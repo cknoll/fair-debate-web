@@ -8,6 +8,7 @@ main_view = views.MainView.as_view
 urlpatterns = [
     path("", main_view(), name="landingpage"),
 
+    path("new/", views.NewDebateView.as_view(), name="new_debate"),
     path("menu/", views.menu_page, name="menupage"),
     path("debug/", views.debugpage, name="debugpage"),
     path("about/", views.about_page, name="aboutpage"),

@@ -20,10 +20,14 @@ from  . import simple_pages_content_default as spc
 
 from ipydex import IPS
 
-# Create your views here.
+
+# it seems not possible to use `reverse("login")` because the decorator executed too early f
+LOGIN_URL = "/login/"
+
 
 class Container:
     pass
+
 
 class MainView(View):
     def get(self, request):
@@ -45,8 +49,21 @@ class MainView(View):
 
         raise NotImplementedError
 
-# it seems not possible to use `reverse("login")` because the decorator executed too early f
-LOGIN_URL = "/login/"
+
+class NewDebateView(View):
+    def get(self, request):
+        context = {
+            "data": {
+                "unit_test_comment": f"utc_new_debate",
+            }
+        }
+        template = "base/main_new_debate.html"
+
+        return render(request, template, context)
+
+    def post(self, request, **kwargs):
+        raise NotImplementedError
+
 
 
 def errorpage(request):

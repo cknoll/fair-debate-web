@@ -1,0 +1,20 @@
+{% extends "base/base.html" %}
+{% load bleach_tags %}
+{% load extra_filters %}
+
+
+{% block title %}New Debate{{ block.super }}{% endblock %}
+
+
+{% block main_class %}main {{data.main_class}}{% endblock %}
+
+{% block content %}
+
+
+{# content class is for styling error messages handle #}
+<div>
+    <!-- {{data.unit_test_comment}} -->
+
+</div>
+
+{% endblock %}

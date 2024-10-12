@@ -69,6 +69,11 @@ class TestCore1(TestCase):
         self.assertIn(b"utc_general_exception", response.content)
         self.assertIn(b"intentionally raised assertion error", response.content)
 
+    def test_030_index(self):
+        response = self.client.get(reverse("new_debate"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"utc_new_debate", response.content)
+
     def test_50__login_and_out(self):
         response = self.client.get(reverse("login"))
         self.assertEqual(response.status_code, 200)
