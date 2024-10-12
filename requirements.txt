@@ -6,3 +6,4 @@ pytest
 pytest-django
 markdown
 deploymentutils
+fair_debate_md

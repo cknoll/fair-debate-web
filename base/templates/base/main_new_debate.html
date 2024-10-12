@@ -9,15 +9,20 @@
 {% block main_class %}main {{data.main_class}}{% endblock %}
 
 {% block content %}
+<!-- {{data.unit_test_comment}} -->
 
 <h2>New Debate</h2>
 
-<!-- {{data.unit_test_comment}} -->
-<div class="ta-container">
+{% if data.segmented_html %}
+<!-- utc_segmented_html -->
+<h3>Preview</h3>
+    {{data.segmented_html|bleach}}
+{% endif %}
 
-    <form id="new-debate-form" method="POST">
+<div class="ta-container">
+    <form id="new-debate-form" action="{{ request.path }}" method="POST">
         {% csrf_token %}
-        <textarea class="custom-textarea" placeholder="Add markdown source here."></textarea>
+        <textarea class="custom-textarea" placeholder="Add markdown source here." name="body_content"></textarea>
         <div class="button-container">
             <button type="button" onclick="window.history.back();">Cancel</button>
             <button id="id_submit" type="submit">Submit</button>

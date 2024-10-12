@@ -13,6 +13,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 
+import fair_debate_md as fdmd
+
 from ipydex import IPS
 
 
@@ -28,7 +30,6 @@ class TestCore1(TestCase):
         spec_values=kwargs.get("spec_values", {})
 
         post_data, action_url = generate_post_data_for_form(response, spec_values=spec_values)
-
 
         response = self.client.post(action_url, post_data)
         return response
@@ -58,21 +59,29 @@ class TestCore1(TestCase):
         target_url = response["Location"]
         self.assertTrue(target_url.startswith(reverse("login")))
 
-    def test_010_index(self):
+    def test_010__index(self):
         response = self.client.get(reverse("landingpage"))
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"utc_landingpage", response.content)
 
-    def test_020_error(self):
+    def test_020__error(self):
         response = self.client.get(reverse("errorpage"))
         self.assertEqual(response.status_code, 500)
         self.assertIn(b"utc_general_exception", response.content)
         self.assertIn(b"intentionally raised assertion error", response.content)
 
-    def test_030_index(self):
+    def test_030__new_debate(self):
         response = self.client.get(reverse("new_debate"))
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"utc_new_debate", response.content)
+        self.assertNotIn(b"utc_segmented_html", response.content)
+
+        with open(fdmd.fixtures.txt1_md_fpath) as fp:
+            content = fp.read()
+
+        response = self.post_to_view(viewname="new_debate", spec_values={"body_content": content})
+        self.assertIn(b"utc_segmented_html", response.content)
+
 
     def test_50__login_and_out(self):
         response = self.client.get(reverse("login"))

@@ -15,6 +15,8 @@ from .forms import UserCreationForm, LoginForm
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+import fair_debate_md as fdmd
+
 from .simple_pages_interface import get_sp, new_sp
 from  . import simple_pages_content_default as spc
 
@@ -62,7 +64,22 @@ class NewDebateView(View):
         return render(request, template, context)
 
     def post(self, request, **kwargs):
-        raise NotImplementedError
+        body_content = request.POST.get("body_content", "")
+
+        segmented_html = fdmd.convert_plain_md_to_segmented_html(body_content)
+
+        context = {
+            "data": {
+                "unit_test_comment": f"utc_new_debate",
+                "segmented_html": segmented_html,
+            }
+        }
+        template = "base/main_new_debate.html"
+
+        # TODO: maybe redirect here
+        return render(request, template, context)
+
+
 
 
 
