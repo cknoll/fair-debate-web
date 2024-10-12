@@ -167,6 +167,7 @@ BLEACH_ALLOWED_ATTRIBUTES = {
     "*": ["id", "style"],
     "img": ["src"],
     "a": ["href"],
+    "span": ["class", "id"],
 }
 
 BLEACH_ALLOWED_STYLES = [

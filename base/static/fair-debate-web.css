@@ -24,3 +24,7 @@
 .button-container button  {
     margin-top: 0.5em;
 }
+
+.segment:hover, .segment:active {
+    background-color: #ffbd71;
+}
