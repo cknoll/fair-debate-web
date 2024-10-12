@@ -1,5 +1,6 @@
-# Fair-Discussion-Web
+# Fair-Debate-Web
 
+Fair-debate-Web is an experimental web application to facilitate controversial text-based debates.
 
 ### Manual Testing
 

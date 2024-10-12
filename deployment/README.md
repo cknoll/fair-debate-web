@@ -1,4 +1,4 @@
-# fair_discussion_web Deployment (not yet tested for this app)
+# fair_debate_web Deployment (not yet tested for this app)
 
 (Semi-) automated deployment is implemented for the target host [uberspace](https://uberspace.de/).
 

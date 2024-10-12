@@ -28,7 +28,7 @@ except ImportError as err:
 
 
 """
-This script serves to deploy and maintain the django app `fair_discussion_web` on an uberspace account.
+This script serves to deploy and maintain the django app `fair_debate_web` on an uberspace account.
 It is largely based on this tutorial: <https://lab.uberspace.de/guide_django.html>.
 """
 

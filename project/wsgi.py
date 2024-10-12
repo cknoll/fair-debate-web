@@ -1,5 +1,5 @@
 """
-WSGI config for fair_discussion_web project.
+WSGI config for fair_debate_web project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

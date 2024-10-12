@@ -56,7 +56,7 @@ Should there be any problem with the operation or the content of this website, p
 <br><br>
 Contact information: \n\n
 - [http://cknoll.github.io/pages/impressum.html](http://cknoll.github.io/pages/impressum.html)
-- [https://codeberg.org/cknoll/fair_discussion_web](https://codeberg.org/cknoll/fair_discussion_web)
+- [https://codeberg.org/kddk/fair-debate-web](https://codeberg.org/kddk/fair-debate-web)
 """)
 
 
@@ -77,7 +77,7 @@ Sollte es ein Problem mit dem Betrieb oder den Inhalten der Seite geben, kontakt
 <br><br>
 Kontaktinformationen: \n\n
 - [https://cknoll.github.io/pages/impressum.html](http://cknoll.github.io/pages/impressum.html)
-- [https://codeberg.org/cknoll/fair_discussion_web](https://codeberg.org/cknoll/fair_discussion_web)
+- [https://codeberg.org/kddk/fair-debate-web](https://codeberg.org/kddk/fair-debate-web)
 """)
 
 
@@ -91,7 +91,7 @@ new_sp(type="contact",
 This site is maintained by Carsten Knoll. For contact information see: \n\n
 
 - [http://cknoll.github.io/pages/impressum.html](http://cknoll.github.io/pages/impressum.html)
-- [https://codeberg.org/cknoll/fair_discussion_web](https://codeberg.org/cknoll/fair_discussion_web)
+- [https://codeberg.org/kddk/fair-debate-web](https://codeberg.org/kddk/fair-debate-web)
 """
        )
 
@@ -104,7 +104,7 @@ Diese Seite wird betrieben von Carsten Knoll.
 Weitere Kontaktinformationen: \n\n
 
 - [http://cknoll.github.io/pages/impressum.html](http://cknoll.github.io/pages/impressum.html)
-- [https://codeberg.org/cknoll/fair_discussion_web](https://codeberg.org/cknoll/fair_discussion_web)
+- [https://codeberg.org/kddk/fair-debate-web](https://codeberg.org/kddk/fair-debate-web)
 """
 )
 
@@ -205,7 +205,7 @@ new_sp(type="general_error",
 
 # TODO: add content
 about_text_en = """
-# About `fair_discussion_web`
+# About `fair_debate_web`
 
 t.b.d.
 
@@ -225,9 +225,9 @@ new_sp(type="about",
 new_sp(type="landing",
        title="landingpage",
        content=_(f"""
-# Fair-Discussion-Web
+# Fair-Debate-Web
 
-Fair-Discussion-Web is an experimental web application to enable controversial discussions.
+Fair-Debate-Web is an experimental web application to facilitate controversial text-based debates.
 
 """))
 # Try it out: [{settings.BASE_URL.rstrip("/")}/new]({settings.BASE_URL.rstrip("/")}/new)

@@ -1,5 +1,5 @@
 """
-ASGI config for fair_discussion_web project.
+ASGI config for fair_debate_web project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

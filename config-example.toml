@@ -22,8 +22,8 @@ user = 'some_user'
 # #############################################################################
 
 
-app_name = "fair_discussion_web"
-PROJECT_NAME = 'fair_discussion_web'
+app_name = "fair_debate_web"
+PROJECT_NAME = 'fair_debate_web'
 url_path = "/%(app_name)s"
 port = '8000'
 
