@@ -1,0 +1,557 @@
+
+
+/* definition of variables */
+:root {
+
+    --color-global-bg: #FFF;
+    --color-gray-dark-text: #333;
+    --color-dim-text: hsl(00, 0%, 50%);
+    --color-red-dark-text: #733;
+    --color-quote-background: hsl(25, 0%, 97%);
+    --color-header-background: #EEE;
+    --color-header-menu-background: #F8F8F8;
+    --color-header-menu-item-hover-background: #E8E8E8;
+    --color-header-border: #d0d0de;
+    --color-header-menu-symbol-hl: #0062cc;
+    --color-header-menu-shadow: rgba(0,0,0,0.2);
+    --color-footer-background:  hsl(230, 20%, 15%);
+    --color-footer-text:  hsl(00, 10%, 70%);
+    --color-border:  hsl(00, 0%, 70%);
+    --color-header-warning-background: hsl(25, 100%, 80%);
+    --color-error-background: hsl(5, 80%, 80%);
+    --color-error-border: hsl(5, 100%, 50%);
+    --color-alert-background: hsl(40, 80%, 80%);
+    --color-alert-border: hsl(40, 100%, 50%);
+    --header-height: 2em;
+    --padding-header: 0.3em;
+    --padding-v-quote: 4px;
+    --padding-h-quote: 1em;
+    --padding-content: min(2.5vw, 30px);
+    --padding-content2: calc(var(--padding-content)*0.5);
+    --padding-content2m: calc(var(--padding-content)*-0.5);
+
+    --width-content: min(90vw, 60em); /*→ max width of 960px (@ vw=1280)*/
+    --width-content-two-column: min(93vw, 100em); /* width for two column part*/
+    --col-height: calc(100vh - var(--header-height)*3);
+
+    /*  the following scaling factor k is calculated by  16px/<min-viewport-width-in-px-at-which-still-normal-font-size> e.g. 16px/640px = 0.025 → 2.5vw    */
+    --font-size-all: max(min(16px, 2.5vw), 10px);
+
+}
+
+/* https://stackoverflow.com/a/19723677/333403 */
+html, body {
+    font-family: Roboto, sans-serif;
+    margin: 0px;
+    padding: 0px;
+    height:100%;
+    width:98%;
+    font-size: var(--font-size-all);
+}
+
+
+#outer-container {
+   display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+
+#header1, #header2 {
+    display: inline-block;
+  }
+
+
+@media (max-width: 650px) {
+    #header2 {
+      display: block;
+      text-align: right;
+    }
+  }
+
+
+
+body {
+
+    color: var(--color-gray-dark-text);
+    background-color: var(--color-global-bg);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+body a{
+    color: inherit;
+    text-decoration: underline dotted;
+}
+
+
+body a:hover{
+    color: inherit;
+    text-decoration: underline;
+}
+
+.headerbar {
+
+    color: var(--color-gray-dark-text);
+    width: 100%;
+    border: 1px solid #EEE;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+    margin-top: 0px;
+    background-color: var(--color-header-background);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+
+    /* height: var(--header-height); */
+
+}
+.vertical-center0 {
+    position: relative;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
+.header {
+    margin-right: auto;
+    margin-left: auto;
+    width: var(--width-content);
+
+    padding: var(--padding-header);
+}
+
+.h3c {
+  /* style headings which are semantically not h3 as h3 */
+  font-size: 120%;
+}
+
+
+.frame-title{
+  font-size: 70%;
+  color: var(--color-gray-dark-text);
+}
+
+.preview-frame {
+  padding-left: var(--padding-content2);
+  padding-right: var(--padding-content2);
+  margin-bottom: 10px;
+  border: 1px var(--color-border) solid;
+}
+
+.placeholder {
+  color: var(--color-dim-text);
+}
+.slug-preview {
+    background-color: var(--color-quote-background);
+
+}
+
+code  {
+  background-color: var(--color-quote-background);
+}
+blockquote {
+
+    background-color: var(--color-quote-background);
+    padding-top: var(--padding-v-quote);
+    padding-bottom: var(--padding-v-quote);
+    padding-left: var(--padding-h-quote);
+    padding-right: var(--padding-h-quote);
+
+}
+
+blockquote p {
+    margin: 0px;
+}
+details {
+  background-color: var(--color-quote-background);
+}
+
+summary {
+  background-color: var(--color-global-bg);
+}
+
+div.header a{
+    color: inherit;
+    text-decoration: none;
+}
+
+div.header a:hover{
+    color: inherit;
+    text-decoration: underline;
+}
+
+.headerbar-warning {
+
+    color: var(--color-gray-dark-text);
+    background-color: var(--color-header-warning-background);
+}
+.headerbar-warning0 {
+    margin-right: -10px;
+    margin-left: -10px;
+    width: 100%;
+
+    border: 1px solid #EEE;
+    position: fixed;
+    top: var(--header-height);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+
+}
+
+.fs70 {
+    font-size: 0.8em;
+
+}
+
+.boxed {
+    text-align: center;
+    display: inline-block;
+    width: 1.2em;
+    border: 1px solid var(--box-grey);
+}
+
+.box-frame{
+    display: inline-block;
+     --box-grey: #BBB;
+
+}
+.box-frame:hover{
+     --box-grey: #777;
+    background-color: #EEE;
+
+}
+
+
+.main {
+
+    flex: 0; /*  allow this element to be as high as needed    */
+    color: var(--color-gray-dark-text);
+    padding-right: var(--padding-content);
+    padding-left: var(--padding-content);
+    padding-top: 0em;
+    padding-bottom: 2em;
+    margin-top: calc(var(--header-height)*1.5);
+    margin-left: auto;
+    margin-right: auto;
+    width: var(--width-content);
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.12),0 1px 5px 0 rgba(0,0,0,0.2);
+    border-radius: 2px;
+
+}
+.main_two_column {
+
+    width: var(--width-content-two-column);
+
+}
+
+.two_col_container {
+    display: flex;
+    justify-content: space-between;
+    max-height: var(--col-height);
+    overflow: hidden; /* Prevent the container from scrolling */
+}
+
+.left-column {
+    width: 50%;
+    padding: 20px;
+    padding-top: 0px;
+    overflow-y: auto;
+}
+
+.right-column {
+  position: sticky;
+  /* top: 2em; */
+  width: 50%;
+  overflow-y: auto;
+  padding: 20px;
+  padding-top: 0px;
+    border-left: 1px solid #ccc;
+    /* for debugging */
+    /* border: 1px solid blue; */
+}
+.right-column-headline-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.prev-next-button-container button {
+  margin-left: 10px;
+}
+
+/* We do not use pseudo-class :active here beacuse the event might
+ *  also be triggered by a js function triggered by a key
+ */
+.button-active {
+    background: var(--color-quote-background) !important;
+}
+
+.arrow-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.arrow {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.arrow-right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.arrow-left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+
+
+#review-detail-content {
+  margin-top: 1em;
+  background-color: var(--color-quote-background);
+  min-height: 5em;
+}
+
+  .annotation-hl {
+    background-color:rgba(255, 165, 0, 0.2);
+    border-bottom:2px solid orange;
+    cursor:pointer;
+  }
+
+  .unique-active-annotation-hl, .unique-active-annotation-hl .annotation-hl {
+    background-color:rgba(255, 165, 0, 0.2);
+    border-bottom:2px solid lightseagreen !important;
+    cursor:pointer;
+    z-index: 10;
+  }
+
+
+
+.error {
+    color: var(--color-red-dark-text);
+    padding: 1em;
+    border: 1px solid  hsla(00, 60%, 40%, 70%);
+  }
+
+  #js_warning {
+    color:hsl(0, 80%, 50%);
+    border: 1px solid  hsla(00, 60%, 40%, 70%);
+    padding: 1em;
+}
+
+.form_input_fw {
+    width: 99%;
+    margin-bottom: 0.5em;
+}
+
+  .btn {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+      border-top-color: transparent;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      border-left-color: transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  }
+
+  .btn:hover {
+    color: #212529;
+    text-decoration: none;
+  }
+  .btn-primary:hover {
+    color: #fff;
+    background-color: #0069d9;
+    border-color: #0062cc;
+  }
+  [type="button"]:not(:disabled), [type="reset"]:not(:disabled), [type="submit"]:not(:disabled), button:not(:disabled) {
+    cursor: pointer;
+  }
+  .btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+
+
+.special_hr{
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75) 40%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0));
+}
+
+
+
+#vertical-spacer {
+/*  background-color: red; */
+ flex: 1;
+ min-height: 0px;
+}
+
+.error_container {
+  background-color: var(--color-error-background);
+  border: solid 3px var(--color-error-border);;
+}
+
+.alert_container {
+  background-color: var(--color-alert-background);
+  border: solid 3px var(--color-alert-border);;
+}
+
+.footer {
+  width: 100vw;
+}
+
+.footerbar {
+
+    color: var(--color-footer-text);
+    width: 100%;
+    border: 1px solid #EEE;
+    margin-top: 5px;
+    background-color: var(--color-footer-background);
+
+
+}
+
+.footer-content {
+    margin-right: auto;
+    margin-left: auto;
+    width: var(--width-content);
+
+    padding: var(--padding-header);
+
+}
+div.footer a{
+    color: inherit;
+    text-decoration: none;
+    text-shadow: 0 0 2px rgba(200, 1, 1, 0.4);
+}
+
+div.footer a:hover{
+    color: inherit;
+    text-shadow: 0 0 2px rgba(200, 1, 1, 0.9);
+}
+
+
+
+/* manual fixup of current css */
+
+.bg-box-body {
+  background: var(--color-box-body);
+}
+
+/* head menu */
+
+.header {
+  display: flex; justify-content: space-between;
+}
+
+.header-left-part {
+  border: none;
+  /* border: 1px solid #A33; */
+}
+
+.header-right-part {
+  border: none;
+  /* border: 1px solid #3A3; */
+}
+
+.menu-container{
+  position: relative;
+  display: inline-block;
+}
+
+.hamburger-menu {
+  cursor: pointer;
+}
+
+/* obsolete because the menu is now represented by the icon: &#9776; */
+.hamburger-menu span {
+  width: 100%;
+  height: 3px;
+  background-color: var(--color-gray-dark-text);
+  transition: 0.3s;
+}
+
+.dropdown-menu {
+  display: none;
+  right: 0;
+  position: absolute;
+  background-color: var(--color-header-menu-background);
+  min-width: 160px;
+  border-radius: 5px;
+  border: 1px solid var(--color-header-border);
+  box-shadow: 0px 8px 16px 0px var(--color-header-menu-shadow);
+  z-index: 1;
+  margin-top: 0.3em;
+  margin-right: 0.5em;
+}
+
+/* this was used for making the drow down menu visible on hover without js -> not used anymore */
+
+/* .menu-container:hover .dropdown-menu {
+  display: block;
+  } */
+
+/* drop down menu symbol */
+
+.ddms {
+  transition: color 0.1s ease;
+}
+
+.ddms:hover {
+  color: var(--color-header-menu-symbol-hl);
+}
+
+.ddms path {
+  transition: fill 0.1s ease;
+}
+
+.ddms:hover path {
+  fill: var(--color-header-menu-symbol-hl);
+}
+
+.dropdown-menu a {
+  color: var(--color-gray-dark-text);
+  text-decoration: none;
+  display: block;
+}
+.dropdown-menu ul {
+  list-style-type: none;
+  padding: 0px 1em;
+}
+.dropdown-menu li {
+  line-height: 2em;
+  /* border: 1px solid red; */
+}
+
+.dropdown-menu a:hover {
+  background-color: var(--color-header-menu-item-hover-background);
+}
+
+/* introduced for item menus  */
+.show {
+  /* allows to toggle visibility of elements */
+  display: block;
+}

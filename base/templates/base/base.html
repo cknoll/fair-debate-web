@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% load static %}
+{#{% load extra_filters %}#}
+
+<html>
+<head lang="en">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<!--  prevent favicon -->
+<link rel="icon" href="data:,">
+
+<link type="text/css" rel="stylesheet" href="{% static 'base.css' %}">
+<link type="text/css" rel="stylesheet" href="{% static 'fair-discussion-web.css' %}">
+
+
+<title>{% block title %}Fair Discussion Web{% endblock %}</title>
+
+{# the following block allows templates to load scripts e.g. for mathjax #}
+{% block head_extension %}{% endblock %}
+
+</head>
+<body>
+
+<div class="headerbar">
+    <div class="header">
+        <div class="header-left-part">
+            <a href="{% url 'landingpage'%}" style="text-decoration: none;">
+                <div id="header1" class="box-frame">
+                    <div class="boxed">F</div> <div class="boxed">D</div> <div class="boxed">W</div>
+                </div>
+            </a>
+                <div id="header2">
+                    – Fair Discussion Web
+                </div>
+        </div> <!-- end of header-left-part -->
+        <div class="header-right-part">
+            <div class="menu-container">
+                {% include "base/partials/headmenu.html" with mode="header"%}
+            </div>
+        </div> <!-- end of header-right-part -->
+    </div> <!-- end of header -->
+{% block header_warning %}
+{% endblock %}
+</div> <!-- end of headerbar -->
+
+<div id="outer-container">
+
+
+<div id="id_main" class="{% block main_class %}main{% endblock %}">
+{% block content %}
+
+add content
+
+{% endblock %}
+</div>
+
+<!-- <div id="vertical-spacer"></div> -->
+</div> <!-- end of outer container -->
+
+
+{% block footer %}
+<!-- <footer> -->
+
+<div class="footer">
+    <div class="footerbar">
+        <div class="footer-content">
+            {#<a href="{% url 'about' %}">about markpad</a> |#}
+            {#<a href="{% url 'legal-notice' %}">legal notice</a> |#}
+            ... made with <a href="https://www.djangoproject.com">django</a> and
+            <a href="https://django-bleach.readthedocs.io">django-bleach</a> |
+            hosted on <a href="https://uberspace.de/">uberspace</a> |
+            source code at <a href="https://codeberg.org/cknoll/fair_discussion_web">codeberg</a>
+            <br>
+            {# last deployment: {{"foobar"|get_last_deployment}}. #}
+        </div>
+    </div>
+</div>
+<!-- </footer> -->
+{% endblock %}
+
+
+{% block extra_content %}
+{% endblock %}
+
+{% block main_script %}
+<script type="text/javascript" src="{% static 'core.js' %}"></script>
+{% endblock %}
+</body>
+
+</html>

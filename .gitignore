@@ -1,0 +1,7 @@
+db.sqlite*
+__pycache__
+config.toml
+config_fedivis.toml
+cache*.pcl
+**/tmp_workdir
+.vscode/*

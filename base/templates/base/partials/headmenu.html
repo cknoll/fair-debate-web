@@ -1,0 +1,26 @@
+{# This template is included in the header with mode "header" in the main content with mode "page" #}
+
+{% if mode == "header" %}
+<div id="ddms_header" class="hamburger-menu ddms">
+    &#9776;
+</div>
+{% endif %}
+
+{# TODO: the page mode of the head menu is probably no longer needed (we assume js to be available) #}
+
+<div {% if mode == "header" %}id="ddm_header" class="dropdown-menu ddm"{% endif %}>
+    {% if mode == "page" %}
+    <h1>Main Menu</h1>
+    {% endif %}
+    <ul>
+        <li style="margin-bottom: 0.75em;"><a href="{% url 'landingpage' %}">Home</a></li>
+    {% if request.user.is_authenticated %}
+        <li style="line-height: 1.5em;">Logged in as <em>{{ request.user.username }}</em></li>
+        <li><a href="{% url 'logout' %}">Log out</a></li>
+    {% else %}
+        <li><a href="{% url 'login' %}">Log in</a></li>
+        <li><a href="{% url 'signup' %}">Sign up</a></li>
+    {% endif %}
+        <li><a href="{% url 'aboutpage' %}">About</a></li>
+    </ul>
+</div>

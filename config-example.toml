@@ -1,0 +1,68 @@
+# This file contains example settings which should mostly work for own deployment. Of course you need to enter your own domain and access data.
+
+
+# #############################################################################
+# general settings (no action necessary)
+# #############################################################################
+
+# valid values are "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+LOGLEVEL = "INFO"
+
+
+# #############################################################################
+# deployment settings which needs to be changed
+# #############################################################################
+
+
+remote = 'some_asteroid.uberspace.de'
+user = 'some_user'
+
+# #############################################################################
+# deployment settings which should be OK for most use cases
+# #############################################################################
+
+
+app_name = "fair_discussion_web"
+PROJECT_NAME = 'fair_discussion_web'
+url_path = "/%(app_name)s"
+port = '8000'
+
+ALLOWED_HOSTS = ["%(app_name)s.%(user)s.uber.space"]
+ALLOWED_HOSTS__DEVMODE = ["localhost"]
+
+BASE_URL = "//%(app_name)s.%(user)s.uber.space/"
+BASE_URL__DEVMODE = "//localhost:%(port)s"
+
+deployment_path = "/home/%(user)s/%(PROJECT_NAME)s-deployment/%(app_name)s"
+
+
+# needed to set the correct web backend; expexted to start with `/`
+django_url_prefix = "/"
+static_url_prefix = "/static"
+
+# working directories during deployment
+# `__BASEDIR__` will be replaced inside settings
+STATIC_ROOT = "__BASEDIR__/collected_static"
+MEDIA_ROOT = "__BASEDIR__/media"
+
+
+# this path sould be located outside <BASEDIR> because the deployment might delete that completely
+BACKUP_PATH = "__BASEDIR__/../%(PROJECT_NAME)s_db_backups"
+
+DB_FILE_NAME = "db.sqlite3"
+
+# name (not path)
+venv = "%(PROJECT_NAME)s-venv"
+
+pip_command = "pip3.11"
+python_version = "python3.11"
+
+
+DEBUG = false
+DEBUG__DEVMODE = true
+
+
+# secret keys can be created with: python3 -c "import secrets; print(secrets.token_urlsafe(50))"
+SECRET_KEY = 'NfdysN_yXKWuliPb--example--W5_Fc9VUDOVnPgUBJ2oeq6FjAOJykFWFpK1PL7URw'
+
+ADMIN_PASS = "9_muuozzBL--example-secret--IV70wX6YbRc_TkL3s"

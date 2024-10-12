@@ -1,0 +1,19 @@
+{% extends "base/base.html" %}
+{% load bleach_tags %}
+{% load extra_filters %}
+
+
+{% block title %}{{data.sp.title}}: {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1>Login</h1>
+<form id="login_form" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button id="id_submit" type="submit">Login</button>
+    <br>
+    <br>
+    <a href="{% url 'signup' %}">Don't have account? Create.</a>
+</form>
+
+{% endblock %}

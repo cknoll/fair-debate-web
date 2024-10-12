@@ -1,0 +1,16 @@
+{% extends "base/base.html" %}
+{% load bleach_tags %}
+{% load extra_filters %}
+
+
+{% block title %}{{ block.super }} Main menu{% endblock %}
+
+
+{% block main_class %}main {{data.main_class}}{% endblock %}
+
+{% block content %}
+
+{% include "base/partials/headmenu.html" with mode="page" %}
+
+
+{% endblock %}
