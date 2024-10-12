@@ -1,0 +1,26 @@
+
+/* for the main textarea */
+.ta-container {
+    width: 100%;
+    /* padding: 20px; */
+    box-sizing: border-box;
+  }
+
+  .custom-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    display: block;
+    padding: 10px;
+    min-height: 100px;
+    resize: vertical; /* Allows vertical resizing */
+  }
+
+  .button-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1em;
+    }
+.button-container button  {
+    margin-top: 0.5em;
+}

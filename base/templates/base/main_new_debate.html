@@ -10,10 +10,19 @@
 
 {% block content %}
 
+<h2>New Debate</h2>
 
-{# content class is for styling error messages handle #}
-<div>
-    <!-- {{data.unit_test_comment}} -->
+<!-- {{data.unit_test_comment}} -->
+<div class="ta-container">
+
+    <form id="new-debate-form" method="POST">
+        {% csrf_token %}
+        <textarea class="custom-textarea" placeholder="Add markdown source here."></textarea>
+        <div class="button-container">
+            <button type="button" onclick="window.history.back();">Cancel</button>
+            <button id="id_submit" type="submit">Submit</button>
+        </div>
+     </form>
 
 </div>
 
