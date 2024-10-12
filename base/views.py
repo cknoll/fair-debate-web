@@ -53,25 +53,27 @@ class MainView(View):
 
 
 class NewDebateView(View):
-    def get(self, request):
-        context = {
-            "data": {
-                "unit_test_comment": f"utc_new_debate",
-            }
-        }
-        template = "base/main_new_debate.html"
-
-        return render(request, template, context)
+    def get(self, request, test=False):
+        return self.render_result(request, body_content="")
 
     def post(self, request, **kwargs):
         body_content = request.POST.get("body_content", "")
+        return self.render_result(request, body_content)
+
+
+    def render_result(self, request, body_content):
 
         segmented_html = fdmd.convert_plain_md_to_segmented_html(body_content)
+        if body_content:
+            submit_label = "Submit"
+        else:
+            submit_label = "Preview"
 
         context = {
             "data": {
                 "unit_test_comment": f"utc_new_debate",
                 "segmented_html": segmented_html,
+                "submit_label": submit_label,
             }
         }
         template = "base/main_new_debate.html"
@@ -80,6 +82,15 @@ class NewDebateView(View):
         return render(request, template, context)
 
 
+def test_new_debate(request):
+    """
+    This view simplifies interactive testing
+    """
+
+    with open(fdmd.fixtures.txt1_md_fpath) as fp:
+            body_content = fp.read()
+
+    return NewDebateView().render_result(request, body_content=body_content)
 
 
 
