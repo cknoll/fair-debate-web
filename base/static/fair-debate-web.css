@@ -1,4 +1,20 @@
 
+
+
+.rendered_content_preview {
+    border: 1px solid #ce9a5e;
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+/* select the h3 immediately before the preview */
+
+h3:has(+ .rendered_content_preview) {
+    margin-bottom: 0.1em;
+}
+
+
+
 /* for the main textarea */
 .ta-container {
     width: 100%;
@@ -16,7 +32,10 @@
     resize: vertical; /* Allows vertical resizing */
   }
 
-  .button-container {
+
+/* for the buttons below the textarea */
+
+.button-container {
       display: flex;
       justify-content: flex-end;
       gap: 1em;

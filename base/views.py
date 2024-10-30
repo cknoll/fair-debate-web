@@ -63,7 +63,7 @@ class NewDebateView(View):
 
     def render_result(self, request, body_content):
 
-        segmented_html = fdmd.convert_plain_md_to_segmented_html(body_content)
+        md_with_keys, segmented_html = fdmd.convert_plain_md_to_segmented_html(body_content)
         if body_content:
             submit_label = "Submit"
         else:
@@ -72,6 +72,7 @@ class NewDebateView(View):
         context = {
             "data": {
                 "unit_test_comment": f"utc_new_debate",
+                "md_with_keys": md_with_keys,
                 "segmented_html": segmented_html,
                 "submit_label": submit_label,
             }
