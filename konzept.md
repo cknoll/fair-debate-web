@@ -1,0 +1,109 @@
+# KDDK-Plattform: faire-debatte.de
+
+- noch frei: https://bero-host.de/webhosting/prepaid-domains-mieten
+
+Hintergrund zur Namensnennung: https://www.uopeople.edu/blog/debate-and-discussion/ -> was ich anstrebe ist eher debatte (kompetetiver, Zielgruppe ist eher das Publikum)
+
+## Hintergrund – Problembeschreibung
+
+### Problem 1: Struktureller Aufwand sich inhaltlich mit einzelnen Aussagen auseinanderzusetzen.
+
+Bisher laufen Debatten typischerweise so ab, dass eine Seite einen Block an Aussagen veröffentlicht (Text, Audio, Video). Die andere Seite, die das kritisieren möchte müsste dann mit Aufwand diesen Block untergliedern und inhaltlich auf die Teilaussagen eingehen. Dieser Aufwand wird oft nicht geleistet. Stattdessen wird der gesamte Block pauschal kritisiert oder in einem eigenen monolithischen Block eine Gegenposition veröffentlicht, welche sich aus strukturellen Gründen ebenfalls nur mit Aufwand inhaltlich adäquat kritisieren lässt. Dieser Debattenprozess setzt sich ggf. noch einige Runden fort, bis er meist irgendwann im Sande verläuft.
+
+### Problem 2: Zerstreuung der Debatte auf unterschiedliche Medien
+
+Hinzu kommt, dass die Debatte meist sehr verstreut stattfindet: Partei A veröffentlicht Aussagen-Block 1 in Medium X, Partei B Antwortet darauf mit Aussagen-Block 2 in Medium Y. Das muss Partei A erstmal mitbekommen um darauf wiederum eingehen zu können. Und das Publikum von Aussagen-Block 1 müsste es auch mitbekommen, um diese Aussagen mit ihrer Kritik abzugleichen. Wenn die Debatte noch einige Runden weitergeht, kommen meist weitere Medien ins Spiel. Was es für die beteiligten und das Publikum schwer bis unmöglich macht, die Debatte geziehlt zu verfolgen.
+
+
+### Problem 3: Beeinflussung der Debatte durch Kontrolle über das Medium
+
+Problem 2 kann vermieden werden, indem die Debatte auf einem Medium (z.B. Online-Forum, in einer Zeitschrift) stattfindet. Allerdings besteht dann die Gefahr, dass diejenigen, die das Medium kontrollieren (z.B. Administration des Forums) bezüglich des Debattenthemas parteiisch sind. Das kann dazu führen, dass bestimmte Argumente oder Akteure von der Debatte ausgeschlossen oder anderweitig behindert werden. Und es kann dazu führen, dass derartige Vorwürfe (z.B. als Ablenkungsmanöver) fälschlicherweise erhoben werden – weil es grundsätzlich möglich ist und sich das Gegenteil schwer beweisen lässt.
+
+### Problem 4: Unklarheit über Akteure
+
+Weiterhin ist es oft schwierig den Überblick zu behalten, welche Akteure an der Debatte überhaupt teilnehmen und auf welcher Seite sie stehen. Z.B. kritisiert Partei C ebenfalls Aussagen-Block 1, aber mit anderen Argumenten als Partei B und Partei D kritisiert sowohl Aussagen-Block 1 als auch 2. Partei E wiederum gibt vor, für Partei A zu sprechen, allerdings ist unklar wie legitim dieser Anspruch ist.
+
+## Lösungsvorschlag:
+
+
+### Zu Problem 1:
+
+Ein Text wird digital veröffentlicht. Jeder Satz und weitere relevante Elemente (Überschriften, Stichpunkte, Abbildungen) sind a) referenzierbare Objekte. Jedes referenzierbare Objekt ist kommentierbar. Jeder Kommentar besteht selbst wieder aus kommentierbaren Objekten. Der Aufwand, sich auf die konkreten inhaltlich strittigen Aussagen zu beziehen, ist sehr gering. Das gleiche gilt für die Antwort auf die Antwort etc.
+
+### Zu Problem 2 und 3:
+
+Es gibt *eine* Plattform, auf der die gesamte Debatte sichtbar ist. Um Problem 3 (Beeinflussung der Debatte durch Kontrolle über das Medium) zu vermeiden, bezieht die Plattform die angezeigten Debattenbeiträge aus unabhängigen und vertrauenswürdigen Quellen, z.B. öffentlichen git-Repositorien (z.B. bei github)). Jede an der Debatte beteiligte Partei hat selber die alleinige Kontrolle über den Schreibzugriff auf ihr Repo. Die Debattenplattform dient lediglich der übersichtlichen Anzeige der Debattenbeiträge und der technischen Unterstützung beim Aktualisieren des Repos.
+
+Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. Allerdings hat die Plattform einen starken Anreiz, ihre Glaubwürdigkeit zu behalten und eine Manipulation der Anzeige wäre sehr einfach nachweisbar, da die manipulationssicheren Originalinhalte öffentlich einsehbar sind (nur eben nicht in einer auf Übersicht optimierten Darstellung).
+
+### Zu Problem 4:
+
+Über die Repositorien, aus denen die Debatten-Beiträge bezogen werden, wird eine klare Identifikation der Akteure ermöglicht. Wenn sich ein Teil des Publikums nur für die Debatte zwischen den Parteien A und B interessiert, dann werden nur die sich aufeinander beziehenden Beiträge dieser Parteien (d.h. der zugehörigen Repositorien) angezeigt. Wenn Partei E beansprucht, für Partei A zu sprechen, muss sie innerhalb von Partei A Überzeugungsarbeit leisten, um die eigenen Beiträge innerhalb des Repos von Partei A veröffentlichen zu können. Technisch ist das mit Hilfe sog. Merge-Requests (auch Pull-Requests) sehr einfach möglich. Es eröffnet zudem die Chance für eine gruppeninterne Profilierung durch inhaltlich qualitative Beiträge.
+
+
+
+## Grundsätzlicher Ablauf:
+
+- an einer Debatte nehmen zwei Seiten ("Parteien") teil. Wie diese Parteien sich intern organisieren, z.B. welche natürlichen Personen Schreibrechte haben, können sie selber entscheiden.
+- Partei A eröffnet die Debatte
+- Partei B hat die Gelegenheit auf der gleichen Plattform mit der gleichen Sichtbarkeit zu antworten
+- Die einzelnen Beiträge sollen bestimmte Qualitätsstandards erfüllen:
+    - Sachlicher Ton, keine Beleidigungen etc.
+    - Aussagen, bei denen kein Konsens angenommen werden kann, sind zu belegen
+    - Beiträge müssen sinnvoll in referenzierbare Aussagen gegliedert sein.
+    - Aussagen müssen zueinander in Beziehung gesetzt werden.
+- Die Debatte (in einem Argumentationsstrang) ist dann beendet, wenn 7 Tage keine Reaktion erfolgte. Reaktion kann auch sein: wir brauchen x Tage mehr Zeit.
+- Ziel der Debatte ist es, dass sich Dritte (z.B. Journalisten, interessiertes Publikum) ein möglichst klares Bild über die Positionen und Argumente der beteiligten Parteien machen können.
+
+
+## Technische Umsetzung:
+
+### Frontend (Lesen)
+
+- Frontend zeigt zunächst Text von Partei A an.
+- Grenzen zwischen einzelnen referenzierbaren Aussagen sind klar erkennbar
+- Durch Symbole wird deutlich, ob und in welchem Umfang auf diese "Elementaraussagen" reagiert wurde
+- oben Meta-Infos (aufklappbar): wer ist Partei A und B (repo-Links), wann jeweils letzter Beitrag
+
+### Frontend (Initialen Beitrag Schreiben)
+
+- Einloggen als Partei A
+    - Schreibt einen MD-Beitrag in ein textarea
+    - Klick auf Preview-Phase1
+    - Automatische Aufteilung in Segmente durch Einfügen von Keys
+    -
+
+### Frontend (Antwort Schreiben)
+- Einloggen als Partei B
+- Aussage anwählen
+- Antwort verfassen
+- Vorschau bestätigen
+- Pullrequest wird vom Backend erzeugt (ggf. branch auswählen).
+- Pullrequest (auf github etc.) manuell mergen
+
+
+## Repräsentation von Aussagen im Repo
+
+- Grundsätzlich: DebateMD = Markdown + Zusatzsyntax
+- User müssen selber MD Quelltext erstellen (ggf. mit GUI Unterstützung)
+- Zusatzsyntax wird vom Frontend erzeugt.
+- Jede Aussage bekommt für die Referenzierbarkeit einen Key.
+- Konsistenz wird automatisiert geprüft.
+- Top-Level Aussagen haben Keys wie: `a1`, `a2`, `a3`.
+- eigene Ergänzungen bekommen Keys wie `a1.1` oder `a4.3.1`
+- Antworten bekommen Keys `a3b1` oder `a3.1b1` oder `a3b1.1` (für Ergänzungen zu Antworten)
+- Jede Partei muss für jeden Antwortstrang das Level explizit abschließen. Beispiele:
+    - `a/`: Es folgen keine weiteren Top-Level Aussagen.
+    - `a1b/`: Es folgen keine weiteren Antworten auf `a1`
+- Die andere Partei darf erst Antworten, wenn das Level abgeschlossen ist.
+- Ein Key ist solange aktiv bis der nächste key kommt.
+- Um andere Statements zu referenzieren
+
+
+
+
+### Offene Fragen/Probleme, die erstmal ignoriert werden:
+
+- Was passiert, wenn sich Aussagen ändern, auf die sich andere schon bezogen haben? → erstmal nicht zulassen
+- Kann eine Partei auf eigene Aussagen Antworten? → erstmal nicht zugelassen
+

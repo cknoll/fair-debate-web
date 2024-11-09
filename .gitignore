@@ -5,3 +5,5 @@ config_fedivis.toml
 cache*.pcl
 **/tmp_workdir
 .vscode/*
+
+_git_bundle_*
