@@ -90,15 +90,14 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 - Jede Aussage bekommt für die Referenzierbarkeit einen Key.
 - Konsistenz wird automatisiert geprüft.
 - Top-Level Aussagen haben Keys wie: `a1`, `a2`, `a3`.
-- eigene Ergänzungen bekommen Keys wie `a1.1` oder `a4.3.1`
-- Antworten bekommen Keys `a3b1` oder `a3.1b1` oder `a3b1.1` (für Ergänzungen zu Antworten)
-- Jede Partei muss für jeden Antwortstrang das Level explizit abschließen. Beispiele:
-    - `a/`: Es folgen keine weiteren Top-Level Aussagen.
-    - `a1b/`: Es folgen keine weiteren Antworten auf `a1`
-- Die andere Partei darf erst Antworten, wenn das Level abgeschlossen ist.
+- Antworten bekommen Keys wie `a3b1`, `a3b2`, `a3b23a12b4`
 - Ein Key ist solange aktiv bis der nächste key kommt.
-- Um andere Statements zu referenzieren
-
+- Syntax um andere Statements zu referenzieren: (:a3b1:)
+- Jede Partei hat ihr eigenes Verzeichnis (`a/` und `b/`) und darf auch nur Dateien in diesem Verzeichnis anlegen/ändern.
+- Level-0-Aussagen (DebateMD Quelltext) kommen in Datei: `a/a.md`
+- Level-1-Antworten kommen in Dateien: `b/a3b.md`, `b/a4b.md` usw.
+- Level-2-Antworten kommen in Dateien: `a/a3b2a.md` usw.
+- Eine im main-Branch des jeweiligen Repos veröffentlichte Datei, darf unmittelbar von der anderen Seite beantwortet werden.
 
 
 
@@ -106,4 +105,3 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 
 - Was passiert, wenn sich Aussagen ändern, auf die sich andere schon bezogen haben? → erstmal nicht zulassen
 - Kann eine Partei auf eigene Aussagen Antworten? → erstmal nicht zugelassen
-
