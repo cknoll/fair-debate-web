@@ -1,3 +1,4 @@
+import os
 from django.views import View
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
@@ -21,6 +22,8 @@ from .simple_pages_interface import get_sp, new_sp
 from  . import simple_pages_content_default as spc
 
 from ipydex import IPS
+
+pjoin = os.path.join
 
 
 # it seems not possible to use `reverse("login")` because the decorator executed too early f
@@ -54,17 +57,16 @@ class MainView(View):
 
 class NewDebateView(View):
     def get(self, request, test=False):
-        return self.render_result(request, body_content="")
+        return self.render_result_from_md(request, body_content_md="")
 
     def post(self, request, **kwargs):
         body_content = request.POST.get("body_content", "")
-        return self.render_result(request, body_content)
+        return self.render_result_from_md(request, body_content)
 
+    def render_result_from_md(self, request, body_content_md):
 
-    def render_result(self, request, body_content):
-
-        md_with_keys, segmented_html = fdmd.convert_plain_md_to_segmented_html(body_content)
-        if body_content:
+        md_with_keys, segmented_html = fdmd.convert_plain_md_to_segmented_html(body_content_md)
+        if body_content_md:
             submit_label = "Submit"
         else:
             submit_label = "Preview"
@@ -82,16 +84,35 @@ class NewDebateView(View):
         # TODO: maybe redirect here
         return render(request, template, context)
 
+    def render_result_from_html(self, request, body_content_html):
+
+        context = {
+            "data": {
+                "unit_test_comment": f"utc_new_debate",
+                "segmented_html": body_content_html,
+                "debate_title": "untitled debate",
+            }
+        }
+        template = "base/main_show_debate.html"
+
+        # TODO: maybe redirect here
+        return render(request, template, context)
+
 
 def test_new_debate(request):
     """
-    This view simplifies interactive testing
+    This view simplifies interactive testing during development
     """
 
     with open(fdmd.fixtures.txt1_md_fpath) as fp:
             body_content = fp.read()
 
-    return NewDebateView().render_result(request, body_content=body_content)
+    TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
+    ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
+    return NewDebateView().render_result_from_html(request, body_content_html=ddl.final_html)
+
+    # this is for the preview (edit mode):
+    # return NewDebateView().render_result(request, body_content=body_content)
 
 
 

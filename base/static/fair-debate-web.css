@@ -78,3 +78,31 @@ h3:has(+ .rendered_content_preview) {
 .sqn::after {
   background-color: red;
 }
+
+.answer {
+  display: none;
+  margin-left: 0.5em;
+  padding: 0.1em;
+}
+.answer p {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+.answer.level1,
+.answer.level3,
+.answer.level5,
+.answer.level7,
+.answer.level9
+{
+  background-color:hsla(220, 100%, 90%, 100%);
+}
+
+ .answer.level2,
+ .answer.level4,
+ .answer.level6,
+ .answer.level8,
+ .answer.level10
+ {
+  background-color:hsla(220, 100%, 97%, 100%);
+}

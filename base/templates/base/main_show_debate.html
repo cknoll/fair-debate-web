@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+{% load bleach_tags %}
+{% load extra_filters %}
+
+
+{% block title %}{{data.debate_title}}{{ block.super }}{% endblock %}
+
+
+{% block main_class %}main {{data.main_class}}{% endblock %}
+
+{% block content %}
+<!-- {{data.unit_test_comment}} -->
+
+<h2>{{data.debate_title}}</h2>
+
+{% if data.segmented_html %}
+<!-- utc_segmented_html -->
+<div class="rendered_content_preview">
+    {{data.segmented_html|bleach}}
+</div>
+{% endif %}
+
+
+{% endblock %}
