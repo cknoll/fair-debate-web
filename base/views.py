@@ -101,18 +101,24 @@ class NewDebateView(View):
 
 def test_new_debate(request):
     """
+    Show the preview (edit) mode with some preloaded fixture data
     This view simplifies interactive testing during development
     """
 
     with open(fdmd.fixtures.txt1_md_fpath) as fp:
             body_content = fp.read()
 
+    return NewDebateView().render_result_from_md(request, body_content_md=body_content)
+
+
+def test_show_debate(request):
+    """
+    Show the display (show) mode with some preloaded fixture data (containing answers)
+    This view simplifies interactive testing during development
+    """
     TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
     ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
     return NewDebateView().render_result_from_html(request, body_content_html=ddl.final_html)
-
-    # this is for the preview (edit mode):
-    # return NewDebateView().render_result(request, body_content=body_content)
 
 
 

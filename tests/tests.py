@@ -13,6 +13,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 
+from packaging.version import Version
+
 import fair_debate_md as fdmd
 
 from ipydex import IPS
@@ -58,6 +60,9 @@ class TestCore1(TestCase):
         self.assertEqual(response.status_code, 302)
         target_url = response["Location"]
         self.assertTrue(target_url.startswith(reverse("login")))
+
+    def test_001__basics(self):
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.1.2"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landingpage"))

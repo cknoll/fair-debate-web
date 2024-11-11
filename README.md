@@ -29,3 +29,5 @@ helpful commands:
 helpful urls:
 
 localhost:8000/new
+localhost:8000/new/test
+localhost:8000/show/test

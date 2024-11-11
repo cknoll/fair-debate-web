@@ -2,8 +2,9 @@ django
 bleach
 django-bleach
 djangorestframework
-pytest
-pytest-django
 markdown
 deploymentutils
 fair_debate_md
+pytest
+pytest-django
+packaging
