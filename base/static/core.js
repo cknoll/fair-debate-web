@@ -75,6 +75,14 @@ function getAnswerKey(key){
     return `answer_${key}${appendix}`
 }
 
+function toggleDisplayNoneBlock(element) {
+    if (element.style.display === "none" || element.style.display === "") {
+        element.style.display = "block";
+    } else {
+        element.style.display = "none";
+    }
+}
+
 
 var answerObjects = null;
 var answerMap = {};
@@ -102,11 +110,15 @@ function onLoadForShowDebatePage(){
         });
     });
 
-    // add square symbols to those segments which have an answer
+    // add square symbols and click-event-handler to those segments which have an answer
     segmentObjects.forEach(segment_span => {
         const answer_key = getAnswerKey(segment_span.id);
         if (answer_key in answerMap) {
             segment_span.classList.add("sqn");
+
+            segment_span.addEventListener('click', function() {
+                toggleDisplayNoneBlock(answerMap[answer_key]);
+            });
         }
     });
 
