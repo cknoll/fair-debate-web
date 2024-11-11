@@ -66,7 +66,7 @@ window.addEventListener('click', function(event) {
 
 var answerObjects = null;
 var segmentObjects = null;
-const segIdDisplaySpan = document.getElementById('seg_id_display_span');
+const segIdDisplay = document.getElementById('seg_id_display');
 
 function onLoadForShowDebatePage(){
     answerObjects = Array.from(document.getElementsByClassName("answer"));
@@ -77,12 +77,12 @@ function onLoadForShowDebatePage(){
     segmentObjects.forEach(segment_span => {
         segment_span.addEventListener('mouseover', function() {
             // Display the id of the hovered span
-            segIdDisplaySpan.textContent = this.id;
+            segIdDisplay.textContent = this.id;
         });
 
         segment_span.addEventListener('mouseout', function() {
             // Clear the display when not hovering
-            segIdDisplaySpan.textContent = '';
+            segIdDisplay.textContent = '';
         });
     });
     console.log("onload function executed");

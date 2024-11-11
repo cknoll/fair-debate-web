@@ -44,18 +44,36 @@ h3:has(+ .rendered_content_preview) {
     margin-top: 0.5em;
 }
 
-#second_sticky_bar h2 {
-  display: inline-block;
-  background-color: red;
+/* debate-specific header bar (title and segment information) */
+
+#second_sticky_bar {
+  display: flex;
 }
 
-#seg_id_display_span {
+#second_sticky_bar h2 {
+  flex: 1;
   display: inline-block;
+
+  /* for debugging the div containers */
+  /* background-color: red; */
 }
+
+#debate_title {
+  margin-top: 0em;
+  margin-bottom: 0em;
+}
+
+#seg_id_display {
+  display: block;
+}
+
+
+/* debate body (segment and answers) */
 
 
 .segment {
   background-color: hsla(28, 100%, 73%, 10%);
+  cursor: pointer;
 }
 
 .segment + .segment {
