@@ -11,7 +11,10 @@
 {% block content %}
 <!-- {{data.unit_test_comment}} -->
 
-<h2>{{data.debate_title}}</h2>
+<div id="second_sticky_bar">
+    <h2>{{data.debate_title}}</h2>
+    <span id="seg_id_display_span">XYZ</span>
+</div>
 
 {% if data.segmented_html %}
 <!-- utc_segmented_html -->
@@ -20,5 +23,16 @@
 </div>
 {% endif %}
 
+
+{% endblock %}
+
+
+
+{% block main_script %}
+
+<script>
+window.onload = onLoadForShowDebatePage;
+console.log("main script executed");
+</script>
 
 {% endblock %}

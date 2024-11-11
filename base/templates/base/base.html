@@ -84,8 +84,10 @@ add content
 {% block extra_content %}
 {% endblock %}
 
-{% block main_script %}
+{% block load_js_lib %}
 <script type="text/javascript" src="{% static 'core.js' %}"></script>
+{% endblock %}
+{% block main_script %}
 {% endblock %}
 </body>
 

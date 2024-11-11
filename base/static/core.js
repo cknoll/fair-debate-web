@@ -62,4 +62,71 @@ window.addEventListener('click', function(event) {
     }
 });
 
+
+
+var answerObjects = null;
+var segmentObjects = null;
+const segIdDisplaySpan = document.getElementById('seg_id_display_span');
+
+function onLoadForShowDebatePage(){
+    answerObjects = Array.from(document.getElementsByClassName("answer"));
+    segmentObjects = Array.from(document.getElementsByClassName("segment"));
+    segmentObjects2 = document.querySelectorAll('segment');
+
+    // Add mouseover and mouseout event listeners to each span
+    segmentObjects.forEach(segment_span => {
+        segment_span.addEventListener('mouseover', function() {
+            // Display the id of the hovered span
+            segIdDisplaySpan.textContent = this.id;
+        });
+
+        segment_span.addEventListener('mouseout', function() {
+            // Clear the display when not hovering
+            segIdDisplaySpan.textContent = '';
+        });
+    });
+    console.log("onload function executed");
+}
+
+
+// window.onload = function() {
+//     document.getElementById('js_warning').remove();
+
+//     var panZoom = svgPanZoom('#main-svg-object', {
+//       zoomEnabled: false,
+//       controlIconsEnabled: false
+//     });
+//     var initialZoom = 0.99;
+
+//     panZoom.zoomBy(initialZoom);
+//     panZoom.fit();
+
+//     function FuncZoomIn(ev){
+//       // ev.preventDefault();
+//       panZoom.zoomIn();
+//     }
+
+//     function FuncZoomOut(ev){
+//         // ev.preventDefault();
+//         panZoom.zoomOut();
+//       }
+
+//       function FuncZoomReset(ev){
+//         // ev.preventDefault();
+//         panZoom.resetZoom();
+//         panZoom.fit();
+//         panZoom.zoomBy(initialZoom);
+//         panZoom.center();
+//     }
+
+//     document.getElementById('zoom-in1').addEventListener('click', FuncZoomIn);
+//     document.getElementById('zoom-in2').addEventListener('click', FuncZoomIn);
+//     document.getElementById('zoom-out1').addEventListener('click', FuncZoomOut);
+//     document.getElementById('zoom-out2').addEventListener('click', FuncZoomOut);
+//     document.getElementById('reset1').addEventListener('click', FuncZoomReset);
+//     document.getElementById('reset2').addEventListener('click', FuncZoomReset);
+//   };
+
+
+
 console.log("core.js loaded");

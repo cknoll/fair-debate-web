@@ -44,6 +44,15 @@ h3:has(+ .rendered_content_preview) {
     margin-top: 0.5em;
 }
 
+#second_sticky_bar h2 {
+  display: inline-block;
+  background-color: red;
+}
+
+#seg_id_display_span {
+  display: inline-block;
+}
+
 
 .segment {
   background-color: hsla(28, 100%, 73%, 10%);
@@ -80,7 +89,7 @@ h3:has(+ .rendered_content_preview) {
 }
 
 .answer {
-  /* display: none; */
+  display: none;
   margin-left: 0.5em;
   padding: 0.1em;
 }
