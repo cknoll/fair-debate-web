@@ -85,10 +85,14 @@ h3:has(+ .rendered_content_preview) {
     background-color: #ffbd71;
 }
 
-/* Small squares to indicate the presence of positive or negative comments */
+/*
+  Small squares to indicate the presence of positive or negative comments
+  (currently only negative variant is used)
+*/
 
-.sqp1::after,
-.sqn2::after {
+
+.sqp::after,
+.sqn::after {
   content: '';
   position: relative;
   display: inline-block;

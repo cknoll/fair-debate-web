@@ -63,15 +63,31 @@ window.addEventListener('click', function(event) {
 });
 
 
+function getAnswerKey(key){
+    var parts = key.match(/[ab]\d+/g);
+    var first_letter_of_last_element = parts.pop()[0]
+    var appendix = null;
+    if (first_letter_of_last_element == "a") {
+        appendix = "b";
+    } else {
+        appendix = "a";
+    }
+    return `answer_${key}${appendix}`
+}
+
 
 var answerObjects = null;
+var answerMap = {};
 var segmentObjects = null;
 const segIdDisplay = document.getElementById('seg_id_display');
 
 function onLoadForShowDebatePage(){
     answerObjects = Array.from(document.getElementsByClassName("answer"));
+    answerObjects.forEach(ansDiv => {
+        answerMap[ansDiv.id] = ansDiv;
+    });
+
     segmentObjects = Array.from(document.getElementsByClassName("segment"));
-    segmentObjects2 = document.querySelectorAll('segment');
 
     // Add mouseover and mouseout event listeners to each span
     segmentObjects.forEach(segment_span => {
@@ -85,7 +101,16 @@ function onLoadForShowDebatePage(){
             segIdDisplay.textContent = '';
         });
     });
-    console.log("onload function executed");
+
+    // add square symbols to those segments which have an answer
+    segmentObjects.forEach(segment_span => {
+        const answer_key = getAnswerKey(segment_span.id);
+        if (answer_key in answerMap) {
+            segment_span.classList.add("sqn");
+        }
+    });
+
+
 }
 
 
