@@ -121,7 +121,7 @@ function insertAnswerForm(segment_element, answer_key) {
     const form = clonedTemplate.getElementById("__segment_answer_form_id");
     form.id = "segment_answer_form";
 
-    form.getElementsByClassName("custom-textarea")[0].name = `${answer_key}_content`
+    form.getElementsByClassName("custom-textarea")[0].name = "body"
     form.getElementsByClassName("_reference_segment")[0].value = segment_element.id;
     form.getElementsByClassName("_cancel_button")[0].addEventListener('click', function() {
         cancelSegmentAnswerForm(segment_element.id);
