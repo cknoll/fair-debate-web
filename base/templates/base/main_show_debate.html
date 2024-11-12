@@ -30,7 +30,17 @@
 
 {% block templates %}
 <template id="segment_answer_form_template">
-    <div class="segment_answer_form">This will be the form</div>
+    <div class="segment_answer_form ta-container">
+        <form id="__segment_answer_form_id" action="{{ request.path }}" method="POST">
+            {% csrf_token %}
+            <input class="_reference_segment" type="hidden" name="reference_segment" value="">
+            <textarea class="custom-textarea" placeholder="Add markdown source here." name="__answer_content_name"></textarea>
+            <div class="button-container">
+                <button class="_cancel_button" type="button">Cancel</button>
+                <button type="submit">Submit</button>
+            </div>
+         </form>
+    </div>
 </template>
 {% endblock %}
 
