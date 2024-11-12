@@ -84,20 +84,6 @@ class NewDebateView(View):
         # TODO: maybe redirect here
         return render(request, template, context)
 
-    def render_result_from_html(self, request, body_content_html):
-
-        context = {
-            "data": {
-                "unit_test_comment": f"utc_new_debate",
-                "segmented_html": body_content_html,
-                "debate_title": "untitled debate",
-            }
-        }
-        template = "base/main_show_debate.html"
-
-        # TODO: maybe redirect here
-        return render(request, template, context)
-
 
 def test_new_debate(request):
     """
@@ -111,15 +97,35 @@ def test_new_debate(request):
     return NewDebateView().render_result_from_md(request, body_content_md=body_content)
 
 
-def test_show_debate(request):
-    """
-    Show the display (show) mode with some preloaded fixture data (containing answers)
-    This view simplifies interactive testing during development
-    """
-    TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
-    ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
-    return NewDebateView().render_result_from_html(request, body_content_html=ddl.final_html)
+class ShowDebateView(View):
+    def get(self, request, test=False):
 
+        if not test:
+            msg = "show debate is only implemented for test content"
+            return error_page(request, "NotImplemented", msg)
+
+        # Show the display (show) mode with some preloaded fixture data (containing answers)
+        # This view simplifies interactive testing during development
+        TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
+        ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
+        return self.render_result_from_html(request, body_content_html=ddl.final_html)
+
+    def post(self, request, **kwargs):
+        pass
+
+    def render_result_from_html(self, request, body_content_html):
+
+        context = {
+            "data": {
+                "unit_test_comment": f"utc_new_debate",
+                "segmented_html": body_content_html,
+                "debate_title": "untitled debate",
+            }
+        }
+        template = "base/main_show_debate.html"
+
+        # TODO: maybe redirect here
+        return render(request, template, context)
 
 
 def errorpage(request):
