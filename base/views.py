@@ -111,7 +111,12 @@ class ShowDebateView(View):
         return self.render_result_from_html(request, body_content_html=ddl.final_html)
 
     def post(self, request, **kwargs):
-        pass
+
+        TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
+        ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
+
+        IPS()
+        return self.render_result_from_html(request, body_content_html=ddl.final_html)
 
     def render_result_from_html(self, request, body_content_html):
 

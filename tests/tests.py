@@ -87,7 +87,6 @@ class TestCore1(TestCase):
         response = self.post_to_view(viewname="new_debate", spec_values={"body_content": content})
         self.assertIn(b"utc_segmented_html", response.content)
 
-
     def test_50__login_and_out(self):
         response = self.client.get(reverse("login"))
         self.assertEqual(response.status_code, 200)
@@ -103,6 +102,48 @@ class TestCore1(TestCase):
         self.assertTrue(auth.get_user(self.client).is_authenticated)
 
         self.perform_logout()
+
+    def test_060__add_answer(self):
+        """
+        <form id="segment_answer_form" action="/show/test" method="POST">
+            <input type="hidden" name="csrfmiddlewaretoken" value="JmyCrTmdOHShyaeAbXgnfN5kHZErJ1n2OPv2QpAHu4WiZCAB5M19aP1GSZj5OuGu">
+            <input class="_reference_segment" type="hidden" name="reference_segment" value="">
+            <textarea class="custom-textarea" placeholder="Insert your answer here. Use markdown for styling." name="answer_a3b_content"></textarea>
+            <div class="button-container">
+                <button class="_cancel_button" type="button">Cancel</button>
+                <button type="submit">Submit</button>
+            </div>
+         </form>
+        """
+        url = reverse("test_show_debate")
+        response = self.client.get(url)
+        action_url, csrf_token = get_form_base_data_from_html_template_host(response.content)
+
+        post_data = {
+            "csrfmiddlewaretoken": csrf_token,
+
+            # hard coded data
+            "reference_segment": "a3",
+            "answer_a3b_content": "This is a level 1 answer.",
+        }
+
+        response = self.client.post(action_url, post_data)
+
+
+def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
+    """
+    This function expects that the csrf token is available within a template-tag with a special
+    id.
+
+    Motivation: for dynamically created forms it is not possible to generate the post data the usual way.
+    This function helps to create it manually.
+    """
+    soup = BeautifulSoup(response_content, "html.parser")
+    template_tag = soup.find(id="form_base_data_host")
+    action_url = template_tag.attrs["data-action-url"]
+    csrf_token = template_tag.find("input").attrs["value"]
+
+    return action_url, csrf_token
 
 class TestGUI(StaticLiveServerTestCase):
     fixtures = ["tests/testdata/users.json"]
@@ -201,6 +242,13 @@ class TestGUI(StaticLiveServerTestCase):
 
         b1.find_by_id("a3").click()
         self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+
+        form = b1.find_by_id("segment_answer_form")[0]
+        ta = form.find_by_tag("textarea")[0]
+        ta.type("This is an answer from a unittest.")
+        form.find_by_css("._submit_button").click()
+
+        # IPS()
 
 
 # #################################################################################################

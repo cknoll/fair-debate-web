@@ -29,6 +29,10 @@
 
 
 {% block templates %}
+<template id="form_base_data_host" data-action-url="{{ request.path }}">
+    {% csrf_token %}
+</template>
+
 <template id="segment_answer_form_template">
     <div id="__segment_answer_form_container_id" class="segment_answer_form_container ta-container">
         <form id="__segment_answer_form_id" action="{{ request.path }}" method="POST">
@@ -37,7 +41,7 @@
             <textarea class="custom-textarea" placeholder="Insert your answer here. Use markdown for styling." name="__answer_content_name"></textarea>
             <div class="button-container">
                 <button class="_cancel_button" type="button">Cancel</button>
-                <button type="submit">Submit</button>
+                <button class="_submit_button"type="submit">Submit</button>
             </div>
          </form>
     </div>
