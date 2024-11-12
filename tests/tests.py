@@ -115,6 +115,7 @@ class TestCore1(TestCase):
             </div>
          </form>
         """
+
         url = reverse("test_show_debate")
         response = self.client.get(url)
         action_url, csrf_token = get_form_base_data_from_html_template_host(response.content)
@@ -128,6 +129,12 @@ class TestCore1(TestCase):
         }
 
         response = self.client.post(action_url, post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response["Location"].startswith("/login"))
+
+        self.perform_login()
+        response = self.client.post(action_url, post_data)
+        self.assertEqual(response.status_code, 200)
 
 
 def get_form_base_data_from_html_template_host(response_content: bytes) -> str:

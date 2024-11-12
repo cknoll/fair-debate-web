@@ -5,6 +5,7 @@
     - [] implementation
         - [x] insert form on click on segment
             - [x] implement splinter-based tests
+            - [] display warning if not logged in
         - [] store answer data in db
             - [] implement splinter-based tests
 - [x] display square if answer is available

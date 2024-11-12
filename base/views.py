@@ -1,11 +1,8 @@
 import os
+from django.conf import settings
 from django.views import View
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.urls import reverse_lazy
-from django.forms import ModelForm
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -14,7 +11,6 @@ from django.contrib.auth import authenticate, login, logout
 
 from .forms import UserCreationForm, LoginForm
 
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 import fair_debate_md as fdmd
 
@@ -24,10 +20,6 @@ from  . import simple_pages_content_default as spc
 from ipydex import IPS
 
 pjoin = os.path.join
-
-
-# it seems not possible to use `reverse("login")` because the decorator executed too early f
-LOGIN_URL = "/login/"
 
 
 class Container:
@@ -110,6 +102,7 @@ class ShowDebateView(View):
         ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
         return self.render_result_from_html(request, body_content_html=ddl.final_html)
 
+    @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
     def post(self, request, **kwargs):
 
         TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")

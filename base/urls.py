@@ -1,4 +1,5 @@
 from django.urls import path
+from django.conf import settings
 
 from . import views
 
@@ -17,7 +18,7 @@ urlpatterns = [
     # this is for testing the error handling
     path("error/", views.errorpage, name="errorpage"),
 
-    path('login/', views.user_login, name='login'),
+    path(settings.LOGIN_URL, views.user_login, name='login'),
     path('signup/', views.user_signup, name='signup'),
     path('logout/', views.user_logout, name='logout'),
 ]
