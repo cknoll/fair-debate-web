@@ -8,9 +8,10 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from django.contrib.auth import authenticate, login, logout
+from django.core.exceptions import ObjectDoesNotExist
 
 from .forms import UserCreationForm, LoginForm
-from .models import Contribution
+from .models import Debate, Contribution
 
 
 import fair_debate_md as fdmd
@@ -22,6 +23,8 @@ from ipydex import IPS
 
 pjoin = os.path.join
 
+
+TEST_DEBATE_KEY = "d1-lorem_ipsum"
 
 class Container:
     pass
@@ -108,13 +111,18 @@ class ShowDebateView(View):
 
         TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
         ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
+        ensure_test_data_existence()
+
+        debate_obj = Debate.objects.get(debate_key=TEST_DEBATE_KEY)
+
         new_contribution = Contribution(
             author=request.user,
-            debate_key="debate1",
+            debate = debate_obj,
             contribution_key = fdmd.get_answer_contribution_key(request.POST["reference_segment"]),
             body=request.POST["body"]
         )
 
+        # IPS()
 
         return self.render_result_from_html(request, body_content_html=ddl.final_html)
 
@@ -131,6 +139,19 @@ class ShowDebateView(View):
 
         # TODO: maybe redirect here
         return render(request, template, context)
+
+
+# TODO move this to fixtures
+def ensure_test_data_existence():
+    """
+    Quick and dirty way to ensure that the necessary test data exists
+    """
+
+    try:
+        Debate.objects.get(debate_key=TEST_DEBATE_KEY)
+    except ObjectDoesNotExist:
+        new_obj = Debate(debate_key=TEST_DEBATE_KEY)
+        new_obj.save()
 
 
 def errorpage(request):
