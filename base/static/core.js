@@ -83,6 +83,11 @@ function toggleDisplayNoneBlock(element) {
     }
 }
 
+function insertAnswerForm(segment_element, answer_key) {
+    console.log(segment_element, answer_key);
+    segment_element.insertAdjacentHTML('afterend', `<div id="answer_form_${answer_key}">textarea</div>`);
+}
+
 
 var answerObjects = null;
 var answerMap = {};
@@ -118,6 +123,11 @@ function onLoadForShowDebatePage(){
 
             segment_span.addEventListener('click', function() {
                 toggleDisplayNoneBlock(answerMap[answer_key]);
+            });
+        } else {
+            // This segment does not yet have an answer
+            segment_span.addEventListener('click', function() {
+                insertAnswerForm(segment_span, answer_key);
             });
         }
     });
