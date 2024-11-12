@@ -1,8 +1,12 @@
 
 - [] add answer via gui
-    - [] specify repo and db-concept
+    - [.] specify repo and db-concept
     - [] consider preview view
     - [] implementation
+        - [x] insert form on click on segment
+            - [x] implement splinter-based tests
+        - [] store answer data in db
+            - [] implement splinter-based tests
 - [x] display square if answer is available
 - [x] open answer by click on segment
 - [x] prevent breaking of p tag by answer -> solved by using div instead of p

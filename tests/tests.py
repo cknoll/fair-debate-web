@@ -167,8 +167,40 @@ class TestGUI(StaticLiveServerTestCase):
         b1.visit(f"{self.live_server_url}{url}")
 
     def test_g02__dropdown(self):
-        # get inspiration from radar
+        # TODO: get inspiration from radar
         pass
+
+    def test_g03__segment_answer1(self):
+
+        # for test development
+        # self.config_for_browser.headless = False
+        b1 = self.new_browser()
+        url = reverse("test_show_debate")
+        b1.visit(f"{self.live_server_url}{url}")
+
+        # assert that no form is displayed:
+        # (using JS is faster and more reliable than using splinter directly)
+
+        js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+
+        # assert that the form has appeared
+        b1.find_by_id("a3").click()
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+
+        # assert that the form does not appear multiple times
+        b1.find_by_id("a3").click()
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+
+        b1.find_by_id("a3").click()
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+
+        # cancel the form
+        b1.find_by_css("._cancel_button").click()
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+
+        b1.find_by_id("a3").click()
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
 
 
 # #################################################################################################

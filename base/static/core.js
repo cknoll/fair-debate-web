@@ -116,8 +116,11 @@ function insertAnswerForm(segment_element, answer_key) {
 
     console.log(segment_element, answer_key);
     const clonedTemplate =  document.getElementById("segment_answer_form_template").content.cloneNode(true);
+    // change ids from the template for the real elements
+    clonedTemplate.getElementById("__segment_answer_form_container_id").id = "segment_answer_form_container";
     const form = clonedTemplate.getElementById("__segment_answer_form_id");
     form.id = "segment_answer_form";
+
     form.getElementsByClassName("custom-textarea")[0].name = `${answer_key}_content`
     form.getElementsByClassName("_reference_segment").value = segment_element.id;
     form.getElementsByClassName("_cancel_button")[0].addEventListener('click', function() {
@@ -132,7 +135,7 @@ function cancelSegmentAnswerForm(segment_id) {
     console.log(segment_id);
     const segment_element = document.getElementById(segment_id);
     segment_element.setAttribute('data-active', false);
-    document.getElementById("segment_answer_form").remove();
+    document.getElementById("segment_answer_form_container").remove();
 }
 
 

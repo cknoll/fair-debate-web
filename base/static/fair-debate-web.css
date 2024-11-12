@@ -140,7 +140,7 @@ h3:has(+ .rendered_content_preview) {
 
 /* segment answer form related */
 
-.segment_answer_form {
+.segment_answer_form_container {
   width: 100%;
   background-color: hsla(130, 50%, 50%, 100%);
 }
