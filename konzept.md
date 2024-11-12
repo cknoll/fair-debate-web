@@ -45,8 +45,8 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 ## Grundsätzlicher Ablauf:
 
 - an einer Debatte nehmen zwei Seiten ("Parteien") teil. Wie diese Parteien sich intern organisieren, z.B. welche natürlichen Personen Schreibrechte haben, können sie selber entscheiden.
-- Partei A eröffnet die Debatte
-- Partei B hat die Gelegenheit auf der gleichen Plattform mit der gleichen Sichtbarkeit zu antworten
+- Partei A eröffnet die Debatte mit einem schriftlichen Beitrag.
+- Partei B hat die Gelegenheit, auf der gleichen Plattform mit der gleichen Sichtbarkeit zu antworten
 - Die einzelnen Beiträge sollen bestimmte Qualitätsstandards erfüllen:
     - Sachlicher Ton, keine Beleidigungen etc.
     - Aussagen, bei denen kein Konsens angenommen werden kann, sind zu belegen
@@ -80,6 +80,20 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 - Vorschau bestätigen
 - Pullrequest wird vom Backend erzeugt (ggf. branch auswählen).
 - Pullrequest (auf github etc.) manuell mergen
+
+
+### Frontend (Antwort Schreiben Versuch 2)
+- Einloggen als Partei B (sicherstellen, dass B nur von einem Gerät aus eingeloggt sein kann)
+- Aussage anwählen
+    -> Formular erscheint an passender stelle (per js eingefügt)
+- Antwort schreiben -> wird in Datenbank gespeichert
+- Vorschau wird (als "normale" Antwort aber mit anderem Hintergrund und mit edit-Button) angezeigt,
+- Weitere Aussage anwählen, weitere Antwort schreiben, editieren etc. alles noch in db gespeichert.
+- grüner Button "Repo exportieren" inklusive Erklärungs-(i) erscheint oben, sobald eine unexportierte Antwort in der Datenbank liegt.
+    - Button bewirkt, dass Antworten als Datei ins Debatten-Verzeichnis geschrieben werden. Neuer Kommit wird erstellt.
+    - PR-erzeugung etc. kommt später
+
+
 
 
 ## Repräsentation von Aussagen im Repo
