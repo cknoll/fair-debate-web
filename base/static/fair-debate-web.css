@@ -137,3 +137,10 @@ h3:has(+ .rendered_content_preview) {
  {
   background-color:hsla(220, 100%, 97%, 100%);
 }
+
+/* segment answer form related */
+
+.segment_answer_form {
+  width: 100%;
+  background-color: hsla(130, 50%, 50%, 100%);
+}

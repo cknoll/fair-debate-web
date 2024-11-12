@@ -83,9 +83,29 @@ function toggleDisplayNoneBlock(element) {
     }
 }
 
+/**
+ * insert an new element (which can also be a DocumentFragment) after a given element
+ * Motivation: A cloned template results in a DocumentFragment which cannot be
+ * inserted by refElement.insertAdjacentHTML('afterend', newElement)
+ *
+ * @param {*} newNode
+ * @param {*} referenceNode
+ */
+function insertAfter(newNode, referenceNode) {
+    // Check if the referenceNode has a next sibling
+    if (referenceNode.nextSibling) {
+        // Insert newNode before the next sibling of referenceNode
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    } else {
+        // If there is no next sibling, append it to the end
+        referenceNode.parentNode.appendChild(newNode);
+    }
+}
+
 function insertAnswerForm(segment_element, answer_key) {
     console.log(segment_element, answer_key);
-    segment_element.insertAdjacentHTML('afterend', `<div id="answer_form_${answer_key}">textarea</div>`);
+    const clonedTemplate =  document.getElementById("segment_answer_form_template").content.cloneNode(true);
+    insertAfter(clonedTemplate, segment_element);
 }
 
 
