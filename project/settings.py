@@ -171,7 +171,7 @@ BLEACH_ALLOWED_ATTRIBUTES = {
     "img": ["src"],
     "a": ["href"],
     "span": ["class", "id"],
-    "div": ["class", "id"],
+    "div": ["class", "id", "data-debate-key"],
 }
 
 BLEACH_ALLOWED_STYLES = [

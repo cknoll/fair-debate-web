@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 
 from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import OperationalError
 
 from .forms import UserCreationForm, LoginForm
 from .models import Debate, Contribution
@@ -102,7 +103,7 @@ class ShowDebateView(View):
         # This view simplifies interactive testing during development
         TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
         ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
-        return self.render_result_from_html(request, body_content_html=ddl.final_html)
+        return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
 
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
     def post(self, request, **kwargs):
@@ -111,7 +112,8 @@ class ShowDebateView(View):
         ddl: fdmd.DebateDirLoader = fdmd.load_dir(TEST_DEBATE_DIR1)
         ensure_test_data_existence()
 
-        debate_obj = Debate.objects.get(debate_key=ddl.debate_key)
+        debate_key = request.POST["debate_key"]
+        debate_obj = Debate.objects.get(debate_key=debate_key)
 
         new_contribution = Contribution(
             author=request.user,
@@ -120,17 +122,18 @@ class ShowDebateView(View):
             body=request.POST["body"]
         )
 
-        # IPS()
+        IPS()
 
-        return self.render_result_from_html(request, body_content_html=ddl.final_html)
+        return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
 
-    def render_result_from_html(self, request, body_content_html):
+    def render_result_from_html(self, request, body_content_html, debate_key: str):
 
         context = {
             "data": {
                 "unit_test_comment": f"utc_new_debate",
                 "segmented_html": body_content_html,
                 "debate_title": "untitled debate",
+                "debate_key": debate_key,
             }
         }
         template = "base/main_show_debate.html"
@@ -147,10 +150,9 @@ def ensure_test_data_existence():
 
     try:
         Debate.objects.get(debate_key=fdmd.TEST_DEBATE_KEY)
-    except ObjectDoesNotExist:
+    except (ObjectDoesNotExist, OperationalError):
         new_obj = Debate(debate_key=fdmd.TEST_DEBATE_KEY)
         new_obj.save()
-
 
 def errorpage(request):
     # serve a page via get request to simplify the display of source code in browser
