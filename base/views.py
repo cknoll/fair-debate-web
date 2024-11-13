@@ -102,7 +102,9 @@ class ShowDebateView(View):
         # Show the display (show) mode with some preloaded fixture data (containing answers)
         # This view simplifies interactive testing during development
         TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
-        ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
+
+        ctb_list = self._get_ctb_list_from_db(debate_obj_or_key=fdmd.TEST_DEBATE_KEY)
+        ddl = fdmd.load_dir(TEST_DEBATE_DIR1, ctb_list=ctb_list)
         return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
 
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
@@ -122,14 +124,27 @@ class ShowDebateView(View):
         )
         new_contribution.save()
 
+        ctb_list = self._get_ctb_list_from_db(debate_obj_or_key=debate_obj)
+
+        ddl: fdmd.DebateDirLoader = fdmd.load_dir(TEST_DEBATE_DIR1, ctb_list=ctb_list)
+
+        return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
+
+    def _get_ctb_list_from_db(self, debate_obj_or_key) -> list[fdmd.DBContribution]:
+
+        if isinstance(debate_obj_or_key, str):
+            debate_obj = Debate.objects.get(debate_key=debate_obj_or_key)
+        else:
+            debate_obj = debate_obj_or_key
+        assert isinstance(debate_obj, Debate)
+
         ctb_list = []
         ctb_obj: Contribution
         for ctb_obj in debate_obj.contribution_set.all():
             ctb_list.append(fdmd.DBContribution(ctb_key=ctb_obj.contribution_key, body=ctb_obj.body))
 
-        ddl: fdmd.DebateDirLoader = fdmd.load_dir(TEST_DEBATE_DIR1, ctb_list=ctb_list)
+        return ctb_list
 
-        return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
 
     def render_result_from_html(self, request, body_content_html, debate_key: str):
 
