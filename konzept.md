@@ -100,7 +100,11 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 
 - User
 - Jede Debatte als Objekt
-- Repo ()
+- Repo (als Objekt)
+- Zusammenhang zwischen User und Repo:
+    - User kann beim Anmelden eine repo-url angeben
+    - ggf. später noch weitere Hinzufügen, ändern, etc. aktuell aktives repo auswählen
+    - Jeder user hat zu jeder Zeit genau ein aktives Repo
 
 ### Dateisystem:
 

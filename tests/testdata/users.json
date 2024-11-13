@@ -14,7 +14,7 @@
         "username" : "admin",
         "user_permissions" : [  ]
       },
-    "model" : "auth.user",
+    "model" : "base.debateuser",
     "pk" : 1
   },
   {
@@ -32,7 +32,7 @@
         "username" : "testuser",
         "user_permissions" : [  ]
       },
-    "model" : "auth.user",
+    "model" : "base.debateuser",
     "pk" : 2
   }
 ]
