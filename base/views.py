@@ -24,8 +24,6 @@ from ipydex import IPS
 pjoin = os.path.join
 
 
-TEST_DEBATE_KEY = "d1-lorem_ipsum"
-
 class Container:
     pass
 
@@ -110,10 +108,10 @@ class ShowDebateView(View):
     def post(self, request, **kwargs):
 
         TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
-        ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
+        ddl: fdmd.DebateDirLoader = fdmd.load_dir(TEST_DEBATE_DIR1)
         ensure_test_data_existence()
 
-        debate_obj = Debate.objects.get(debate_key=TEST_DEBATE_KEY)
+        debate_obj = Debate.objects.get(debate_key=ddl.debate_key)
 
         new_contribution = Contribution(
             author=request.user,
@@ -148,9 +146,9 @@ def ensure_test_data_existence():
     """
 
     try:
-        Debate.objects.get(debate_key=TEST_DEBATE_KEY)
+        Debate.objects.get(debate_key=fdmd.TEST_DEBATE_KEY)
     except ObjectDoesNotExist:
-        new_obj = Debate(debate_key=TEST_DEBATE_KEY)
+        new_obj = Debate(debate_key=fdmd.TEST_DEBATE_KEY)
         new_obj.save()
 
 
