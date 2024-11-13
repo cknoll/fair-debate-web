@@ -1,2 +1,7 @@
 [
+  {
+    "fields" : { "debate_key" : "d1-lorem_ipsum" },
+    "model" : "base.debate",
+    "pk" : 1
+  }
 ]

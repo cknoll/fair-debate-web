@@ -22,7 +22,7 @@ from ipydex import IPS
 
 
 class TestCore1(TestCase):
-    fixtures = ["tests/testdata/users.json"]
+    fixtures = ["tests/testdata/users.json", "tests/testdata/fixtures01.json"]
 
     def post_to_view(self, viewname, **kwargs):
 
@@ -104,17 +104,8 @@ class TestCore1(TestCase):
         self.perform_logout()
 
     def test_060__add_answer(self):
-        """
-        <form id="segment_answer_form" action="/show/test" method="POST">
-            <input type="hidden" name="csrfmiddlewaretoken" value="JmyCrTmdOHShyaeAbXgnfN5kHZErJ1n2OPv2QpAHu4WiZCAB5M19aP1GSZj5OuGu">
-            <input class="_reference_segment" type="hidden" name="reference_segment" value="">
-            <textarea class="custom-textarea" placeholder="Insert your answer here. Use markdown for styling." name="answer_a3b_content"></textarea>
-            <div class="button-container">
-                <button class="_cancel_button" type="button">Cancel</button>
-                <button type="submit">Submit</button>
-            </div>
-         </form>
-        """
+
+        settings.CATCH_EXCEPTIONS = False
 
         url = reverse("test_show_debate")
         response = self.client.get(url)
@@ -165,7 +156,7 @@ def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
     return action_url, csrf_token
 
 class TestGUI(StaticLiveServerTestCase):
-    fixtures = ["tests/testdata/users.json"]
+    fixtures = ["tests/testdata/users.json", "tests/testdata/fixtures01.json"]
     # headless = False
     headless = True
 
@@ -271,6 +262,8 @@ class TestGUI(StaticLiveServerTestCase):
         self.assertTrue(b1.url.startswith(f"{self.live_server_url}/login"))
 
     def test_g04__segment_answer2(self):
+
+        # self.config_for_browser.headless = False
 
         b1 = self.new_browser()
         self.perform_login(browser=b1)

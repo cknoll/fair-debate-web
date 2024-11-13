@@ -26,7 +26,7 @@ except FileNotFoundError:
             msg = "could not find neither `config.toml` nor config-example.toml`"
             raise FileNotFoundError(msg)
         msg = "Could not find `config.toml. Using `config-example.toml instead."
-    print(du.yellow("Warning:"), msg)
+    print(du.yellow("Warning:"), msg, file=sys.stderr)
 
 SECRET_KEY = cfg("SECRET_KEY")
 
