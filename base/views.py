@@ -108,9 +108,8 @@ class ShowDebateView(View):
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
     def post(self, request, **kwargs):
 
-        TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
-        ddl: fdmd.DebateDirLoader = fdmd.load_dir(TEST_DEBATE_DIR1)
         ensure_test_data_existence()
+        TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
 
         debate_key = request.POST["debate_key"]
         debate_obj = Debate.objects.get(debate_key=debate_key)
@@ -121,8 +120,14 @@ class ShowDebateView(View):
             contribution_key = fdmd.get_answer_contribution_key(request.POST["reference_segment"]),
             body=request.POST["body"]
         )
+        new_contribution.save()
 
-        IPS()
+        ctb_list = []
+        ctb_obj: Contribution
+        for ctb_obj in debate_obj.contribution_set.all():
+            ctb_list.append(fdmd.DBContribution(ctb_key=ctb_obj.contribution_key, body=ctb_obj.body))
+
+        ddl: fdmd.DebateDirLoader = fdmd.load_dir(TEST_DEBATE_DIR1, ctb_list=ctb_list)
 
         return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
 

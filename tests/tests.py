@@ -62,7 +62,7 @@ class TestCore1(TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.1.3"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.2.0"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landingpage"))
@@ -125,7 +125,8 @@ class TestCore1(TestCase):
 
             # hard coded data
             "reference_segment": "a3",
-            "body": "This is a level 1 answer from a unittest.",
+            "debate_key": fdmd.TEST_DEBATE_KEY,
+            "body": "This is a level 1 **answer** from a unittest.",
         }
 
         if 0:
@@ -137,6 +138,15 @@ class TestCore1(TestCase):
         self.perform_login()
         response = self.client.post(action_url, post_data)
         self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, "html.parser")
+        answer_div = soup.find(id="answer_a3b")
+        self.assertIsNotNone(answer_div)
+        segment_span = answer_div.find(id="a3b1")
+        self.assertIsNotNone(segment_span)
+
+        expected_res = "This is a level 1\n     <strong>\n      answer\n     </strong>\n     from a unittest."
+        res = "".join(map(str, segment_span.contents)).strip()
+        self.assertEqual(res, expected_res)
 
 
 def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
@@ -257,7 +267,22 @@ class TestGUI(StaticLiveServerTestCase):
         ta.type("This is an answer from a unittest.")
         form.find_by_css("._submit_button").click()
 
-        # IPS()
+        ## assert that post is only possible if logged in
+        self.assertTrue(b1.url.startswith(f"{self.live_server_url}/login"))
+
+    def test_g04__segment_answer2(self):
+
+        b1 = self.new_browser()
+        self.perform_login(browser=b1)
+        url = reverse("test_show_debate")
+        b1.visit(f"{self.live_server_url}{url}")
+
+        b1.find_by_id("a3").click()
+
+        form = b1.find_by_id("segment_answer_form")[0]
+        ta = form.find_by_tag("textarea")[0]
+        ta.type("This is an answer from a unittest.")
+        form.find_by_css("._submit_button").click()
 
 
 # #################################################################################################
