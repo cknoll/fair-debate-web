@@ -20,10 +20,12 @@ Contact the maintainer <https://cknoll.github.io/pages/impressum.html>
 
 helpful commands:
 
+- py3 manage.py shell
 - py3 manage.py createsuperuser
 - mv db.sqlite3 db.sqlite3_old
 - py3 manage.py migrate --run-syncdb
 - py3 manage.py dumpdata auth.user base | jsonlint -f > fixtures.json
+- py3 manage.py dumpdata base | jsonlint -f > fixtures.json
 - py3 manage.py loaddata tests/testdata/users.json
 - py3 manage.py loaddata tests/testdata/*.json
 

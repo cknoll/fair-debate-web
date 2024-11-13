@@ -22,7 +22,7 @@ from ipydex import IPS
 
 
 class TestCore1(TestCase):
-    fixtures = ["tests/testdata/users.json", "tests/testdata/fixtures01.json"]
+    fixtures = ["tests/testdata/fixtures01.json"]
 
     def post_to_view(self, viewname, **kwargs):
 
@@ -156,7 +156,7 @@ def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
     return action_url, csrf_token
 
 class TestGUI(StaticLiveServerTestCase):
-    fixtures = ["tests/testdata/users.json", "tests/testdata/fixtures01.json"]
+    fixtures = ["tests/testdata/fixtures01.json"]
     # headless = False
     headless = True
 

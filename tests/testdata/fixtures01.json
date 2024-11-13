@@ -1,7 +1,81 @@
 [
   {
-    "fields" : { "debate_key" : "d1-lorem_ipsum" },
+    "fields" : {
+        "name" : "d1-lorem_ipsum_a",
+        "url" : "__url__a"
+      },
+    "model" : "base.repo",
+    "pk" : 1
+  },
+  {
+    "fields" : {
+        "name" : "d1-lorem_ipsum_b",
+        "url" : "__url__b"
+      },
+    "model" : "base.repo",
+    "pk" : 2
+  },
+  {
+    "fields" : {
+        "debate_key" : "d1-lorem_ipsum",
+        "repo_a" : 1,
+        "repo_b" : 2
+      },
     "model" : "base.debate",
     "pk" : 1
+  },
+  {
+    "fields" : {
+        "date_joined" : "2024-05-22T22:41:00.946Z",
+        "email" : "",
+        "first_name" : "",
+        "groups" : [  ],
+        "is_active" : true,
+        "is_staff" : true,
+        "is_superuser" : true,
+        "last_login" : "2024-05-22T22:41:31.020Z",
+        "last_name" : "",
+        "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
+        "username" : "admin",
+        "user_permissions" : [  ]
+      },
+    "model" : "base.debateuser",
+    "pk" : 1
+  },
+  {
+    "fields" : {
+        "date_joined" : "2024-05-22T22:41:00.946Z",
+        "email" : "",
+        "first_name" : "",
+        "groups" : [  ],
+        "is_active" : true,
+        "is_staff" : false,
+        "is_superuser" : false,
+        "last_login" : "2024-05-22T22:41:31.020Z",
+        "last_name" : "",
+        "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
+        "username" : "testuser_a",
+        "user_permissions" : [  ]
+      },
+    "model" : "base.debateuser",
+    "pk" : 2
+  },
+  {
+    "fields" : {
+        "date_joined" : "2024-05-22T22:41:00.946Z",
+        "email" : "",
+        "first_name" : "",
+        "groups" : [  ],
+        "is_active" : true,
+        "is_staff" : false,
+        "is_superuser" : false,
+        "last_login" : "2024-05-22T22:41:31.020Z",
+        "last_name" : "",
+        "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
+        "username" : "testuser_b",
+        "user_permissions" : [  ]
+      },
+    "model" : "base.debateuser",
+    "pk" : 3
   }
 ]
