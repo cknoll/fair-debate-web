@@ -94,6 +94,57 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
     - PR-erzeugung etc. kommt später
 
 
+## Abgrenzung Datenbank vs. Dateisystem
+
+### Datenbank:
+
+- User
+- Jede Debatte als Objekt
+- Repo ()
+
+### Dateisystem:
+
+- Verzeichnis für jede Debatte.
+- Verzeichnis ist ein repo mit zwei remotes:
+    - official_a
+    - official_b
+- Beide remotes müssen konsistenten main-branch haben, d.h. Repo X darf nur um "fast-forward-merge" von repo Y abweichen
+
+
+Herausforderung: wie kann ich ein repo (inklusive jedem einzelnen Kommit für jeden Branch in einer Sammlung von patch-Dateien darstellen?)
+
+
+
+repo erzeugen:
+
+```
+git init
+git add a/a.md
+git commit --author="user_a <user_a@example.org>" -m "my contribution"
+git add b/a2b.md b/a4b.md b/a6b.md b/a7b.md
+git commit --author="user_b <user_b@example.org>" -m "my contribution"
+git add a/a2b1a.md
+git commit --author="user_a <user_a@example.org>" -m "my contribution"
+git add b/a2b1a3b.md
+git commit --author="user_b <user_b@example.org>" -m "my contribution"
+```
+
+patches erzeugen:
+
+```
+git format-patch --root -o patches
+```
+
+patches anwenden:
+```
+git init
+git am patches/*patch
+```
+
+Wo soll der git-bezogene code leben?
+-> eher im package als im web-repo
+
+
 
 
 ## Repräsentation von Aussagen im Repo
