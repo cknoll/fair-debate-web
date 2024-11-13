@@ -35,7 +35,7 @@
     --col-height: calc(100vh - var(--header-height)*3);
 
     /*  the following scaling factor k is calculated by  16px/<min-viewport-width-in-px-at-which-still-normal-font-size> e.g. 16px/640px = 0.025 → 2.5vw    */
-    --font-size-all: max(min(16px, 2.5vw), 10px);
+    --font-size-all: max(min(16px, 2.5vw), 12px);
 
 }
 
@@ -63,12 +63,13 @@ html, body {
   }
 
 
-@media (max-width: 650px) {
+/*
+  @media (max-width: 650px) {
     #header2 {
       display: block;
       text-align: right;
     }
-  }
+  } */
 
 
 
@@ -464,7 +465,8 @@ div.footer a:hover{
 /* head menu */
 
 .header {
-  display: flex; justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .header-left-part {
