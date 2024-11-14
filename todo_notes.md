@@ -6,8 +6,8 @@
         - [x] insert form on click on segment
             - [x] implement splinter-based tests
             - [] display warning if not logged in
-        - [] store answer data in db
-            - [] implement splinter-based tests
+        - [x] store answer data in db
+            - [x] implement splinter-based tests
 - [x] display square if answer is available
 - [x] open answer by click on segment
 - [x] prevent breaking of p tag by answer -> solved by using div instead of p

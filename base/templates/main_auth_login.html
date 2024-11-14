@@ -16,4 +16,9 @@
     <a href="{% url 'signup' %}">Don't have account? Create.</a>
 </form>
 
+
+# {# insert information about failed login attempt #}
+{{ data.failed_login_attempt|json_script:"data-failed_login_attempt" }}
+
+
 {% endblock %}

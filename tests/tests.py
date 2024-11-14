@@ -187,13 +187,32 @@ class TestGUI(StaticLiveServerTestCase):
             browser = self.browsers[-1]
         browser.visit(f"{self.live_server_url}{url}")
 
-    def perform_login(self, browser: Browser, username: str = "testuser"):
+    def perform_login(self, browser: Browser, username: str = "testuser_a"):
         self.visit(reverse("login"), browser=browser)
         pw = "admin"
 
         browser.find_by_id("id_username").fill(username)
         browser.find_by_id("id_password").fill(pw)
         browser.find_by_id("id_submit").click()
+
+        # ensure that the login was successful
+
+        failed_login_attempt = self.fast_get_by_id(browser, id_str="data-failed_login_attempt")
+
+        if failed_login_attempt and failed_login_attempt.html == "true":
+            msg = f"Login process unexpectedly failed ({username=})"
+            raise ValueError(msg)
+
+    def fast_get_by_id(self, browser: Browser, id_str: str):
+        """
+        This function is faster in cases where the
+        """
+        js_get_data = f'document.getElementById("{id_str}")'
+        js_res = browser.evaluate_script(js_get_data)
+        if not js_res:
+            return None
+        else:
+            return browser.find_by_id(id_str)[0]
 
 
     def new_browser(self):
@@ -276,6 +295,16 @@ class TestGUI(StaticLiveServerTestCase):
         ta = form.find_by_tag("textarea")[0]
         ta.type("This is an answer from a unittest.")
         form.find_by_css("._submit_button").click()
+
+        # check result
+        answer_div = b1.find_by_id("answer_a3b")
+        self.assertNotEqual(answer_div, [])
+        segment_span = answer_div.find_by_id("a3b1")[0]
+        self.assertNotEqual(segment_span, [])
+
+        content = segment_span.html.strip()
+        expected_res = "This is an answer from a unittest."
+        self.assertEqual(content, expected_res)
 
 
 # #################################################################################################

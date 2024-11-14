@@ -246,6 +246,10 @@ def user_signup(request):
 
 # login page
 def user_login(request):
+    data = {
+        "failed_login_attempt": None
+    }
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -254,10 +258,13 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                return redirect('landingpage')
+                #TODO process "?next" here
+                return redirect("landingpage")
+            else:
+                data["failed_login_attempt"] = True
     else:
         form = LoginForm()
-    return render(request, 'main_auth_login.html', {'form': form})
+    return render(request, 'main_auth_login.html', {'form': form, "data": data})
 
 # logout page
 def user_logout(request):
