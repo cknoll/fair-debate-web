@@ -142,5 +142,18 @@ h3:has(+ .rendered_content_preview) {
 
 .segment_answer_form_container {
   width: 100%;
+}
+
+.segment_answer_form_container .button-container {
   background-color: hsla(130, 50%, 50%, 100%);
+}
+
+.not_logged_in_warning{
+  margin: 1em 0 1em 0;
+  padding: 0.5em;
+  background-color: hsla(10, 95%, 60%, 100%);
+}
+
+.hidden{
+  display: none;
 }

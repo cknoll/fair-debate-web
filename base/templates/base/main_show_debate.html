@@ -35,6 +35,9 @@
 
 <template id="segment_answer_form_template">
     <div id="__segment_answer_form_container_id" class="segment_answer_form_container ta-container">
+        <div class="not_logged_in_warning"> {#<!-- class 'hidden' will be added by js if user is authenticated -->#}
+            Warning: you are not logged and thus will not be able to save your contribution.
+        </div>
         <form id="__segment_answer_form_id" action="{{ request.path }}" method="POST">
             {% csrf_token %}
             <input class="_reference_segment" type="hidden" name="reference_segment" value="">
@@ -44,7 +47,7 @@
                 <button class="_cancel_button" type="button">Cancel</button>
                 <button class="_submit_button"type="submit">Submit</button>
             </div>
-         </form>
+        </form>
     </div>
 </template>
 {% endblock %}

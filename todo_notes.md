@@ -1,4 +1,5 @@
 
+- [] open debate from url /d/debate_key
 - [] add answer via gui
     - [.] specify repo and db-concept
     - [] consider preview view

@@ -83,6 +83,22 @@ function toggleDisplayNoneBlock(element) {
     }
 }
 
+function readJsonWithDefault(dataId, defaultValue) {
+    const dataElement = document.getElementById(dataId);
+    let result = defaultValue; // Default value
+
+    if (dataElement) {
+        try {
+            result = JSON.parse(dataElement.text);
+        } catch (error) {
+            // Handle JSON parsing error if needed
+            // console.error("Parsing error:", error);
+            result = defaultValue; // Set it once again
+        }
+    }
+    return result
+}
+
 /**
  * insert an new element (which can also be a DocumentFragment) after a given element
  * Motivation: A cloned template results in a DocumentFragment which cannot be
@@ -117,7 +133,15 @@ function insertAnswerForm(segment_element, answer_key) {
     console.log(segment_element, answer_key);
     const clonedTemplate =  document.getElementById("segment_answer_form_template").content.cloneNode(true);
     // change ids from the template for the real elements
-    clonedTemplate.getElementById("__segment_answer_form_container_id").id = "segment_answer_form_container";
+    const form_container = clonedTemplate.getElementById("__segment_answer_form_container_id");
+    form_container.id = "segment_answer_form_container";
+
+    // add warning
+    const userIsAuthenticated = readJsonWithDefault("data-user_is_authenticated", false);
+    if (userIsAuthenticated) {
+        form_container.getElementsByClassName("not_logged_in_warning")[0].classList.add("hidden");
+    }
+
     const form = clonedTemplate.getElementById("__segment_answer_form_id");
     form.id = "segment_answer_form";
 
