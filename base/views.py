@@ -93,18 +93,22 @@ def test_new_debate(request):
 
 
 class ShowDebateView(View):
-    def get(self, request, test=False):
+    def get(self, request, debate_key=None, test=False):
 
-        if not test:
-            msg = "show debate is only implemented for test content"
-            return error_page(request, "NotImplemented", msg)
 
-        # Show the display (show) mode with some preloaded fixture data (containing answers)
-        # This view simplifies interactive testing during development
-        TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
+        if test:
+            # Show the display (show) mode with some preloaded fixture data (containing answers)
+            # This view simplifies interactive testing during development
+            debate_key = fdmd.TEST_DEBATE_KEY
+
+            # TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
+
+        assert debate_key is not None
+
 
         ctb_list = self._get_ctb_list_from_db(debate_obj_or_key=fdmd.TEST_DEBATE_KEY)
-        ddl = fdmd.load_dir(TEST_DEBATE_DIR1, ctb_list=ctb_list)
+        ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
+        # ddl = fdmd.load_dir(TEST_DEBATE_DIR1, ctb_list=ctb_list)
         return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
 
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
@@ -181,7 +185,12 @@ def errorpage(request):
 
 def debugpage(request):
     # serve a page via get request to simplify the display of source code in browser
-    msg="this is a debug page<br><br>\n"*10
+    msg=f"""
+    this is a debug page<br><br>\n
+
+    {settings.REPO_HOST_DIR=}
+
+    """
     return error_page(request, title="debug page", msg=msg, status=200)
 
 

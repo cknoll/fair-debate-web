@@ -20,6 +20,7 @@ Contact the maintainer <https://cknoll.github.io/pages/impressum.html>
 
 helpful commands:
 
+- fdmd unpack-repos ./content_repos
 - py3 manage.py shell
 - py3 manage.py createsuperuser
 - mv db.sqlite3 db.sqlite3_old

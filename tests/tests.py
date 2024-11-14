@@ -132,10 +132,14 @@ class TestCore1(TestCase):
 
     def _06x__common(self):
 
-        # settings.CATCH_EXCEPTIONS = False
+        settings.CATCH_EXCEPTIONS = False
 
         url = reverse("test_show_debate")
         response = self.client.get(url)
+
+        # if this fails, probably ./content_repos is not initialized
+        # solution: `fdmd unpack-repos ./content_repos``
+        self.assertEqual(response.status_code, 200)
         action_url, csrf_token = get_form_base_data_from_html_template_host(response.content)
 
         post_data = {

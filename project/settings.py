@@ -45,6 +45,9 @@ CATCH_EXCEPTIONS = True
 
 ALLOWED_HOSTS = cfg("ALLOWED_HOSTS")
 
+# Directory where all the managed repos are located
+REPO_HOST_DIR = cfg("REPO_HOST_DIR").replace("__BASEDIR__", BASE_DIR)
+os.makedirs(REPO_HOST_DIR, exist_ok=True)
 
 # Collect static files here (will be copied to correct location by deployment script)
 STATIC_ROOT = cfg("STATIC_ROOT").replace("__BASEDIR__", BASE_DIR)

@@ -40,10 +40,11 @@ deployment_path = "/home/%(user)s/%(PROJECT_NAME)s-deployment/%(app_name)s"
 django_url_prefix = "/"
 static_url_prefix = "/static"
 
-# working directories during deployment
+# working directories during production (after successful deployment)
 # `__BASEDIR__` will be replaced inside settings
 STATIC_ROOT = "__BASEDIR__/collected_static"
 MEDIA_ROOT = "__BASEDIR__/media"
+REPO_HOST_DIR = "__BASEDIR__/content_repos"
 
 
 # this path sould be located outside <BASEDIR> because the deployment might delete that completely
