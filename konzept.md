@@ -115,16 +115,47 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 - Beide remotes müssen konsistenten main-branch haben, d.h. Repo X darf nur um "fast-forward-merge" von repo Y abweichen
 - Prozedur:
     - Nutzer meldet sich an.
-    - Erzeugt einen neuen Beitrag (a/a.md). Um ihn zu Diskussion zu stellen muss folgendes passieren:
-        - Plattform erzeugt ein quasi leeres Repo (z.B. auf github) und fordert user auf es zu forken
-        - User forkt es und teilt repo-url der Plattform mit
-        - diese erstellt einen Pullrequest mit dem Inhalt von a/a.md und forder user auf diesen Pullrequest zu mergen
-        - dadurch wird sichergestellt, dass der Inhalt wirklich vom Eigentümer des Repos bestätig wurde.
-        - -> eigentlich ist mergen unnötig. manuelles Forken ist sollte Bestätigung genug sein.
-        - (Plattform erzeugt indem fall ein repo mit zwei Kommits: 1: README.md und Verz.-Struktur; 2: a/a.md)
-    - Anderer Nutzer meldet sich an. Teilt der Plattform relevante repos mit.
-    - Bekommt dann alle Diskussionen angezeigt, auf die er reagieren kann (d.h. deren Repos er geforkt hat)
-    - Kann Antworten im b-Modus verfassen
+    - Erzeugt einen neuen Beitrag (a/a.md). Um ihn zur Diskussion zu stellen muss folgendes passieren:
+        - Plattform erzeugt ein Repo (z.B. auf github) mit
+            - generischer README und Link https://faire-debatte.de/d/d1-lorem_ipsum + Link zur Doku
+            - Verzeichnisstruktur
+        - Plattform kommittiert a/a.md (2. Kommit)
+        - Plattform fordert user auf, das Repo zu forken
+        - User a forkt es und teilt repo-url der Plattform mit (damit bestätigt er die Authentizität des Inhalts von a.md)
+        - Plattform veröffentlicht Beitrag
+    - Anderer Nutzer möchte auf Beitrag eingehen und meldet sich dazu an. Er erstellt Antworten auf einzelne Aussagen (in der Datenbank)
+    - Um diese Antworten zu publizieren muss folgendes passieren:
+        - Plattform erzeugt im Repo einen Kommit als user b
+        - Plattform fordert user b auf, das repo zu forken
+        - User b forkt es und teilt Plattform die URL mit. (damit bestätigt er die Authentizität des Inhalts von b/a\d+b.md)
+        - Plattform macht Antworten von b öffentlich sichtbar
+
+
+- Kritik: Prozedur ist für den Anfang zu umständlich. Versuch einer Vereinfachung:
+
+- Prozedur:
+    - Nutzer meldet sich an.
+    - Erzeugt einen neuen Beitrag (a/a.md). Um ihn zur Diskussion zu stellen muss folgendes passieren:
+    - Plattform erzeugt ein Repo (z.B. auf github) mit
+            - generischer README und Link https://faire-debatte.de/d/d1-lorem_ipsum + Link zur Doku
+            - Verzeichnisstruktur
+        - Plattform kommittiert a/a.md (2. Kommit)
+        - Plattform gibt user die Möglichkeit, das Repo zu forken und die eigene URL zu hinterlegen.
+            - **Einfacher Weg:** User klickt auf OK dann ist das Plattform-kontrollierte-repo maßgeblich
+            - Sicherer Weg: User a forkt es und teilt repo-url der Plattform mit (damit bestätigt er die Authentizität des Inhalts von a.md)
+        - Plattform veröffentlicht Beitrag
+    - Anderer Nutzer möchte auf Beitrag eingehen und meldet sich dazu an. Er erstellt Antworten auf einzelne Aussagen (in der Datenbank)
+    - Um diese Antworten zu publizieren muss folgendes passieren:
+        - Plattform erzeugt im Repo einen Kommit als user b
+        - Plattform ermöglicht User b das repo zu forken
+            - **Einfacher Weg: User klickt auf OK** dann ist das Plattform-kontrollierte-repo maßgeblich
+            - sicherer Weg: User b forkt es und teilt Plattform die URL mit. (damit bestätigt er die Authentizität des Inhalts von b/a\d+b.md)
+        - Plattform macht Antworten von b öffentlich sichtbar
+
+1. Implementierungsstufe:
+
+Repo nur lokal im Arbeitsverzeichnis
+
 
 
 Können mehrere Repos auf einen Ausgangspost reagieren? -> sollte grundsätzlich möglich sein. allerdings sollte das Ziel der Plattform Qualität vor Quantität sein.
