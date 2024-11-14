@@ -1,12 +1,13 @@
 
 - [] open debate from url /d/debate_key
+- [x] respect ?next= in login processing
 - [] add answer via gui
     - [.] specify repo and db-concept
     - [] consider preview view
     - [] implementation
         - [x] insert form on click on segment
             - [x] implement splinter-based tests
-            - [] display warning if not logged in
+            - [x] display warning if not logged in
         - [x] store answer data in db
             - [x] implement splinter-based tests
 - [x] display square if answer is available

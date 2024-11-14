@@ -36,12 +36,20 @@ class TestCore1(TestCase):
         response = self.client.post(action_url, post_data)
         return response
 
-    def perform_login(self, username=None, previous_response=None):
+    def perform_login(self, username=None, previous_response=None, next_url=None):
+        """
+
+        :param next_url:    only evaluated if previous_response is None
+        """
 
         username = username or "admin"
 
         if previous_response is None:
-            previous_response = self.client.get(reverse("login"))
+            url = reverse("login")
+            if next_url:
+                # construct something like /login/?next=/show/test
+                url = f"{url}?next={next_url}"
+            previous_response = self.client.get(url)
         self.assertFalse(auth.get_user(self.client).is_authenticated)
         login_data = {"username": username, "password": "admin"}
         post_data, action_url = generate_post_data_for_form(previous_response, spec_values=login_data)
@@ -87,7 +95,7 @@ class TestCore1(TestCase):
         response = self.post_to_view(viewname="new_debate", spec_values={"body_content": content})
         self.assertIn(b"utc_segmented_html", response.content)
 
-    def test_50__login_and_out(self):
+    def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(auth.get_user(self.client).is_authenticated)
@@ -103,9 +111,15 @@ class TestCore1(TestCase):
 
         self.perform_logout()
 
-    def test_060__add_answer(self):
+        # test if redirect with ?next=... works
+        response = self.perform_login(next_url=reverse("test_show_debate"))
+        self.assertEqual(response.status_code, 302)
+        new_url = response["Location"]
+        self.assertEqual(new_url, reverse("test_show_debate"))
 
-        settings.CATCH_EXCEPTIONS = False
+    def _06x__common(self):
+
+        # settings.CATCH_EXCEPTIONS = False
 
         url = reverse("test_show_debate")
         response = self.client.get(url)
@@ -120,13 +134,21 @@ class TestCore1(TestCase):
             "body": "This is a level 1 **answer** from a unittest.",
         }
 
-        if 0:
-            # omit to speed up development
-            response = self.client.post(action_url, post_data)
-            self.assertEqual(response.status_code, 302)
-            self.assertTrue(response["Location"].startswith("/login"))
+        return post_data, action_url
 
-        self.perform_login()
+    def test_060__add_answer1(self):
+        post_data, action_url = self._06x__common()
+
+        response = self.client.post(action_url, post_data)
+        self.assertEqual(response.status_code, 302)
+        new_url = response["Location"]
+        self.assertTrue(new_url.startswith("/login"))
+        response = self.client.get(new_url)
+
+    def test_061__add_answer2(self):
+        post_data, action_url = self._06x__common()
+
+        response = self.perform_login()
         response = self.client.post(action_url, post_data)
         self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, "html.parser")

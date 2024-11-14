@@ -247,7 +247,8 @@ def user_signup(request):
 # login page
 def user_login(request):
     data = {
-        "failed_login_attempt": None
+        "failed_login_attempt": None,
+        "next_url":  request.GET.get("next"),  # this allows requests to /login/?next=/show/test
     }
 
     if request.method == 'POST':
@@ -258,8 +259,10 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                #TODO process "?next" here
-                return redirect("landingpage")
+                if next_url := request.POST.get("next_url"):
+                    return HttpResponseRedirect(next_url)
+                else:
+                    return redirect("landingpage")
             else:
                 data["failed_login_attempt"] = True
     else:
