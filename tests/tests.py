@@ -110,6 +110,14 @@ class TestCore1(TestCase):
         self.assertTrue(auth.get_user(self.client).is_authenticated)
 
         self.perform_logout()
+        response = self.perform_login()
+        self.assertEqual(response.status_code, 302)
+        new_url = response["Location"]
+        self.assertEqual(new_url, reverse("landingpage"))
+        response = self.client.get(new_url)
+        self.assertEqual(response.status_code, 200)
+
+        self.perform_logout()
 
         # test if redirect with ?next=... works
         response = self.perform_login(next_url=reverse("test_show_debate"))

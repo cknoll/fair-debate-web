@@ -1,9 +1,11 @@
 
 - [] open debate from url /d/debate_key
 - [x] respect ?next= in login processing
+    - [x] fix bug with no given parameter
 - [] add answer via gui
     - [.] specify repo and db-concept
-    - [] consider preview view
+    - [] consider preview view -> edit already created answer:
+        - [] create roles for users in repos
     - [] implementation
         - [x] insert form on click on segment
             - [x] implement splinter-based tests
