@@ -8,6 +8,7 @@
     --color-dim-text: hsl(00, 0%, 50%);
     --color-red-dark-text: #733;
     --color-quote-background: hsl(25, 0%, 97%);
+    --color-tt-background: hsla(25, 0%, 97%, 50%);
     --color-header-background: #EEE;
     --color-header-menu-background: #F8F8F8;
     --color-header-menu-item-hover-background: #E8E8E8;
@@ -413,6 +414,11 @@ div.header a:hover{
 .error_container {
   background-color: var(--color-error-background);
   border: solid 3px var(--color-error-border);;
+}
+.error_container tt {
+  background-color: var(--color-tt-background);
+  padding: 0 0.5em 0 0.5em;
+
 }
 
 .alert_container {

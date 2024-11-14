@@ -83,6 +83,11 @@ class TestCore1(TestCase):
         self.assertIn(b"utc_general_exception", response.content)
         self.assertIn(b"intentionally raised assertion error", response.content)
 
+        # provoke 404
+        response = self.client.get("/does/not/exist")
+        self.assertIn(b"utc_404_error", response.content)
+        self.assertEqual(response.status_code, 404)
+
     def test_030__new_debate(self):
         response = self.client.get(reverse("new_debate"))
         self.assertEqual(response.status_code, 200)
