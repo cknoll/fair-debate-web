@@ -113,6 +113,26 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
     - official_a
     - official_b
 - Beide remotes müssen konsistenten main-branch haben, d.h. Repo X darf nur um "fast-forward-merge" von repo Y abweichen
+- Prozedur:
+    - Nutzer meldet sich an.
+    - Erzeugt einen neuen Beitrag (a/a.md). Um ihn zu Diskussion zu stellen muss folgendes passieren:
+        - Plattform erzeugt ein quasi leeres Repo (z.B. auf github) und fordert user auf es zu forken
+        - User forkt es und teilt repo-url der Plattform mit
+        - diese erstellt einen Pullrequest mit dem Inhalt von a/a.md und forder user auf diesen Pullrequest zu mergen
+        - dadurch wird sichergestellt, dass der Inhalt wirklich vom Eigentümer des Repos bestätig wurde.
+        - -> eigentlich ist mergen unnötig. manuelles Forken ist sollte Bestätigung genug sein.
+        - (Plattform erzeugt indem fall ein repo mit zwei Kommits: 1: README.md und Verz.-Struktur; 2: a/a.md)
+    - Anderer Nutzer meldet sich an. Teilt der Plattform relevante repos mit.
+    - Bekommt dann alle Diskussionen angezeigt, auf die er reagieren kann (d.h. deren Repos er geforkt hat)
+    - Kann Antworten im b-Modus verfassen
+
+
+Können mehrere Repos auf einen Ausgangspost reagieren? -> sollte grundsätzlich möglich sein. allerdings sollte das Ziel der Plattform Qualität vor Quantität sein.
+d.h. Kritiker sollten sich zusammenschließen und gemeinsam an einer möglichst guten Kritik arbeiten, statt an mehreren mittelmäßigen oder schlechten.
+
+Wenn das nicht geht, ist es das sinnvollste, eine eigene Debatte (mit dem selben a.md-Beitrag) aufzumachen, die "in geeigneter Weise" auf die Ausgangsdebatte verweist.
+
+Es sollte aber immer klar sein, das das nicht die offizielle Debatte ist und a-Autor "nicht verpflichtet" ist (entsprechend der Wettbewerbsregeln) auf die Kritik einzugehen.
 
 
 Herausforderung: wie kann ich ein repo (inklusive jedem einzelnen Kommit für jeden Branch in einer Sammlung von patch-Dateien darstellen?)
