@@ -19,6 +19,7 @@ import fair_debate_md as fdmd
 
 from .simple_pages_interface import get_sp, new_sp
 from . import simple_pages_content_default as spc
+from . import utils
 
 from ipydex import IPS
 
@@ -123,19 +124,34 @@ class ShowDebateView(View):
         if err_page := self._ensure_suitable_user_role(request, user_role, answer_mode):
             return err_page
 
-        new_contribution = Contribution(
-            author=request.user,
-            debate=debate_obj,
-            contribution_key=contribution_key,
-            body=request.POST["body"],
-        )
-
-        new_contribution.save()
+        self.create_or_update_contribution(request, debate_obj, contribution_key)
 
         ctb_list = self._get_ctb_list_from_db(debate_obj_or_key=debate_obj)
         ddl: fdmd.DebateDirLoader = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
 
         return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
+
+    def create_or_update_contribution(self, request, debate_obj: Debate, contribution_key: str) -> Contribution:
+        """
+        return updated existing or new Contribution-object
+        """
+
+        contribution_obj: Contribution
+        if contribution_obj := utils.get_or_none(debate_obj.contribution_set, contribution_key=contribution_key):
+            contribution_obj.body = request.POST["body"]
+            contribution_obj.save()
+
+        else:
+            contribution_obj = Contribution(
+                author=request.user,
+                debate=debate_obj,
+                contribution_key=contribution_key,
+                body=request.POST["body"],
+            )
+
+        contribution_obj.save()
+        return contribution_obj
+
 
     def _ensure_suitable_user_role(self, request, user_role, answer_mode):
 

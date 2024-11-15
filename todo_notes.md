@@ -2,7 +2,10 @@
 - [] js based buttons: level visibility ← →
 - [] add answer via gui
     - [.] specify repo and db-concept
-    - [] consider preview view -> edit already created answer:
+    - [] consider preview view with possibility to update -> edit already created answer:
+        - [.] implement update mechanism
+            - [x] backend
+            - [] frontend
         - [.] create roles for users in repos
             - [] implement tests
                 - [] testuser_1 has role a in d1-lorem_ipsum. Thus they cannot create a b-contribution, but an a-contribution

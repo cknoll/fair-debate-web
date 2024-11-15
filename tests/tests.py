@@ -17,8 +17,12 @@ from selenium.webdriver.chrome.options import Options
 from packaging.version import Version
 
 import fair_debate_md as fdmd
+from base import models
 
 from ipydex import IPS
+
+class Container:
+    pass
 
 
 class TestCore1(TestCase):
@@ -133,7 +137,7 @@ class TestCore1(TestCase):
         new_url = response["Location"]
         self.assertEqual(new_url, reverse("test_show_debate"))
 
-    def _06x__common(self):
+    def _06x__common(self) -> Container:
 
         # ensure file system based test data exists:
 
@@ -149,9 +153,10 @@ class TestCore1(TestCase):
         # if this fails, probably ./content_repos is not initialized
         # solution: `fdmd unpack-repos ./content_repos``
         self.assertEqual(response.status_code, 200)
-        action_url, csrf_token = get_form_base_data_from_html_template_host(response.content)
+        res = Container()
+        res.action_url, csrf_token = get_form_base_data_from_html_template_host(response.content)
 
-        post_data = {
+        res.post_data_a3 = {
             "csrfmiddlewaretoken": csrf_token,
             # hard coded data
             "reference_segment": "a3",
@@ -159,36 +164,50 @@ class TestCore1(TestCase):
             "body": "This is a level 1 **answer** from a unittest.",
         }
 
-        return post_data, action_url
+        res.post_data_a3_updated = res.post_data_a3.copy()
+        res.post_data_a3_updated.update({"body": "This is an updated level 1 **answer** from a unittest.",})
+
+        res.post_data_a4b4 = res.post_data_a3.copy()
+        res.post_data_a4b4.update({
+            "reference_segment": "a4b4",
+            "body": "This is a level 2 *answer* from a unittest.",
+        })
+
+        res.debate_obj1 = models.Debate.objects.get(debate_key=fdmd.TEST_DEBATE_KEY)
+
+
+        return res
 
     def test_060__add_answer1(self):
-        post_data, action_url = self._06x__common()
+        c = self._06x__common()
 
-        response = self.client.post(action_url, post_data)
+        response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 302)
         new_url = response["Location"]
         self.assertTrue(new_url.startswith("/login"))
         response = self.client.get(new_url)
 
     def test_061__add_answer2(self):
-        post_data, action_url = self._06x__common()
+        c = self._06x__common()
 
         # first wrong user
         response = self.perform_login(username="testuser_1")
-        response = self.client.post(action_url, post_data)
+        response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 403)
         self.assertIn(b"utc_contribution_with_wrong_mode_not_allowed_for_user", response.content)
 
         # second wrong user
         response = self.perform_login(username="testuser_3", logout_first=True)
-        response = self.client.post(action_url, post_data)
+        response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 403)
         self.assertIn(b"utc_no_contribution_allowed_for_user", response.content)
 
-        # correct wrong user
+        # correct user
+        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 0)
         self.perform_login(username="testuser_2", logout_first=True)
-        response = self.client.post(action_url, post_data)
+        response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 1)
         soup = BeautifulSoup(response.content, "html.parser")
         answer_div = soup.find(id="answer_a3b")
         self.assertIsNotNone(answer_div)
@@ -196,6 +215,19 @@ class TestCore1(TestCase):
         self.assertIsNotNone(segment_span)
 
         expected_res = "This is a level 1\n     <strong>\n      answer\n     </strong>\n     from a unittest."
+        res = "".join(map(str, segment_span.contents)).strip()
+        self.assertEqual(res, expected_res)
+
+        # we are still testuser_2
+        # send data for that segment key again with different body (update post)
+        response = self.client.post(c.action_url, c.post_data_a3_updated)
+        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 1)
+        expected_res = (
+            "This is an updated level 1\n     <strong>\n      answer\n     </strong>\n     from a unittest."
+        )
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        segment_span = soup.find(id="a3b1")
         res = "".join(map(str, segment_span.contents)).strip()
         self.assertEqual(res, expected_res)
 
