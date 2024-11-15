@@ -11,6 +11,7 @@ Fair-debate-Web is an experimental web application to facilitate controversial t
 
 ### Manual Testing
 
+- `fdmd unpack-repos ./content_repos`
 - `python manage.py runserver`
 
 ### Unittests

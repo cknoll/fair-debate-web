@@ -1,3 +1,4 @@
+import os
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
@@ -130,6 +131,12 @@ class TestCore1(TestCase):
         self.assertEqual(new_url, reverse("test_show_debate"))
 
     def _06x__common(self):
+
+        # ensure file system based test data exists:
+
+        TEST_REPO1_PATH = os.path.join(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY, ".git")
+        if not os.path.isdir(TEST_REPO1_PATH):
+            raise FileNotFoundError(TEST_REPO1_PATH)
 
         settings.CATCH_EXCEPTIONS = False
 

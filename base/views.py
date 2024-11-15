@@ -24,7 +24,6 @@ from ipydex import IPS
 
 pjoin = os.path.join
 
-TEST_REPO1_PATH = pjoin(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY, ".git")
 
 class Container:
     pass
@@ -113,8 +112,6 @@ class ShowDebateView(View):
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
     def post(self, request, **kwargs):
 
-        ensure_test_data_existence()
-
         debate_key = request.POST["debate_key"]
         debate_obj = Debate.objects.get(debate_key=debate_key)
 
@@ -160,22 +157,6 @@ class ShowDebateView(View):
 
         # TODO: maybe redirect here
         return render(request, template, context)
-
-
-# TODO obsolete?
-def ensure_test_data_existence():
-    """
-    Quick and dirty way to ensure that the necessary test data exists
-    """
-
-    try:
-        Debate.objects.get(debate_key=fdmd.TEST_DEBATE_KEY)
-    except (ObjectDoesNotExist, OperationalError):
-        new_obj = Debate(debate_key=fdmd.TEST_DEBATE_KEY)
-        new_obj.save()
-
-    if not os.path.isdir(TEST_REPO1_PATH):
-        raise FileNotFoundError(TEST_REPO1_PATH)
 
 
 def errorpage(request):
