@@ -403,12 +403,12 @@ class TestGUI(StaticLiveServerTestCase):
         ## assert that post is only possible if logged in
         self.assertTrue(b1.url.startswith(f"{self.live_server_url}/login"))
 
-    def test_g04__segment_answer2(self):
+    def test_g04__segment_answer_level1(self):
 
         # self.config_for_browser.headless = False
 
         b1 = self.new_browser()
-        self.perform_login(browser=b1)
+        self.perform_login(browser=b1, username="testuser_2")
         url = reverse("test_show_debate")
         b1.visit(f"{self.live_server_url}{url}")
 
