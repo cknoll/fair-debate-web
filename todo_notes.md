@@ -1,5 +1,6 @@
 
 - [] js based buttons: level visibility ← →
+- [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
 - [] add answer via gui
     - [.] specify repo and db-concept
     - [] consider preview view with possibility to update -> edit already created answer:

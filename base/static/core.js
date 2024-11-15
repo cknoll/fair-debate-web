@@ -120,20 +120,45 @@ function insertAfter(newNode, referenceNode) {
 
 /**
  * Insert answer-form after after the segment element (when clicked on it)
+ * If the current user has the wrong role insert a hint-element instead
  * @param {*} segment_element
  * @param {*} answer_key
  */
-function insertAnswerForm(segment_element, answer_key) {
-
+function insertAnswerFormOrHint(segment_element, answer_key) {
     // prevent insertion if current element is already marked as active
     if (segment_element.getAttribute('data-active') === "true") {
         return
     }
 
-    console.log(segment_element, answer_key);
-    const clonedTemplate =  document.getElementById("segment_answer_form_template").content.cloneNode(true);
+    const user_role = JSON.parse(document.getElementById("data-user_role").text)
+    console.log("AnswerFormOrHint", segment_element, answer_key, user_role);
+
+    if (answer_key.endsWith(user_role)) {
+        return insertAnswerForm(segment_element);
+    } else {
+        return insertHintField(segment_element, answer_key, user_role);
+    }
+}
+
+
+function insertHintField(segment_element, answer_key, user_role) {
+
+    const clonedHintTemplate =  document.getElementById("segment_answer_hint").content.cloneNode(true);
+    const hint_container = clonedHintTemplate.getElementById("__segment_answer_hint_container_id");
+    hint_container.id = "segment_answer_hint_container";
+    // hint_container.style.add("background: red;")
+
+    insertAfter(clonedHintTemplate, segment_element);
+    segment_element.setAttribute('data-active', "true");
+
+}
+
+
+function insertAnswerForm(segment_element) {
+
+    const clonedFormTemplate =  document.getElementById("segment_answer_form_template").content.cloneNode(true);
     // change ids from the template for the real elements
-    const form_container = clonedTemplate.getElementById("__segment_answer_form_container_id");
+    const form_container = clonedFormTemplate.getElementById("__segment_answer_form_container_id");
     form_container.id = "segment_answer_form_container";
 
     // add warning
@@ -142,7 +167,7 @@ function insertAnswerForm(segment_element, answer_key) {
         form_container.getElementsByClassName("not_logged_in_warning")[0].classList.add("hidden");
     }
 
-    const form = clonedTemplate.getElementById("__segment_answer_form_id");
+    const form = clonedFormTemplate.getElementById("__segment_answer_form_id");
     form.id = "segment_answer_form";
 
     form.getElementsByClassName("custom-textarea")[0].name = "body"
@@ -151,9 +176,10 @@ function insertAnswerForm(segment_element, answer_key) {
         cancelSegmentAnswerForm(segment_element.id);
     });
 
-    insertAfter(clonedTemplate, segment_element);
+    insertAfter(clonedFormTemplate, segment_element);
     segment_element.setAttribute('data-active', "true");
 }
+
 
 function cancelSegmentAnswerForm(segment_id) {
     console.log(segment_id);
@@ -193,15 +219,19 @@ function onLoadForShowDebatePage(){
     segmentObjects.forEach(segment_span => {
         const answer_key = getAnswerKey(segment_span.id);
         if (answer_key in answerMap) {
+
+            // for this segment there is already an answer
+            // -> add square symbol
             segment_span.classList.add("sqn");
 
+            // -> add function to toggle the visibility of the answer
             segment_span.addEventListener('click', function() {
                 toggleDisplayNoneBlock(answerMap[answer_key]);
             });
         } else {
             // This segment does not yet have an answer
             segment_span.addEventListener('click', function() {
-                insertAnswerForm(segment_span, answer_key);
+                insertAnswerFormOrHint(segment_span, answer_key);
             });
         }
     });
