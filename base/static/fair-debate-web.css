@@ -64,7 +64,13 @@ h3:has(+ .rendered_content_preview) {
 }
 
 #seg_id_display {
-  display: block;
+  display: inline;
+}
+
+#user_role_display {
+  display: inline;
+  margin-left: 0.5em;
+  background-color: hsla(0, 0%, 0%, 10%);
 }
 
 

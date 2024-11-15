@@ -13,7 +13,12 @@
 
 <div id="second_sticky_bar">
     <h2 id="debate_title">{{data.debate_title}}</h2>
-    <div id="seg_id_display">XYZ</div>
+    <div style="display: block;">
+        <div id="seg_id_display"></div>
+        {% if data.user_role %}
+            <div id="user_role_display">{{ data.user_role }}</div>
+        {% endif %}
+    </div>
 </div>
 
 {% if data.segmented_html %}
@@ -27,8 +32,10 @@
 {% endblock %}
 
 
+{% block templates_and_data %}
 
-{% block templates %}
+{{ data.user_role|json_script:"data-user_role" }}
+
 <template id="form_base_data_host" data-action-url="{{ request.path }}">
     {% csrf_token %}
 </template>

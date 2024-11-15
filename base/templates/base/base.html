@@ -86,10 +86,10 @@ add content
 {% endblock %}
 
 {# html templates for inserting dynamic elements via JS#}
-{% block templates %}
+{% block templates_and_data %}
 {% endblock %}
 
-{# store some json data #}
+{# store some (more) json data #}
 {{ request.user. | json_script:"data-user_name" }}
 {{ request.user.is_authenticated | json_script:"data-user_is_authenticated" }}
 

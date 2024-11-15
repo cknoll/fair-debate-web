@@ -1,4 +1,5 @@
 import os
+import json
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
@@ -190,21 +191,35 @@ class TestCore1(TestCase):
     def test_061__add_answer_level1(self):
         c = self._06x__common()
 
-        # first wrong user
+        # first wrong user (testuser_1, role: a)
         response = self.perform_login(username="testuser_1")
         response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 403)
         self.assertIn(b"utc_contribution_with_wrong_mode_not_allowed_for_user", response.content)
 
-        # second wrong user
+        response = self.client.get(reverse("test_show_debate"))
+        user_role = get_parsed_element_by_id(response.content, id="data-user_role")
+        self.assertEqual(user_role, "a")
+
+        # second wrong user (testuser_3, role: None)
         response = self.perform_login(username="testuser_3", logout_first=True)
         response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 403)
         self.assertIn(b"utc_no_contribution_allowed_for_user", response.content)
 
-        # correct user
-        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 0)
+        response = self.client.get(reverse("test_show_debate"))
+        user_role = get_parsed_element_by_id(response.content, id="data-user_role")
+        self.assertEqual(user_role, None)
+
+        # correct user (testuser_2, role: b)
         self.perform_login(username="testuser_2", logout_first=True)
+
+        response = self.client.get(reverse("test_show_debate"))
+        user_role = get_parsed_element_by_id(response.content, id="data-user_role")
+        self.assertEqual(user_role, "b")
+
+        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 0)
+
         response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(c.debate_obj1.contribution_set.all()), 1)
@@ -429,6 +444,10 @@ class TestGUI(StaticLiveServerTestCase):
         expected_res = "This is an answer from a unittest."
         self.assertEqual(content, expected_res)
 
+        user_role_element = b1.find_by_id("data-user_role")[0]
+        user_role = json.loads(user_role_element.html)
+        self.assertEqual(user_role, "b")
+
 
 # #################################################################################################
 
@@ -441,6 +460,13 @@ def send_key_to_browser(browser, key):
     actions = ActionChains(browser.driver)
     actions.send_keys(key)
     actions.perform()
+
+
+def get_parsed_element_by_id(response_content: bytes, id: str):
+    soup = BeautifulSoup(response_content, "html.parser")
+    element = soup.find(id=id)
+    content_str = "".join(element.contents)
+    return json.loads(content_str)
 
 
 def get_element_by_html_content(element_list: list, content: str):
