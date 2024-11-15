@@ -1,6 +1,13 @@
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # Fair-Debate-Web
 
 Fair-debate-Web is an experimental web application to facilitate controversial text-based debates.
+
+## Development
+
+`pip install -r requirements.txt`
 
 ### Manual Testing
 
@@ -10,9 +17,14 @@ Fair-debate-Web is an experimental web application to facilitate controversial t
 
 `pytest` (requires splinter installed and configured)
 
-### Feedback
+## Feedback
 
 Contact the maintainer <https://cknoll.github.io/pages/impressum.html>
+
+## Coding style
+
+We use `black -l 120 ./` to ensure coding style consistency.
+
 
 
 ## Development notes
@@ -36,3 +48,4 @@ helpful urls:
 localhost:8000/new
 localhost:8000/new/test
 localhost:8000/show/test
+localhost:8000/d/d1-lorem_ipsum

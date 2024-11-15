@@ -8,6 +8,7 @@ from os.path import join as pjoin
 # these packages are not in requirements.txt but in deployment_requirements.txt
 # noinspection PyUnresolvedReferences
 from packaging import version
+
 # noinspection PyUnresolvedReferences
 from ipydex import IPS, activate_ips_on_exception
 
@@ -38,9 +39,9 @@ It is largely based on this tutorial: <https://lab.uberspace.de/guide_django.htm
 
 workdir = os.path.abspath(os.getcwd())
 msg = (
-       "This deployment script is expected to be run from the BASEDIR of the django project, i.e. "
-       "from the same directory where manage.py is located. This seems not to be the case.\n"
-       f"Your current workdir is {workdir}"
+    "This deployment script is expected to be run from the BASEDIR of the django project, i.e. "
+    "from the same directory where manage.py is located. This seems not to be the case.\n"
+    f"Your current workdir is {workdir}"
 )
 
 if not os.path.isfile(pjoin(workdir, "manage.py")):
@@ -70,7 +71,6 @@ app_name = config("app_name")
 project_name = config("PROJECT_NAME")
 
 
-
 # this is needed to distinguish different django instances on the same uberspace account
 port = config("port")
 
@@ -97,13 +97,14 @@ pipc = config("pip_command")
 python_version = config("python_version")
 
 
-
 du.argparser.add_argument("-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true")
-du.argparser.add_argument("-d", "--omit-database",
-                          help="omit database-related-stuff (and requirements)", action="store_true")
+du.argparser.add_argument(
+    "-d", "--omit-database", help="omit database-related-stuff (and requirements)", action="store_true"
+)
 du.argparser.add_argument("-s", "--omit-static", help="omit static file handling", action="store_true")
-du.argparser.add_argument("-x", "--omit-backup",
-                          help="omit db-backup (avoid problems with changed models)", action="store_true")
+du.argparser.add_argument(
+    "-x", "--omit-backup", help="omit db-backup (avoid problems with changed models)", action="store_true"
+)
 du.argparser.add_argument(
     "-q",
     "--omit-requirements",
@@ -155,7 +156,6 @@ c.env_variables["PATH"] = f"/home/{user}/.local/bin:{PATH_ENV}"
 
 def create_and_setup_venv(c: du.StateConnection):
 
-
     # TODO: check if venv exists
 
     c.run(f"{pipc} install --user virtualenv")
@@ -199,9 +199,7 @@ def render_and_upload_config_files(c):
     du.render_template(
         tmpl_path=pjoin(asset_dir, tmpl_dir, tmpl_name),
         target_path=pjoin(temp_workdir, tmpl_dir, target_name),
-        context=dict(
-            venv_dir=f"{venv_path}", deployment_path=target_deployment_path, port=port, user=user
-        ),
+        context=dict(venv_dir=f"{venv_path}", deployment_path=target_deployment_path, port=port, user=user),
     )
 
     #
@@ -242,8 +240,6 @@ def set_web_backend(c):
     c.run(f"uberspace web backend set {django_base_domain}{static_url_prefix} --apache", target_spec="remote")
 
 
-
-
 def upload_files(c):
     print("\n", "ensure that deployment path exists", "\n")
     c.run(f"mkdir -p {target_deployment_path}", target_spec="both")
@@ -262,9 +258,7 @@ def upload_files(c):
     db_file_name = config("DB_FILE_NAME")
     filters = f"--exclude='.git/' --exclude='.idea/' --exclude='{db_file_name}' "
 
-    c.rsync_upload(
-        project_src_path + "/", target_deployment_path, filters=filters, target_spec="both"
-    )
+    c.rsync_upload(project_src_path + "/", target_deployment_path, filters=filters, target_spec="both")
 
     c.run(f"touch requirements.txt", target_spec="remote")
 
@@ -300,7 +294,6 @@ def initialize_db(c):
     # print("\n", "backup old database", "\n")
     _ = c.run("python manage.py savefixtures --backup", warn=False)
 
-
     c.run("python manage.py makemigrations", target_spec="both")
 
     # delete old db
@@ -321,7 +314,6 @@ def initialize_db(c):
     c.run(f"python manage.py loaddata {init_fixture_path}", target_spec="both")
 
 
-
 def generate_static_files(c):
 
     c.chdir(target_deployment_path)
@@ -340,7 +332,6 @@ def generate_static_files(c):
     c.run(f"cp -r {static_root_dir} ./{static_url_prefix}")
 
     c.chdir(target_deployment_path)
-
 
 
 if args.debug:

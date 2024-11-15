@@ -20,7 +20,6 @@ import fair_debate_md as fdmd
 from ipydex import IPS
 
 
-
 class TestCore1(TestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
 
@@ -29,7 +28,7 @@ class TestCore1(TestCase):
         response = self.client.get(reverse(viewname, kwargs=kwargs.get("view_kwargs", {})))
         self.assertEqual(response.status_code, 200)
 
-        spec_values=kwargs.get("spec_values", {})
+        spec_values = kwargs.get("spec_values", {})
 
         post_data, action_url = generate_post_data_for_form(response, spec_values=spec_values)
 
@@ -144,7 +143,6 @@ class TestCore1(TestCase):
 
         post_data = {
             "csrfmiddlewaretoken": csrf_token,
-
             # hard coded data
             "reference_segment": "a3",
             "debate_key": fdmd.TEST_DEBATE_KEY,
@@ -194,13 +192,14 @@ def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
 
     return action_url, csrf_token
 
+
 class TestGUI(StaticLiveServerTestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
     # headless = False
     headless = True
 
     def setUp(self) -> None:
-        self.options_for_browser = dict(driver_name='chrome')
+        self.options_for_browser = dict(driver_name="chrome")
 
         # docs: https://splinter.readthedocs.io/en/latest/config.html
         self.config_for_browser = Config(headless=self.headless)
@@ -252,7 +251,6 @@ class TestGUI(StaticLiveServerTestCase):
             return None
         else:
             return browser.find_by_id(id_str)[0]
-
 
     def new_browser(self):
         """
@@ -366,7 +364,7 @@ def get_element_by_html_content(element_list: list, content: str):
             res_elt = elt
             return res_elt
 
-    raise ValueError(f"Could not find element with content \"{content}\"")
+    raise ValueError(f'Could not find element with content "{content}"')
 
 
 # helper functions copied from moodpoll
@@ -377,7 +375,7 @@ def get_first_form(response):
     :param response:
     :return:
     """
-    bs = BeautifulSoup(response.content, 'html.parser')
+    bs = BeautifulSoup(response.content, "html.parser")
     forms = bs.find_all("form")
 
     form = forms[0]
@@ -449,10 +447,10 @@ def generate_post_data_for_form(response_or_form, default_value="xyz", spec_valu
 
     post_data = {}
     for f in hidden_fields:
-        post_data[f.attrs['name']] = f.attrs['value']
+        post_data[f.attrs["name"]] = f.attrs["value"]
 
     for f in fields:
-        name = f.attrs.get('name')
+        name = f.attrs.get("name")
 
         if name is None:
             # ignore fields without a name (relevant for dropdown checkbox)

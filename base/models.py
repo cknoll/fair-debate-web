@@ -1,17 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+
 class Repo(models.Model):
     name = models.CharField(max_length=255)
     url = models.CharField(max_length=1000)
 
 
 class DebateUser(AbstractUser):
-    repos = models.ManyToManyField(Repo, related_name='users', blank=True)
+    repos = models.ManyToManyField(Repo, related_name="users", blank=True)
     active_rep = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"DebateUser<{self.username}>"
+
 
 class Debate(models.Model):
     debate_key = models.CharField(max_length=255)

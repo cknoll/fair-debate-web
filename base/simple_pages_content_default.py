@@ -10,15 +10,14 @@ from django.conf import settings
 from .simple_pages_core import SimplePage
 
 
-dupurls = {"contact-page": "/contact",
-                        "about-page": "/about",
-                        }
+dupurls = {
+    "contact-page": "/contact",
+    "about-page": "/about",
+}
 duplicated_urls = defaultdict(lambda: "__invalid_url__", dupurls)
 
 
-sp_unknown = SimplePage(type="unknown",
-                        title="unknown",
-                        content="This page is unknown. Please go back to `home`.")
+sp_unknown = SimplePage(type="unknown", title="unknown", content="This page is unknown. Please go back to `home`.")
 
 splist = [sp_unknown]
 
@@ -32,17 +31,16 @@ def new_sp(**kwargs):
 
 # ----------------------------------------------------------------------------
 
-new_sp(type="settings",
-       title="Settings",
-       content="In the future you can configure some settings here.")
+new_sp(type="settings", title="Settings", content="In the future you can configure some settings here.")
 
 
 # ----------------------------------------------------------------------------
 
-new_sp(type="imprint",
-       title="Legal Notice",
-       utc_comment="utc_imprint_en",
-       content="""
+new_sp(
+    type="imprint",
+    title="Legal Notice",
+    utc_comment="utc_imprint_en",
+    content="""
 ## Legal Notice
 
 
@@ -57,15 +55,16 @@ Should there be any problem with the operation or the content of this website, p
 Contact information: \n\n
 - [http://cknoll.github.io/pages/impressum.html](http://cknoll.github.io/pages/impressum.html)
 - [https://codeberg.org/kddk/fair-debate-web](https://codeberg.org/kddk/fair-debate-web)
-""")
+""",
+)
 
 
 new_sp(
-       type="imprint",
-       lang="de",
-       title="Impressum",
-       utc_comment="utc_imprint_de",
-       content="""
+    type="imprint",
+    lang="de",
+    title="Impressum",
+    utc_comment="utc_imprint_de",
+    content="""
 ## Impressum
 
 Diese Seite wird betrieben von Carsten Knoll.
@@ -78,44 +77,48 @@ Sollte es ein Problem mit dem Betrieb oder den Inhalten der Seite geben, kontakt
 Kontaktinformationen: \n\n
 - [https://cknoll.github.io/pages/impressum.html](http://cknoll.github.io/pages/impressum.html)
 - [https://codeberg.org/kddk/fair-debate-web](https://codeberg.org/kddk/fair-debate-web)
-""")
+""",
+)
 
 
 # ----------------------------------------------------------------------------
 contact = True
 
-new_sp(type="contact",
-       title="Contact",
-       utc_comment="utc_contact_en",
-       content="""
+new_sp(
+    type="contact",
+    title="Contact",
+    utc_comment="utc_contact_en",
+    content="""
 This site is maintained by Carsten Knoll. For contact information see: \n\n
 
 - [http://cknoll.github.io/pages/impressum.html](http://cknoll.github.io/pages/impressum.html)
 - [https://codeberg.org/kddk/fair-debate-web](https://codeberg.org/kddk/fair-debate-web)
-"""
-       )
+""",
+)
 
-new_sp(type="contact",
-       lang="de",
-       title="Kontakt",
-       utc_comment="utc_contact_de",
-       content="""
+new_sp(
+    type="contact",
+    lang="de",
+    title="Kontakt",
+    utc_comment="utc_contact_de",
+    content="""
 Diese Seite wird betrieben von Carsten Knoll.
 Weitere Kontaktinformationen: \n\n
 
 - [http://cknoll.github.io/pages/impressum.html](http://cknoll.github.io/pages/impressum.html)
 - [https://codeberg.org/kddk/fair-debate-web](https://codeberg.org/kddk/fair-debate-web)
-"""
+""",
 )
 
 
 # ----------------------------------------------------------------------------
 privacy = True
 
-new_sp(type="privacy",
-       title=_("Privacy rules"),
-       utc_comment="utc_privacy_en",
-       content="""
+new_sp(
+    type="privacy",
+    title=_("Privacy rules"),
+    utc_comment="utc_privacy_en",
+    content="""
 ## Privacy rules
 
 This website aims for data **frugality**.
@@ -133,15 +136,18 @@ In particular we collect and process the following data:
 
 If you have questions or requests (e.g. Correction or Deletion of data) please contact the maintainer of this website,
 see [contact]({}).
-""".format(dupurls["contact-page"])
-       )
+""".format(
+        dupurls["contact-page"]
+    ),
+)
 
 
-new_sp(type="privacy",
-       lang="de",
-       title=_("Datenschutzrichtlinie"),
-       utc_comment="utc_privacy_de",
-       content="""
+new_sp(
+    type="privacy",
+    lang="de",
+    title=_("Datenschutzrichtlinie"),
+    utc_comment="utc_privacy_de",
+    content="""
 ## Datenschutzrichtlinie
 
 Diese Seite orientiert sich am Prinzip der **Datensparsamkeit**
@@ -161,32 +167,32 @@ Im Einzelen werden folgende Daten erfasst und verarbeitet.:
 Bei Fragen bzw. Anfragen (z.B. Richtigstellung und Löschung von Daten) wenden Sie sich bitte den Betreiber der Seite.
 Siehe [Kontakt]({}).
 
-""".format(dupurls["contact-page"])
-       )
+""".format(
+        dupurls["contact-page"]
+    ),
+)
 
 # ----------------------------------------------------------------------------
 backup = True
 
-new_sp(type="backup",
-       title="backup message",
-       content=_("""Backup has been written to: {backup_path}"""))
+new_sp(type="backup", title="backup message", content=_("""Backup has been written to: {backup_path}"""))
 # ----------------------------------------------------------------------------
 backup_no_login = True
 
 # this is for logged in users which are no superuser
 
-new_sp(type="backup_no_login",
-       title="backup message",
-       content=_("""You need to be logged in as admin to create a backup."""))
+new_sp(
+    type="backup_no_login",
+    title="backup message",
+    content=_("""You need to be logged in as admin to create a backup."""),
+)
 
 # ----------------------------------------------------------------------------
 general_error = True
 
 # this is for logged in users which are no superuser
 
-new_sp(type="general_error",
-       title="general error page",
-       content=_("""Some Error occurred. Sorry."""))
+new_sp(type="general_error", title="general error page", content=_("""Some Error occurred. Sorry."""))
 
 # ----------------------------------------------------------------------------
 
@@ -211,9 +217,7 @@ t.b.d.
 
 """
 
-new_sp(type="about",
-       title="About the app",
-       content=_(about_text_en))
+new_sp(type="about", title="About the app", content=_(about_text_en))
 
 # extra2 = "You can [try it out now]({}) or [read more]({}).".format(dupurls["new_poll"], dupurls["about-page"])
 
@@ -222,14 +226,18 @@ new_sp(type="about",
 #        title="moodpoll - easy and good decision making",
 #        content=_(txt_landing))
 
-new_sp(type="landing",
-       title="landingpage",
-       content=_(f"""
+new_sp(
+    type="landing",
+    title="landingpage",
+    content=_(
+        f"""
 # Fair-Debate-Web
 
 Fair-Debate-Web is an experimental web application to facilitate controversial text-based debates.
 
-"""))
+"""
+    ),
+)
 # Try it out: [{settings.BASE_URL.rstrip("/")}/new]({settings.BASE_URL.rstrip("/")}/new)
 
 # --

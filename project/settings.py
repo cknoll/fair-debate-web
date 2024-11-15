@@ -17,7 +17,7 @@ else:
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.as_posix()
 
-cwd = None# os.getcwd()
+cwd = None  # os.getcwd()
 try:
     cfg = du.get_nearest_config("config.toml", devmode=DEVMODE)
 except FileNotFoundError:
@@ -73,7 +73,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'django_bleach',
+    "django_bleach",
     "base",
 ]
 
@@ -85,10 +85,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
     # TODO: make this more professional
     # this line should be commented out for debugging
-    "base.error_handler.ErrorHandlerMiddleware"
+    "base.error_handler.ErrorHandlerMiddleware",
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -141,7 +140,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'base.DebateUser'
+AUTH_USER_MODEL = "base.DebateUser"
 
 
 # Internationalization
@@ -171,7 +170,24 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 BLEACH_ALLOWED_TAGS = [
-    'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'ul', 'ol', 'li', 'pre', 'code'
+    "p",
+    "b",
+    "i",
+    "u",
+    "em",
+    "strong",
+    "a",
+    "span",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "ul",
+    "ol",
+    "li",
+    "pre",
+    "code",
 ] + ["br", "hr", "blockquote", "div", "tt"]
 BLEACH_STRIP_COMMENTS = False
 
@@ -184,6 +200,4 @@ BLEACH_ALLOWED_ATTRIBUTES = {
     "div": ["class", "id", "data-debate-key"],
 }
 
-BLEACH_ALLOWED_STYLES = [
-    'font-family', 'font-weight', 'text-decoration', 'font-variant'
-]
+BLEACH_ALLOWED_STYLES = ["font-family", "font-weight", "text-decoration", "font-variant"]

@@ -18,7 +18,7 @@ from .models import Debate, Contribution
 import fair_debate_md as fdmd
 
 from .simple_pages_interface import get_sp, new_sp
-from  . import simple_pages_content_default as spc
+from . import simple_pages_content_default as spc
 
 from ipydex import IPS
 
@@ -87,14 +87,13 @@ def test_new_debate(request):
     """
 
     with open(fdmd.fixtures.txt1_md_fpath) as fp:
-            body_content = fp.read()
+        body_content = fp.read()
 
     return NewDebateView().render_result_from_md(request, body_content_md=body_content)
 
 
 class ShowDebateView(View):
     def get(self, request, debate_key=None, test=False):
-
 
         if test:
             # Show the display (show) mode with some preloaded fixture data (containing answers)
@@ -104,7 +103,6 @@ class ShowDebateView(View):
             # TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
 
         assert debate_key is not None
-
 
         ctb_list = self._get_ctb_list_from_db(debate_obj_or_key=fdmd.TEST_DEBATE_KEY)
         ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
@@ -122,9 +120,9 @@ class ShowDebateView(View):
 
         new_contribution = Contribution(
             author=request.user,
-            debate = debate_obj,
-            contribution_key = fdmd.get_answer_contribution_key(request.POST["reference_segment"]),
-            body=request.POST["body"]
+            debate=debate_obj,
+            contribution_key=fdmd.get_answer_contribution_key(request.POST["reference_segment"]),
+            body=request.POST["body"],
         )
         new_contribution.save()
 
@@ -148,7 +146,6 @@ class ShowDebateView(View):
             ctb_list.append(fdmd.DBContribution(ctb_key=ctb_obj.contribution_key, body=ctb_obj.body))
 
         return ctb_list
-
 
     def render_result_from_html(self, request, body_content_html, debate_key: str):
 
@@ -178,14 +175,16 @@ def ensure_test_data_existence():
         new_obj = Debate(debate_key=fdmd.TEST_DEBATE_KEY)
         new_obj.save()
 
+
 def errorpage(request):
     # serve a page via get request to simplify the display of source code in browser
 
     assert False, "intentionally raised assertion error"
 
+
 def debugpage(request):
     # serve a page via get request to simplify the display of source code in browser
-    msg=f"""
+    msg = f"""
     this is a debug page\n
 
     {settings.REPO_HOST_DIR=}
@@ -196,42 +195,43 @@ def debugpage(request):
 
 
 def error_page(request, title, msg, status=500):
-        sp_type = title.lower().replace(" ", "_")
-        sp = new_sp(
-            type=sp_type,
-            title=title,
-            # TODO handle translation (we can not simple use
-            # django.utils.translation.gettext here)
-            content=msg
-        )
+    sp_type = title.lower().replace(" ", "_")
+    sp = new_sp(
+        type=sp_type,
+        title=title,
+        # TODO handle translation (we can not simple use
+        # django.utils.translation.gettext here)
+        content=msg,
+    )
 
-        context = {
-            # nested dict for easier debugging in the template
-            "data": {
-                "sp": sp,
-                "main_class": "error_container",
-                "unit_test_comment": f"utc_{sp_type}",
-            }
+    context = {
+        # nested dict for easier debugging in the template
+        "data": {
+            "sp": sp,
+            "main_class": "error_container",
+            "unit_test_comment": f"utc_{sp_type}",
         }
+    }
 
-        template = "base/main_simplepage.html"
+    template = "base/main_simplepage.html"
 
-        return render(request, template, context, status=status)
+    return render(request, template, context, status=status)
+
 
 def about_page(request):
 
-        context = {
-            # nested dict for easier debugging in the template
-            "data": {
-                "sp": get_sp("about"),
-                # "main_class": "error_container",
-                "unit_test_comment": f"utc_about_page",
-            }
+    context = {
+        # nested dict for easier debugging in the template
+        "data": {
+            "sp": get_sp("about"),
+            # "main_class": "error_container",
+            "unit_test_comment": f"utc_about_page",
         }
+    }
 
-        template = "base/main_simplepage.html"
+    template = "base/main_simplepage.html"
 
-        return render(request, template, context)
+    return render(request, template, context)
 
 
 def menu_page(request):
@@ -243,29 +243,31 @@ def menu_page(request):
 
 # Source: https://medium.com/@devsumitg/django-auth-user-signup-and-login-7b424dae7fab
 
+
 # signup page
 def user_signup(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect("login")
     else:
         form = UserCreationForm()
-    return render(request, 'main_auth_signup.html', {'form': form})
+    return render(request, "main_auth_signup.html", {"form": form})
+
 
 # login page
 def user_login(request):
     data = {
         "failed_login_attempt": None,
-        "next_url":  request.GET.get("next"),  # this allows requests to /login/?next=/show/test
+        "next_url": request.GET.get("next"),  # this allows requests to /login/?next=/show/test
     }
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
@@ -277,11 +279,13 @@ def user_login(request):
                 data["failed_login_attempt"] = True
     else:
         form = LoginForm()
-    return render(request, 'main_auth_login.html', {'form': form, "data": data})
+    return render(request, "main_auth_login.html", {"form": form, "data": data})
+
 
 # logout page
 def user_logout(request):
     logout(request)
-    return redirect('landingpage')
+    return redirect("landingpage")
+
 
 # End of medium source
