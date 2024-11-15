@@ -36,11 +36,14 @@ class TestCore1(TestCase):
         response = self.client.post(action_url, post_data)
         return response
 
-    def perform_login(self, username=None, previous_response=None, next_url=None):
+    def perform_login(self, username=None, previous_response=None, next_url=None, logout_first=True):
         """
 
         :param next_url:    only evaluated if previous_response is None
         """
+
+        if logout_first:
+            self.perform_logout()
 
         username = username or "admin"
 
@@ -170,7 +173,20 @@ class TestCore1(TestCase):
     def test_061__add_answer2(self):
         post_data, action_url = self._06x__common()
 
-        response = self.perform_login()
+        # first wrong user
+        response = self.perform_login(username="testuser_1")
+        response = self.client.post(action_url, post_data)
+        self.assertEqual(response.status_code, 403)
+        self.assertIn(b"utc_contribution_with_wrong_mode_not_allowed_for_user", response.content)
+
+        # second wrong user
+        response = self.perform_login(username="testuser_3", logout_first=True)
+        response = self.client.post(action_url, post_data)
+        self.assertEqual(response.status_code, 403)
+        self.assertIn(b"utc_no_contribution_allowed_for_user", response.content)
+
+        # correct wrong user
+        self.perform_login(username="testuser_2", logout_first=True)
         response = self.client.post(action_url, post_data)
         self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, "html.parser")

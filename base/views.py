@@ -115,18 +115,44 @@ class ShowDebateView(View):
         debate_key = request.POST["debate_key"]
         debate_obj = Debate.objects.get(debate_key=debate_key)
 
+        contribution_key = fdmd.get_answer_contribution_key(request.POST["reference_segment"])
+        answer_mode = contribution_key[-1]
+        assert answer_mode in ("a", "b")
+
+        user_role = debate_obj.get_user_role(request.user)
+        if err_page := self._ensure_suitable_user_role(request, user_role, answer_mode):
+            return err_page
+
         new_contribution = Contribution(
             author=request.user,
             debate=debate_obj,
-            contribution_key=fdmd.get_answer_contribution_key(request.POST["reference_segment"]),
+            contribution_key=contribution_key,
             body=request.POST["body"],
         )
+
         new_contribution.save()
 
         ctb_list = self._get_ctb_list_from_db(debate_obj_or_key=debate_obj)
         ddl: fdmd.DebateDirLoader = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
 
         return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
+
+    def _ensure_suitable_user_role(self, request, user_role, answer_mode):
+
+        if user_role is None:
+            msg = (
+                f"You ({request.user}) are not allowed to contribute to this debate."
+                "<!-- utc_no_contribution_allowed_for_user -->"
+            )
+            return error_page(request, title="Contribution Error", msg=msg, status=403)
+
+        if answer_mode != user_role:
+            msg = (
+                f"You ({request.user}) have role {user_role} in this debate but tried to "
+                f"contribute with role {answer_mode}. This is not allowed."
+                "<!-- utc_contribution_with_wrong_mode_not_allowed_for_user -->"
+            )
+            return error_page(request, title="Contribution Error", msg=msg, status=403)
 
     def _get_ctb_list_from_db(self, debate_obj_or_key) -> list[fdmd.DBContribution]:
 

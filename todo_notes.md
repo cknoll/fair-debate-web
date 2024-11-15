@@ -6,8 +6,14 @@
         - [.] create roles for users in repos
             - [] implement tests
                 - [] testuser_1 has role a in d1-lorem_ipsum. Thus they cannot create a b-contribution, but an a-contribution
+                    - [.] backend
+                    - [] frontend
                 - [] testuser_2 has role b in d1-lorem_ipsum. Thus they can create a b-contribution but not an a-contribution
+                    - [.] backend
+                    - [] frontend
                 - [] testuser_3 has no role in d1-lorem_ipsum. Thus they can create neither a nor b-contributions
+                    - [.] backend
+                    - [] frontend
         - [] implement mechanism to publish answer from db to repo
     - [x] basic implementation
         - [x] insert form on click on segment
