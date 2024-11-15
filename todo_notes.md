@@ -1,20 +1,22 @@
 
-- [] open debate from url /d/debate_key
-    - [] drop fmdm.fixtures/debate1 in favor of fdmd.fixtures/repos/d1-lorem_ipsum
-    - [] specify test concept
-    - [] implement test concept
-    - [x] load repo from workdir
-    - [x] robust repo creation for testing
 - [] add answer via gui
     - [.] specify repo and db-concept
     - [] consider preview view -> edit already created answer:
-        - [] create roles for users in repos
+        - [.] create roles for users in repos
+            - [] make write access role-dependent
+            - [] implement test
     - [x] basic implementation
         - [x] insert form on click on segment
             - [x] implement splinter-based tests
             - [x] display warning if not logged in
         - [x] store answer data in db
             - [x] implement splinter-based tests
+- [x] open debate from url /d/debate_key
+    - [x] drop fmdm.fixtures/debate1 in favor of fdmd.fixtures/repos/d1-lorem_ipsum
+    - [x] specify test concept
+    - [x] implement test concept
+    - [x] load repo from workdir
+    - [x] robust repo creation for testing
 - [x] implement suitable template tag for version-insertion (see footer in base.html)
 - [x] respect ?next= in login processing
     - [x] fix bug with no given parameter

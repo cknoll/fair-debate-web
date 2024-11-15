@@ -232,7 +232,7 @@ class TestGUI(StaticLiveServerTestCase):
             browser = self.browsers[-1]
         browser.visit(f"{self.live_server_url}{url}")
 
-    def perform_login(self, browser: Browser, username: str = "testuser_a"):
+    def perform_login(self, browser: Browser, username: str = "testuser_1"):
         self.visit(reverse("login"), browser=browser)
         pw = "admin"
 

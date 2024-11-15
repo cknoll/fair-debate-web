@@ -20,6 +20,9 @@ class Debate(models.Model):
     repo_a = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_a")
     repo_b = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_b")
 
+    user_a = models.ForeignKey(DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_a")
+    user_b = models.ForeignKey(DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_b")
+
 
 class Contribution(models.Model):
     author = models.ForeignKey(DebateUser, on_delete=models.CASCADE)
