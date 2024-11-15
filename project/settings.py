@@ -4,6 +4,8 @@ from pathlib import Path
 import deploymentutils as du
 import time
 
+from base import release
+
 
 # export DJANGO_DEVMODE=True; py3 manage.py custom_command
 env_devmode = os.getenv("DJANGO_DEVMODE")
@@ -44,6 +46,8 @@ CATCH_EXCEPTIONS = True
 
 
 ALLOWED_HOSTS = cfg("ALLOWED_HOSTS")
+
+VERSION = release.__version__
 
 # Directory where all the managed repos are located
 REPO_HOST_DIR = cfg("REPO_HOST_DIR").replace("__BASEDIR__", BASE_DIR)

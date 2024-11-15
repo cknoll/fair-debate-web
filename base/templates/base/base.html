@@ -66,13 +66,15 @@ add content
 <div class="footer">
     <div class="footerbar">
         <div class="footer-content">
-            {#<a href="{% url 'about' %}">about markpad</a> |#}
+            {#<a href="{% url 'about' %}">about fair-debate-web</a> |#}
             {#<a href="{% url 'legal-notice' %}">legal notice</a> |#}
             ... made with <a href="https://www.djangoproject.com">django</a> and
             <a href="https://django-bleach.readthedocs.io">django-bleach</a> |
             hosted on <a href="https://uberspace.de/">uberspace</a> |
             source code at <a href="https://codeberg.org/cknoll/fair_debate_web">codeberg</a>
             <br>
+            {# TODO: implement suitable templatetag #}
+            {# Version: {{"version"|get_selected_settings}}. #}
             {# last deployment: {{"foobar"|get_last_deployment}}. #}
         </div>
     </div>

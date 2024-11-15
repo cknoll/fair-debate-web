@@ -186,9 +186,10 @@ def errorpage(request):
 def debugpage(request):
     # serve a page via get request to simplify the display of source code in browser
     msg=f"""
-    this is a debug page<br><br>\n
+    this is a debug page\n
 
     {settings.REPO_HOST_DIR=}
+    {settings.VERSION=}
 
     """
     return error_page(request, title="debug page", msg=msg, status=200)
