@@ -1,16 +1,23 @@
 
+- [] js based buttons: level visibility ← →
 - [] add answer via gui
     - [.] specify repo and db-concept
     - [] consider preview view -> edit already created answer:
         - [.] create roles for users in repos
-            - [] make write access role-dependent
-            - [] implement test
+            - [] implement tests
+                - [] testuser_1 has role a in d1-lorem_ipsum. Thus they cannot create a b-contribution, but an a-contribution
+                - [] testuser_2 has role b in d1-lorem_ipsum. Thus they can create a b-contribution but not an a-contribution
+                - [] testuser_3 has no role in d1-lorem_ipsum. Thus they can create neither a nor b-contributions
+        - [] implement mechanism to publish answer from db to repo
     - [x] basic implementation
         - [x] insert form on click on segment
             - [x] implement splinter-based tests
             - [x] display warning if not logged in
         - [x] store answer data in db
             - [x] implement splinter-based tests
+
+- [x] use ?next=... mechanism in the login-link from the head menu
+
 - [x] open debate from url /d/debate_key
     - [x] drop fmdm.fixtures/debate1 in favor of fdmd.fixtures/repos/d1-lorem_ipsum
     - [x] specify test concept
