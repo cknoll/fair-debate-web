@@ -144,12 +144,41 @@ function insertAnswerFormOrHint(segment_element, answer_key) {
 function insertHintField(segment_element, answer_key, user_role) {
 
     const clonedHintTemplate =  document.getElementById("segment_answer_hint").content.cloneNode(true);
-    const hint_container = clonedHintTemplate.getElementById("__segment_answer_hint_container_id");
-    hint_container.id = "segment_answer_hint_container";
-    // hint_container.style.add("background: red;")
+    const hintContainer = clonedHintTemplate.getElementById("__segment_answer_hint_container_id");
+    hintContainer.id = "segment_answer_hint_container";
+
+    const hintDiv = hintContainer.getElementsByClassName("segment_answer_hint")[0];
+
+    hintDiv.textContent = getHintMessage(segment_element.id, answer_key, user_role);
+
+    // define action of OK button (-> make the hint removable)
+    hintContainer.getElementsByClassName("_ok_button")[0].addEventListener('click', function() {
+        segment_element.setAttribute('data-active', false);
+        hintContainer.remove();
+    });
 
     insertAfter(clonedHintTemplate, segment_element);
     segment_element.setAttribute('data-active', "true");
+
+}
+
+function getHintMessage(segmentId, answer_key, userRole){
+
+    // this should not occur because segments without answers should not be clickable for
+    // non-logged-in users (and users which have no role in this debate)
+    if (!user_is_authenticated) {
+        return "You cannot answer without logging in."
+    }
+
+    const username = readJsonWithDefault("data-user_name", null);
+    const requiredRole = answer_key.slice(-1);
+    if (["a", "b"].includes(userRole)) {
+        return `You cannot answer to segment ${segmentId}. You (username: "${username}") have role ${userRole} but role ${requiredRole} is required.`
+
+    } else {
+        return `You (username: "${username}") cannot answer to any segment of this debate because your have neither role a nor role b. See documentation for more information.`
+
+    }
 
 }
 
@@ -162,7 +191,8 @@ function insertAnswerForm(segment_element) {
     form_container.id = "segment_answer_form_container";
 
     // add warning
-    const userIsAuthenticated = readJsonWithDefault("data-user_is_authenticated", false);
+    // todo: unify
+    const userIsAuthenticated = user_is_authenticated;
     if (userIsAuthenticated) {
         form_container.getElementsByClassName("not_logged_in_warning")[0].classList.add("hidden");
     }
@@ -182,7 +212,6 @@ function insertAnswerForm(segment_element) {
 
 
 function cancelSegmentAnswerForm(segment_id) {
-    console.log(segment_id);
     const segment_element = document.getElementById(segment_id);
     segment_element.setAttribute('data-active', false);
     document.getElementById("segment_answer_form_container").remove();
@@ -192,6 +221,7 @@ function cancelSegmentAnswerForm(segment_id) {
 var answerObjects = null;
 var answerMap = {};
 var segmentObjects = null;
+const user_is_authenticated = readJsonWithDefault("data-user_is_authenticated", false);
 const segIdDisplay = document.getElementById('seg_id_display');
 
 function onLoadForShowDebatePage(){
@@ -231,6 +261,7 @@ function onLoadForShowDebatePage(){
         } else {
             // This segment does not yet have an answer
             segment_span.addEventListener('click', function() {
+                // test if user should be able anyway
                 insertAnswerFormOrHint(segment_span, answer_key);
             });
         }

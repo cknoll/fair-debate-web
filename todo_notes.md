@@ -1,4 +1,5 @@
 
+- [] fix bug for empty contribution (1. dont accept, 2. ignore them if they occur anyway)
 - [] js based buttons: level visibility ← →
 - [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
 - [] add answer via gui

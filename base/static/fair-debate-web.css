@@ -160,6 +160,13 @@ h3:has(+ .rendered_content_preview) {
   background-color: hsla(10, 95%, 60%, 100%);
 }
 
+.segment_answer_hint_container {
+  margin: 1em 0 1em 0;
+  padding: 0.5em;
+  background-color: hsla(10, 95%, 60%, 100%);
+
+}
+
 .hidden{
   display: none;
 }

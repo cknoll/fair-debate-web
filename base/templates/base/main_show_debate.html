@@ -52,7 +52,7 @@
             <textarea class="custom-textarea" placeholder="Insert your answer here. Use markdown for styling." name="__answer_content_name"></textarea>
             <div class="button-container">
                 <button class="_cancel_button" type="button">Cancel</button>
-                <button class="_submit_button"type="submit">Submit</button>
+                <button class="_submit_button" type="submit">Submit</button>
             </div>
         </form>
     </div>
@@ -60,7 +60,12 @@
 
 <template id="segment_answer_hint">
     <div id="__segment_answer_hint_container_id" class="segment_answer_hint_container">
-        You cannot answer here!
+        <div class="segment_answer_hint">
+            You cannot answer here!
+        </div>
+        <div class="button-container">
+            <button class="_ok_button" type="button">OK</button>
+        </div>
     </div>
 </template>
 {% endblock %}
