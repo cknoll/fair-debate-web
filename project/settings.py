@@ -48,6 +48,7 @@ CATCH_EXCEPTIONS = True
 ALLOWED_HOSTS = cfg("ALLOWED_HOSTS")
 
 VERSION = release.__version__
+DEPLOYMENT_DATE = "1970-01-01 00:00:00".replace(" ", "&nbsp;")
 
 # Directory where all the managed repos are located
 REPO_HOST_DIR = cfg("REPO_HOST_DIR").replace("__BASEDIR__", BASE_DIR)

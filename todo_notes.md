@@ -1,4 +1,4 @@
-- [] implement suitable template tag for version-insertion (see footer in base.html)
+- [x] implement suitable template tag for version-insertion (see footer in base.html)
 - [] open debate from url /d/debate_key
     - [x] load repo from workdir
     - [x] robust repo creation for testing
