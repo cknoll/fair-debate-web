@@ -178,7 +178,7 @@ class TestCore1(TestCase):
 
         return res
 
-    def test_060__add_answer1(self):
+    def test_060__add_answer_level1_without_login(self):
         c = self._06x__common()
 
         response = self.client.post(c.action_url, c.post_data_a3)
@@ -187,7 +187,7 @@ class TestCore1(TestCase):
         self.assertTrue(new_url.startswith("/login"))
         response = self.client.get(new_url)
 
-    def test_061__add_answer2(self):
+    def test_061__add_answer_level1(self):
         c = self._06x__common()
 
         # first wrong user
@@ -221,6 +221,8 @@ class TestCore1(TestCase):
         # we are still testuser_2
         # send data for that segment key again with different body (update post)
         response = self.client.post(c.action_url, c.post_data_a3_updated)
+
+        # ensure that no additional object is created
         self.assertEqual(len(c.debate_obj1.contribution_set.all()), 1)
         expected_res = (
             "This is an updated level 1\n     <strong>\n      answer\n     </strong>\n     from a unittest."
@@ -228,6 +230,35 @@ class TestCore1(TestCase):
 
         soup = BeautifulSoup(response.content, "html.parser")
         segment_span = soup.find(id="a3b1")
+        res = "".join(map(str, segment_span.contents)).strip()
+        self.assertEqual(res, expected_res)
+
+
+    def test_062__add_answer__level2(self):
+        c = self._06x__common()
+
+        # first wrong user (testuser_2 which has role b)
+        response = self.perform_login(username="testuser_2")
+        response = self.client.post(c.action_url, c.post_data_a4b4)
+        self.assertEqual(response.status_code, 403)
+        self.assertIn(b"utc_contribution_with_wrong_mode_not_allowed_for_user", response.content)
+
+        # second wrong user (testuser_3 has no role at all here)
+        response = self.perform_login(username="testuser_3", logout_first=True)
+        response = self.client.post(c.action_url, c.post_data_a4b4)
+        self.assertEqual(response.status_code, 403)
+        self.assertIn(b"utc_no_contribution_allowed_for_user", response.content)
+
+        # correct user (testuser_1 which has role a)
+        response = self.perform_login(username="testuser_1", logout_first=True)
+        response = self.client.post(c.action_url, c.post_data_a4b4)
+        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 1)
+        expected_res = (
+            "This is a level 2\n        <em>\n         answer\n        </em>\n        from a unittest."
+        )
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        segment_span = soup.find(id="a4b4a1")
         res = "".join(map(str, segment_span.contents)).strip()
         self.assertEqual(res, expected_res)
 
