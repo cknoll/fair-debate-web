@@ -1,5 +1,8 @@
-- [x] implement suitable template tag for version-insertion (see footer in base.html)
+
 - [] open debate from url /d/debate_key
+    - [] drop fmdm.fixtures/debate1 in favor of fdmd.fixtures/repos/d1-lorem_ipsum
+    - [] specify test concept
+    - [] implement test concept
     - [x] load repo from workdir
     - [x] robust repo creation for testing
 - [] add answer via gui
@@ -12,6 +15,7 @@
             - [x] display warning if not logged in
         - [x] store answer data in db
             - [x] implement splinter-based tests
+- [x] implement suitable template tag for version-insertion (see footer in base.html)
 - [x] respect ?next= in login processing
     - [x] fix bug with no given parameter
 - [x] display square if answer is available

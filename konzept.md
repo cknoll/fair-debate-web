@@ -157,6 +157,20 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 Repo nur lokal im Arbeitsverzeichnis
 
 
+---
+
+Test-Konzept:
+
+Üblich:
+- Testdaten liegen in fixture-Dateien
+- für jeden Test wird eine leere Datenbank erzeugt und spezifische fixtures werden geladen
+
+Problem:
+- repo-basiertes Vorgehen nutzt Datenbank + Dateisystem
+- → ich muss mich um das Herstellen eines definierten Zustandes selber kümmern
+- setUp, tearDown
+
+---
 
 Können mehrere Repos auf einen Ausgangspost reagieren? -> sollte grundsätzlich möglich sein. allerdings sollte das Ziel der Plattform Qualität vor Quantität sein.
 d.h. Kritiker sollten sich zusammenschließen und gemeinsam an einer möglichst guten Kritik arbeiten, statt an mehreren mittelmäßigen oder schlechten.
@@ -166,7 +180,7 @@ Wenn das nicht geht, ist es das sinnvollste, eine eigene Debatte (mit dem selben
 Es sollte aber immer klar sein, das das nicht die offizielle Debatte ist und a-Autor "nicht verpflichtet" ist (entsprechend der Wettbewerbsregeln) auf die Kritik einzugehen.
 
 
-Herausforderung: wie kann ich ein repo (inklusive jedem einzelnen Kommit für jeden Branch in einer Sammlung von patch-Dateien darstellen?)
+Herausforderung: wie kann ich ein repo (inklusive jedem einzelnen Kommit für jeden Branch in einer Sammlung von patch-Dateien darstellen?) -> gelöst
 
 
 

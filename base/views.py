@@ -24,6 +24,7 @@ from ipydex import IPS
 
 pjoin = os.path.join
 
+TEST_REPO1_PATH = pjoin(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY, ".git")
 
 class Container:
     pass
@@ -113,7 +114,6 @@ class ShowDebateView(View):
     def post(self, request, **kwargs):
 
         ensure_test_data_existence()
-        TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
 
         debate_key = request.POST["debate_key"]
         debate_obj = Debate.objects.get(debate_key=debate_key)
@@ -127,8 +127,7 @@ class ShowDebateView(View):
         new_contribution.save()
 
         ctb_list = self._get_ctb_list_from_db(debate_obj_or_key=debate_obj)
-
-        ddl: fdmd.DebateDirLoader = fdmd.load_dir(TEST_DEBATE_DIR1, ctb_list=ctb_list)
+        ddl: fdmd.DebateDirLoader = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
 
         return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_key=ddl.debate_key)
 
@@ -163,7 +162,7 @@ class ShowDebateView(View):
         return render(request, template, context)
 
 
-# TODO move this to fixtures
+# TODO obsolete?
 def ensure_test_data_existence():
     """
     Quick and dirty way to ensure that the necessary test data exists
@@ -174,6 +173,9 @@ def ensure_test_data_existence():
     except (ObjectDoesNotExist, OperationalError):
         new_obj = Debate(debate_key=fdmd.TEST_DEBATE_KEY)
         new_obj.save()
+
+    if not os.path.isdir(TEST_REPO1_PATH):
+        raise FileNotFoundError(TEST_REPO1_PATH)
 
 
 def errorpage(request):
