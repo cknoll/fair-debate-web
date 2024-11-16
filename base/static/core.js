@@ -270,45 +270,4 @@ function onLoadForShowDebatePage(){
 
 }
 
-
-// window.onload = function() {
-//     document.getElementById('js_warning').remove();
-
-//     var panZoom = svgPanZoom('#main-svg-object', {
-//       zoomEnabled: false,
-//       controlIconsEnabled: false
-//     });
-//     var initialZoom = 0.99;
-
-//     panZoom.zoomBy(initialZoom);
-//     panZoom.fit();
-
-//     function FuncZoomIn(ev){
-//       // ev.preventDefault();
-//       panZoom.zoomIn();
-//     }
-
-//     function FuncZoomOut(ev){
-//         // ev.preventDefault();
-//         panZoom.zoomOut();
-//       }
-
-//       function FuncZoomReset(ev){
-//         // ev.preventDefault();
-//         panZoom.resetZoom();
-//         panZoom.fit();
-//         panZoom.zoomBy(initialZoom);
-//         panZoom.center();
-//     }
-
-//     document.getElementById('zoom-in1').addEventListener('click', FuncZoomIn);
-//     document.getElementById('zoom-in2').addEventListener('click', FuncZoomIn);
-//     document.getElementById('zoom-out1').addEventListener('click', FuncZoomOut);
-//     document.getElementById('zoom-out2').addEventListener('click', FuncZoomOut);
-//     document.getElementById('reset1').addEventListener('click', FuncZoomReset);
-//     document.getElementById('reset2').addEventListener('click', FuncZoomReset);
-//   };
-
-
-
 console.log("core.js loaded");
