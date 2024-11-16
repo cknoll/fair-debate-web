@@ -397,7 +397,7 @@ class TestGUI(StaticLiveServerTestCase):
         # TODO: get inspiration from radar
         pass
 
-    def test_g03__segment_clicks_for_non_logged_in_user(self):
+    def test_g031__segment_clicks_for_non_logged_in_user(self):
 
         # for test development
         # self.headless = False
@@ -444,8 +444,29 @@ class TestGUI(StaticLiveServerTestCase):
         b1.find_by_id("a2b1a3").click()
         self.assertTrue(b1.find_by_id("answer_a2b1a3b")[0].is_visible())
 
-        return
-        # TODO: move this to other unittest
+        # also test for non-appearance of answer dialog after child segment click
+        trigger_mouseover_event(b1, id="a2b1a3b1")
+        self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2b1a3b1")
+
+        # assert that a click on it nothing changes
+        full_html_3 = b1.html
+        b1.find_by_id("a2b1a3b1").click()
+        full_html_4 = b1.html
+        self.assertEqual(full_html_2, full_html_1)
+
+    def test_g032__gui_behavior_for_correct_user(self):
+
+        # self.headless = False
+        b1 = self.new_browser()
+
+        self.perform_login(browser=b1, username="testuser_2")
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+
+        js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
+
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+
+        b1.find_by_id("a3").click()
         self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
 
         # assert that the form does not appear multiple times
@@ -465,19 +486,19 @@ class TestGUI(StaticLiveServerTestCase):
         form = b1.find_by_id("segment_answer_form")[0]
         ta = form.find_by_tag("textarea")[0]
         ta.type("This is an answer from a unittest.")
-        form.find_by_css("._submit_button").click()
 
-        ## assert that post is only possible if logged in
-        self.assertTrue(b1.url.startswith(f"{self.live_server_url}/login"))
+        self.assertEqual(len(models.Contribution.objects.all()), 0)
+        form.find_by_css("._submit_button").click()
+        self.assertEqual(len(models.Contribution.objects.all()), 1)
+
 
     def test_g04__segment_answer_level1(self):
 
-        # self.config_for_browser.headless = False
+        # self.headless = False
 
         b1 = self.new_browser()
         self.perform_login(browser=b1, username="testuser_2")
-        url = reverse("test_show_debate")
-        b1.visit(f"{self.live_server_url}{url}")
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
         b1.find_by_id("a3").click()
 
