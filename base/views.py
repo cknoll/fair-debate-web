@@ -36,7 +36,8 @@ class MainView(View):
             # nested dict for easier debugging in the template
             "data": {
                 "sp": None,
-                "unit_test_comment": f"utc_landingpage",
+                "unit_test_comment": "utc_landingpage",
+                "unit_test_data": "utd_landingpage",
             }
         }
 
@@ -69,7 +70,8 @@ class NewDebateView(View):
 
         context = {
             "data": {
-                "unit_test_comment": f"utc_new_debate",
+                "unit_test_comment": "utc_new_debate",
+                "unit_test_data": "utd_new_debate",
                 "md_with_keys": md_with_keys,
                 "segmented_html": segmented_html,
                 "submit_label": submit_label,
@@ -195,7 +197,8 @@ class ShowDebateView(View):
 
         context = {
             "data": {
-                "unit_test_comment": f"utc_new_debate",
+                "unit_test_comment": "utc_new_debate",
+                "unit_test_data": f"utd_new_debate",
                 "segmented_html": body_content_html,
                 "debate_title": "untitled debate",
                 "debate_key": debate_obj.debate_key,
@@ -242,6 +245,7 @@ def error_page(request, title, msg, status=500):
             "sp": sp,
             "main_class": "error_container",
             "unit_test_comment": f"utc_{sp_type}",
+            "unit_test_data": f"utd_{sp_type}",
         }
     }
 
@@ -257,7 +261,8 @@ def about_page(request):
         "data": {
             "sp": get_sp("about"),
             # "main_class": "error_container",
-            "unit_test_comment": f"utc_about_page",
+            "unit_test_comment": "utc_about_page",
+            "unit_test_data": f"utd_about_page",
         }
     }
 

@@ -11,6 +11,7 @@ from django.contrib import auth
 from base import models
 
 from splinter import Browser, Config
+from splinter.driver.webdriver import BaseWebDriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
@@ -198,7 +199,7 @@ class TestCore1(TestCase):
         self.assertIn(b"utc_contribution_with_wrong_mode_not_allowed_for_user", response.content)
 
         response = self.client.get(reverse("test_show_debate"))
-        user_role = get_parsed_element_by_id(response.content, id="data-user_role")
+        user_role = get_parsed_element_by_id(id="data-user_role", response_content=response.content)
         self.assertEqual(user_role, "a")
 
         # second wrong user (testuser_3, role: None)
@@ -208,14 +209,14 @@ class TestCore1(TestCase):
         self.assertIn(b"utc_no_contribution_allowed_for_user", response.content)
 
         response = self.client.get(reverse("test_show_debate"))
-        user_role = get_parsed_element_by_id(response.content, id="data-user_role")
+        user_role = get_parsed_element_by_id(id="data-user_role", response_content=response.content)
         self.assertEqual(user_role, None)
 
         # correct user (testuser_2, role: b)
         self.perform_login(username="testuser_2", logout_first=True)
 
         response = self.client.get(reverse("test_show_debate"))
-        user_role = get_parsed_element_by_id(response.content, id="data-user_role")
+        user_role = get_parsed_element_by_id(id="data-user_role", response_content=response.content)
         self.assertEqual(user_role, "b")
 
         self.assertEqual(len(c.debate_obj1.contribution_set.all()), 0)
@@ -368,11 +369,13 @@ class TestGUI(StaticLiveServerTestCase):
 
         return browser
 
-    def test_g01__get_landing_page(self):
+    def test_g01__get_error_free_landing_page(self):
 
         b1 = self.new_browser()
         url = reverse("landingpage")
         b1.visit(f"{self.live_server_url}{url}")
+        utd = get_parsed_element_by_id(id="data-utd_page_type", browser=b1)
+        self.assertEqual(utd, "utd_landingpage")
 
     def test_g02__dropdown(self):
         # TODO: get inspiration from radar
@@ -465,10 +468,20 @@ def send_key_to_browser(browser, key):
     actions.perform()
 
 
-def get_parsed_element_by_id(response_content: bytes, id: str):
-    soup = BeautifulSoup(response_content, "html.parser")
-    element = soup.find(id=id)
-    content_str = "".join(element.contents)
+def get_parsed_element_by_id(id: str, response_content: bytes = None, browser: Browser = None):
+
+
+    if browser is None:
+        assert isinstance(response_content, bytes)
+        # for usage with http response
+        soup = BeautifulSoup(response_content, "html.parser")
+        element = soup.find(id=id)
+        content_str = "".join(element.contents)
+    elif response_content is None:
+        assert isinstance(browser, BaseWebDriver)
+        # for usage with splinter browser
+        element = browser.find_by_id(id)[0]
+        content_str = element.html
     return json.loads(content_str)
 
 

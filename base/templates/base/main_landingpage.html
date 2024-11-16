@@ -10,6 +10,7 @@
 {# TODO: remove code duplication with main_simplepage.html #}
 <div>
     <!-- {{data.unit_test_comment}} -->
+    {{ data.unit_test_data|json_script:"data-utd_page_type" }}
     {{data.sp.content|render_markdown|bleach}}
 </div>
 
