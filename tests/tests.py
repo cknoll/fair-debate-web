@@ -371,11 +371,19 @@ class TestGUI(StaticLiveServerTestCase):
 
     def test_g01__get_error_free_landing_page(self):
 
+        self.config_for_browser.headless = False
+
         b1 = self.new_browser()
         url = reverse("landingpage")
         b1.visit(f"{self.live_server_url}{url}")
         utd = get_parsed_element_by_id(id="data-utd_page_type", browser=b1)
         self.assertEqual(utd, "utd_landingpage")
+
+        url = reverse("trigger_js_error")
+        b1.visit(f"{self.live_server_url}{url}")
+
+        js_errors = check_for_js_errors(b1)
+        # TODO: tbc
 
     def test_g02__dropdown(self):
         # TODO: get inspiration from radar
@@ -466,6 +474,12 @@ def send_key_to_browser(browser, key):
     actions = ActionChains(browser.driver)
     actions.send_keys(key)
     actions.perform()
+
+
+def check_for_js_errors(browser):
+    logs = browser.driver.get_log('browser')
+    js_errors = [log for log in logs if log['level'] == 'SEVERE']
+    return js_errors
 
 
 def get_parsed_element_by_id(id: str, response_content: bytes = None, browser: Browser = None):

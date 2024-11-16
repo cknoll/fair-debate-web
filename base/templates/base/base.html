@@ -90,8 +90,13 @@ add content
 {% endblock %}
 
 {# store some (more) json data #}
+{% if data.unit_test_data %}
+    {{ data.unit_test_data|json_script:"data-utd_page_type" }}
+{% endif %}
+
 {{ request.user.username | json_script:"data-user_name" }}
 {{ request.user.is_authenticated | json_script:"data-user_is_authenticated" }}
+
 
 {% block load_js_lib %}
 <script type="text/javascript" src="{% static 'core.js' %}"></script>

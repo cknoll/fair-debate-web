@@ -19,6 +19,7 @@ urlpatterns = [
     path("about/", views.about_page, name="aboutpage"),
     # this is for testing the error handling
     path("error/", views.errorpage, name="errorpage"),
+    path("error/js", views.js_error_page, name="trigger_js_error"),
     path(settings.LOGIN_URL, views.user_login, name="login"),
     path("signup/", views.user_signup, name="signup"),
     path("logout/", views.user_logout, name="logout"),

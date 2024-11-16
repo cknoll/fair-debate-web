@@ -229,7 +229,24 @@ def debugpage(request):
     return error_page(request, title="debug page", msg=msg, status=200)
 
 
-def error_page(request, title, msg, status=500):
+def js_error_page(request):
+    """
+    This view-function serves to deliberately trigger an javascript error.
+    Motivation: check if this error is caught by unittests.
+    """
+
+    res = error_page(
+        request,
+        title="deliberate javascript error (for testing purposes)",
+        msg="This page contains a deliberate javascript error (for testing purposes).",
+        status=200,
+        extra_data={"trigger_js_error": True, "unit_test_data": f"utd_trigger_js_error_page",},
+    )
+
+    return res
+
+
+def error_page(request, title, msg, status=500, extra_data: dict = None):
     sp_type = title.lower().replace(" ", "_")
     sp = new_sp(
         type=sp_type,
@@ -248,6 +265,9 @@ def error_page(request, title, msg, status=500):
             "unit_test_data": f"utd_{sp_type}",
         }
     }
+
+    if extra_data:
+        context["data"].update(extra_data)
 
     template = "base/main_simplepage.html"
 
