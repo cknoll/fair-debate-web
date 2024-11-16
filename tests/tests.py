@@ -305,15 +305,11 @@ def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
 
 class TestGUI(StaticLiveServerTestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
-    # headless = False
-    headless = True
+    # headless = True
+    headless = "new"  # recommended by ai
 
     def setUp(self) -> None:
-        self.options_for_browser = dict(driver_name="chrome")
-
         # docs: https://splinter.readthedocs.io/en/latest/config.html
-        self.config_for_browser = Config(headless=self.headless)
-
         self.browsers = []
 
         return
@@ -370,8 +366,10 @@ class TestGUI(StaticLiveServerTestCase):
         """
         chrome_options = Options()
         chrome_options.add_argument("--disable-search-engine-choice-screen")
+        if self.headless:
+            chrome_options.add_argument("--headless=new")
 
-        browser = Browser(**self.options_for_browser, config=self.config_for_browser, options=chrome_options)
+        browser = Browser("chrome", options=chrome_options)
         browser.logs = []
         self.browsers.append(browser)
 
@@ -379,7 +377,7 @@ class TestGUI(StaticLiveServerTestCase):
 
     def test_g01__get_error_free_landing_page(self):
 
-        # self.config_for_browser.headless = False
+        # self.headless = False
 
         b1 = self.new_browser()
         url = reverse("landingpage")
@@ -402,7 +400,8 @@ class TestGUI(StaticLiveServerTestCase):
     def test_g03__segment_answer1(self):
 
         # for test development
-        # self.config_for_browser.headless = False
+        self.headless = False
+
         b1 = self.new_browser()
         url = reverse("test_show_debate")
         b1.visit(f"{self.live_server_url}{url}")
