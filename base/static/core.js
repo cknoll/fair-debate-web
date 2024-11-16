@@ -130,7 +130,6 @@ function insertAnswerFormOrHint(segment_element, answer_key) {
         return
     }
 
-    const user_role = JSON.parse(document.getElementById("data-user_role").text)
     console.log("AnswerFormOrHint", segment_element, answer_key, user_role);
 
     if (answer_key.endsWith(user_role)) {
@@ -149,7 +148,7 @@ function insertHintField(segment_element, answer_key, user_role) {
 
     const hintDiv = hintContainer.getElementsByClassName("segment_answer_hint")[0];
 
-    hintDiv.textContent = getHintMessage(segment_element.id, answer_key, user_role);
+    hintDiv.innerHTML = getHintMessage(segment_element.id, answer_key, user_role);
 
     // define action of OK button (-> make the hint removable)
     hintContainer.getElementsByClassName("_ok_button")[0].addEventListener('click', function() {
@@ -163,23 +162,28 @@ function insertHintField(segment_element, answer_key, user_role) {
 }
 
 function getHintMessage(segmentId, answer_key, userRole){
-
-    // this should not occur because segments without answers should not be clickable for
-    // non-logged-in users (and users which have no role in this debate)
     if (!userIsAuthenticated) {
+        // this should not occur because segments without answers should not be clickable for non-logged-in users.
+        // We have this as 'second line of defense' (if something goes wrong)
         return "You cannot answer without logging in."
     }
 
     const username = readJsonWithDefault("data-user_name", null);
     const requiredRole = answer_key.slice(-1);
     if (["a", "b"].includes(userRole)) {
-        return `You cannot answer to segment ${segmentId}. You (username: "${username}") have role ${userRole} but role ${requiredRole} is required.`
+        const part1 = `You cannot answer to your own segment (${segmentId}). `;
+        const part2 = `You ("${username}") have role <b>${userRole}</b> in this debate. `;
+        const part3 = `However, role <b>${requiredRole}</b> is required to answer to segment ${segmentId}.`;
+        return part1 + part2 + part3
 
     } else {
-        return `You (username: "${username}") cannot answer to any segment of this debate because your have neither role a nor role b. See documentation for more information.`
 
+        // this should not occur because segments without answers should not be clickable for users with no role.
+        // We have this as 'second line of defense' (if something goes wrong)
+        const part1 = `You (username: "${username}") cannot answer to any segment `;
+        const part2 = `of this debate because your have neither role a nor role b. See documentation for more information.`;
+        return part1 + part2
     }
-
 }
 
 
@@ -220,6 +224,7 @@ var answerObjects = null;
 var answerMap = {};
 var segmentObjects = null;
 const userIsAuthenticated = readJsonWithDefault("data-user_is_authenticated", false);
+const user_role = readJsonWithDefault("data-user_role", null);
 const segIdDisplay = document.getElementById('seg_id_display');
 const utdPageType = readJsonWithDefault("data-utd_page_type", null);
 
@@ -259,8 +264,17 @@ function onLoadForShowDebatePage(){
             });
         } else {
             // This segment does not yet have an answer
+            if (!userIsAuthenticated){
+                // non-logged-in user: no click-action
+                return
+            }
+            if (!["a", "b"].includes(user_role)){
+                // logged-in user with no role: no click-action
+                return
+            }
+
             segment_span.addEventListener('click', function() {
-                // test if user should be able anyway
+
                 insertAnswerFormOrHint(segment_span, answer_key);
             });
         }

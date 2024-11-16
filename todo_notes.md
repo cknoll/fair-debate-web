@@ -1,5 +1,4 @@
 - [] improve landing page
-- [x] in splinter-based-tests: ensure that no js error occurred
 - [] fix bug for empty contribution (1. dont accept, 2. ignore them if they occur anyway)
 - [] js based buttons: level visibility ← →
 - [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
@@ -30,6 +29,7 @@
         - [x] store answer data in db
             - [x] implement splinter-based tests
 
+- [x] in splinter-based-tests: ensure that no js error occurred
 - [x] use ?next=... mechanism in the login-link from the head menu
 
 - [x] open debate from url /d/debate_key
