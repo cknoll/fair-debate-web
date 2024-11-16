@@ -347,6 +347,10 @@ class TestGUI(StaticLiveServerTestCase):
             msg = f"Login process unexpectedly failed ({username=})"
             raise ValueError(msg)
 
+    def perform_logout(self, browser: BaseWebDriver):
+        browser.visit(f"{self.live_server_url}{reverse('logout')}")
+        self.assertFalse(auth.get_user(self.client).is_authenticated)
+
     def fast_get_by_id(self, browser: Browser, id_str: str):
         """
         This function is faster in cases where the
@@ -514,6 +518,23 @@ class TestGUI(StaticLiveServerTestCase):
         # this should currently trigger a warning in the future an edit-dialog
         b1.find_by_id("a3b1").click()
         self.assertIsNotNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+
+        # test that the new contribution is displayed in response to get request
+        b1.visit(f"{self.live_server_url}{reverse('landingpage')}")  # goto unrelated url
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+        self.assertIsNotNone(self.fast_get_by_id(b1, "a3b1"))
+
+        # new contribution should not be contained in response for anonymous user
+        self.perform_logout(b1)
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+        self.assertIsNone(self.fast_get_by_id(b1, "a3b1"))
+
+        # for testuser_1 segment a3b1 should also not be present
+        self.perform_login(browser=b1, username="testuser_1")
+
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+        self.assertIsNone(self.fast_get_by_id(b1, "a3b1"))
+
 
     def test_g04__segment_answer_level1(self):
 

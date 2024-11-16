@@ -4,7 +4,9 @@
 - [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
 - [] add answer via gui
     - [.] specify repo and db-concept
-    - [] all uncommited answers should be displayed by default and have their own css class
+    - all uncommitted answers
+        - [] for the author: should be displayed by default (and thus their parents) and have their own css class (moderately highlighted)
+        - [x] for all but the author: should not be displayed
     - [] consider preview view with possibility to update -> edit already created answer:
         - [.] implement update mechanism
             - [x] backend

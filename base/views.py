@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import OperationalError
 
 from .forms import UserCreationForm, LoginForm
-from .models import Debate, Contribution
+from .models import Debate, Contribution, DebateUser
 
 
 import fair_debate_md as fdmd
@@ -105,7 +105,7 @@ class ShowDebateView(View):
 
         assert debate_key is not None
 
-        ctb_list = self._get_ctb_list_from_db(debate_obj_or_key=fdmd.TEST_DEBATE_KEY)
+        ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=fdmd.TEST_DEBATE_KEY)
         ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
         # ddl = fdmd.load_dir(TEST_DEBATE_DIR1, ctb_list=ctb_list)
         return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_obj_or_key=ddl.debate_key)
@@ -126,7 +126,7 @@ class ShowDebateView(View):
 
         self.create_or_update_contribution(request, debate_obj, contribution_key)
 
-        ctb_list = self._get_ctb_list_from_db(debate_obj_or_key=debate_obj)
+        ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=debate_obj)
         ddl: fdmd.DebateDirLoader = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
 
         return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_obj_or_key=ddl.debate_key)
@@ -170,7 +170,10 @@ class ShowDebateView(View):
             )
             return error_page(request, title="Contribution Error", msg=msg, status=403)
 
-    def _get_ctb_list_from_db(self, debate_obj_or_key) -> list[fdmd.DBContribution]:
+    def _get_ctb_list_from_db(self, author: DebateUser, debate_obj_or_key) -> list[fdmd.DBContribution]:
+
+        if not author.is_authenticated:
+            return []
 
         if isinstance(debate_obj_or_key, str):
             debate_obj = Debate.objects.get(debate_key=debate_obj_or_key)
@@ -180,7 +183,8 @@ class ShowDebateView(View):
 
         ctb_list = []
         ctb_obj: Contribution
-        for ctb_obj in debate_obj.contribution_set.all():
+        ctb_obj_set = debate_obj.contribution_set.filter(author=author)
+        for ctb_obj in ctb_obj_set:
             ctb_list.append(fdmd.DBContribution(ctb_key=ctb_obj.contribution_key, body=ctb_obj.body))
 
         return ctb_list
