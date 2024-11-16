@@ -79,7 +79,7 @@ class TestCore1(TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.2.0"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.2"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landingpage"))
@@ -235,6 +235,7 @@ class TestCore1(TestCase):
         soup = BeautifulSoup(response.content, "html.parser")
         answer_div = soup.find(id="answer_a3b")
         self.assertIsNotNone(answer_div)
+        self.assertIn("db_ctb", answer_div.attrs["class"])
         segment_span = answer_div.find(id="a3b1")
         self.assertIsNotNone(segment_span)
 

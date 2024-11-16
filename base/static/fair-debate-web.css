@@ -144,6 +144,11 @@ h3:has(+ .rendered_content_preview) {
   background-color:hsla(220, 100%, 97%, 100%);
 }
 
+.answer.db_ctb {
+ border: 1px solid red;
+}
+
+
 /* segment answer form related */
 
 .segment_answer_form_container {

@@ -5,11 +5,16 @@
 - [] add answer via gui
     - [.] specify repo and db-concept
     - all uncommitted answers
-        - [] for the author: should be displayed by default (and thus their parents) and have their own css class (moderately highlighted)
+        - for the author:
+        - [] should be displayed by default (and thus their parents)
+        - [x] and have their own css class (moderately highlighted) -> db_ctb
         - [x] for all but the author: should not be displayed
     - [] consider preview view with possibility to update -> edit already created answer:
         - [.] implement update mechanism
             - [x] backend
+            - [] frontend
+        - [] implement mechanism to publish answer from db to repo
+            - [] backend
             - [] frontend
         - [x] create roles for users in repos
             - [x] implement tests
@@ -24,9 +29,6 @@
                     - [x] frontend
                 - [x] not-logged-in-user can create neither a nor b-contributions
                     - [x] frontend (backend already implemented)
-        - [] implement mechanism to publish answer from db to repo
-            - [] backend
-            - [] frontend
     - [x] basic implementation
         - [x] insert form on click on segment
             - [x] implement splinter-based tests
