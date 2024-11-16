@@ -397,14 +397,15 @@ class TestGUI(StaticLiveServerTestCase):
         # TODO: get inspiration from radar
         pass
 
-    def test_g03__segment_answer1(self):
+    def test_g03__segment_clicks_for_non_logged_in_user(self):
 
         # for test development
-        self.headless = False
+        # self.headless = False
 
         b1 = self.new_browser()
-        url = reverse("test_show_debate")
-        b1.visit(f"{self.live_server_url}{url}")
+
+        # non-logged in user
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
         # assert that no form is displayed:
         # (using JS is faster and more reliable than using splinter directly)
@@ -412,11 +413,39 @@ class TestGUI(StaticLiveServerTestCase):
         js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
         self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
 
-        # assert that the form has appeared
-        b1.find_by_id("a3").click()
+        seg_id_text_0 = b1.find_by_id("seg_id_display")[0].text
+        self.assertEqual(seg_id_text_0, "")
+        trigger_mouseover_event(b1, id="a3")
+        seg_id_text_1 = b1.find_by_id("seg_id_display")[0].text
+        self.assertEqual(seg_id_text_1, "a3")
 
-        # TODO: specify desired behavior for non logged in user (hint or no action)
+        full_html_1 = b1.html
+
+        # assert that nothing changed
+        b1.find_by_id("a3").click()
+        full_html_2 = b1.html
+        self.assertEqual(full_html_2, full_html_1)
+
+        # now test that elements appear
+        trigger_mouseover_event(b1, id="a2")
+        seg_id_text_1 = b1.find_by_id("seg_id_display")[0].text
+        self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2")
+
+        self.assertFalse(b1.find_by_id("answer_a2b")[0].is_visible())
+        b1.find_by_id("a2").click()
+        self.assertTrue(b1.find_by_id("answer_a2b")[0].is_visible())
+
+        # investigate child answer
+        self.assertFalse(b1.find_by_id("answer_a2b1a")[0].is_visible())
+        b1.find_by_id("a2b1").click()
+        self.assertTrue(b1.find_by_id("answer_a2b1a")[0].is_visible())
+
+        self.assertFalse(b1.find_by_id("answer_a2b1a3b")[0].is_visible())
+        b1.find_by_id("a2b1a3").click()
+        self.assertTrue(b1.find_by_id("answer_a2b1a3b")[0].is_visible())
+
         return
+        # TODO: move this to other unittest
         self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
 
         # assert that the form does not appear multiple times
@@ -484,6 +513,11 @@ def send_key_to_browser(browser, key):
     actions.send_keys(key)
     actions.perform()
 
+
+def trigger_mouseover_event(splinter_browser: BaseWebDriver, id: str):
+    element = splinter_browser.find_by_id(id)[0]
+    script = "var event = new MouseEvent('mouseover', {'bubbles': true, 'cancelable': true}); arguments[0].dispatchEvent(event);"
+    splinter_browser.execute_script(script, element._element)
 
 def get_js_error_list(browser):
     logs = browser.driver.get_log('browser')
