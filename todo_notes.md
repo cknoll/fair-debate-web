@@ -4,6 +4,7 @@
 - [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
 - [] add answer via gui
     - [.] specify repo and db-concept
+    - [] all uncommited answers should be displayed by default and have their own css class
     - [] consider preview view with possibility to update -> edit already created answer:
         - [.] implement update mechanism
             - [x] backend
@@ -15,10 +16,12 @@
                     - [] frontend
                 - [] testuser_2 has role b in d1-lorem_ipsum. Thus they can create a b-contribution but not an a-contribution
                     - [x] backend
-                    - [] frontend
+                    - [x] frontend
                 - [] testuser_3 has no role in d1-lorem_ipsum. Thus they can create neither a nor b-contributions
                     - [x] backend
                     - [] frontend
+                - [] not-logged-in-user can create neither a nor b-contributions
+                    - [x] frontend (backend already implemented)
         - [] implement mechanism to publish answer from db to repo
             - [] backend
             - [] frontend

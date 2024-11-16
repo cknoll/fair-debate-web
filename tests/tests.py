@@ -449,9 +449,7 @@ class TestGUI(StaticLiveServerTestCase):
         self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2b1a3b1")
 
         # assert that a click on it nothing changes
-        full_html_3 = b1.html
         b1.find_by_id("a2b1a3b1").click()
-        full_html_4 = b1.html
         self.assertEqual(full_html_2, full_html_1)
 
     def test_g032__gui_behavior_for_correct_user(self):
@@ -462,8 +460,21 @@ class TestGUI(StaticLiveServerTestCase):
         self.perform_login(browser=b1, username="testuser_2")
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
-        js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
+        # for existing committed element
+        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+        # this should currently trigger a warning (this answer is already committed)
+        b1.find_by_id("a2").click()
+        b1.find_by_id("a2b2").click()
+        hint_div = self.fast_get_by_id(b1, "segment_answer_hint_container")
+        self.assertIsNotNone(hint_div)
 
+        # close hint
+        hint_div.find_by_tag("button").click()
+        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+
+        # investigate the (non) appearance of the answer form
+        # (this is not solved via `self.fast_get_by_id` to possibly receive more then 1 result)
+        js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
         self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
 
         b1.find_by_id("a3").click()
@@ -483,6 +494,7 @@ class TestGUI(StaticLiveServerTestCase):
         b1.find_by_id("a3").click()
         self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
 
+        # fill and submit the form
         form = b1.find_by_id("segment_answer_form")[0]
         ta = form.find_by_tag("textarea")[0]
         ta.type("This is an answer from a unittest.")
@@ -491,6 +503,17 @@ class TestGUI(StaticLiveServerTestCase):
         form.find_by_css("._submit_button").click()
         self.assertEqual(len(models.Contribution.objects.all()), 1)
 
+        # test for new element
+        self.assertFalse(b1.find_by_id("answer_a3b")[0].is_visible())
+        b1.find_by_id("a3").click()
+        self.assertTrue(b1.find_by_id("answer_a3b")[0].is_visible())
+
+        trigger_mouseover_event(b1, id="a3b1")
+
+        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+        # this should currently trigger a warning in the future an edit-dialog
+        b1.find_by_id("a3b1").click()
+        self.assertIsNotNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
 
     def test_g04__segment_answer_level1(self):
 
