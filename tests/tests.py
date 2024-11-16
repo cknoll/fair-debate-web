@@ -371,19 +371,21 @@ class TestGUI(StaticLiveServerTestCase):
 
     def test_g01__get_error_free_landing_page(self):
 
-        self.config_for_browser.headless = False
+        # self.config_for_browser.headless = False
 
         b1 = self.new_browser()
         url = reverse("landingpage")
         b1.visit(f"{self.live_server_url}{url}")
         utd = get_parsed_element_by_id(id="data-utd_page_type", browser=b1)
         self.assertEqual(utd, "utd_landingpage")
+        self.assertFalse(get_js_error_list(b1))
 
         url = reverse("trigger_js_error")
         b1.visit(f"{self.live_server_url}{url}")
 
-        js_errors = check_for_js_errors(b1)
-        # TODO: tbc
+        js_errors = get_js_error_list(b1)
+        self.assertEqual(len(js_errors), 1)
+        self.assertIn("Uncaught ReferenceError: notExistingVariable is not defined", js_errors[0]["message"])
 
     def test_g02__dropdown(self):
         # TODO: get inspiration from radar
@@ -476,7 +478,7 @@ def send_key_to_browser(browser, key):
     actions.perform()
 
 
-def check_for_js_errors(browser):
+def get_js_error_list(browser):
     logs = browser.driver.get_log('browser')
     js_errors = [log for log in logs if log['level'] == 'SEVERE']
     return js_errors

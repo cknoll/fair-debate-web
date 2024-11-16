@@ -166,7 +166,7 @@ function getHintMessage(segmentId, answer_key, userRole){
 
     // this should not occur because segments without answers should not be clickable for
     // non-logged-in users (and users which have no role in this debate)
-    if (!user_is_authenticated) {
+    if (!userIsAuthenticated) {
         return "You cannot answer without logging in."
     }
 
@@ -191,8 +191,6 @@ function insertAnswerForm(segment_element) {
     form_container.id = "segment_answer_form_container";
 
     // add warning
-    // todo: unify
-    const userIsAuthenticated = user_is_authenticated;
     if (userIsAuthenticated) {
         form_container.getElementsByClassName("not_logged_in_warning")[0].classList.add("hidden");
     }
@@ -221,8 +219,9 @@ function cancelSegmentAnswerForm(segment_id) {
 var answerObjects = null;
 var answerMap = {};
 var segmentObjects = null;
-const user_is_authenticated = readJsonWithDefault("data-user_is_authenticated", false);
+const userIsAuthenticated = readJsonWithDefault("data-user_is_authenticated", false);
 const segIdDisplay = document.getElementById('seg_id_display');
+const utdPageType = readJsonWithDefault("data-utd_page_type", null);
 
 function onLoadForShowDebatePage(){
     answerObjects = Array.from(document.getElementsByClassName("answer"));
@@ -268,6 +267,13 @@ function onLoadForShowDebatePage(){
     });
 
 
+}
+
+function onLoadForSimplePage(){
+    if (utdPageType === "utd_trigger_js_error_page"){
+        const x = notExistingVariable*0;
+    }
+    console.log("simple page loaded")
 }
 
 console.log("core.js loaded");
