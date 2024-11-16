@@ -11,18 +11,18 @@
         - [.] implement update mechanism
             - [x] backend
             - [] frontend
-        - [.] create roles for users in repos
-            - [] implement tests
-                - [] testuser_1 has role a in d1-lorem_ipsum. Thus they cannot create a b-contribution, but an a-contribution
-                    - [x] backend
-                    - [] frontend
-                - [] testuser_2 has role b in d1-lorem_ipsum. Thus they can create a b-contribution but not an a-contribution
+        - [x] create roles for users in repos
+            - [x] implement tests
+                - [x] testuser_1 has role a in d1-lorem_ipsum. Thus they cannot create a b-contribution, but an a-contribution
                     - [x] backend
                     - [x] frontend
-                - [] testuser_3 has no role in d1-lorem_ipsum. Thus they can create neither a nor b-contributions
+                - [x] testuser_2 has role b in d1-lorem_ipsum. Thus they can create a b-contribution but not an a-contribution
                     - [x] backend
-                    - [] frontend
-                - [] not-logged-in-user can create neither a nor b-contributions
+                    - [x] frontend
+                - [x] testuser_3 has no role in d1-lorem_ipsum. Thus they can create neither a nor b-contributions
+                    - [x] backend
+                    - [x] frontend
+                - [x] not-logged-in-user can create neither a nor b-contributions
                     - [x] frontend (backend already implemented)
         - [] implement mechanism to publish answer from db to repo
             - [] backend

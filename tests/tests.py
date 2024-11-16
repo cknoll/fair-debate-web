@@ -401,66 +401,76 @@ class TestGUI(StaticLiveServerTestCase):
         # TODO: get inspiration from radar
         pass
 
-    def test_g031__segment_clicks_for_non_logged_in_user(self):
+    def test_g031__segment_clicks_for_anonymous_or_no_role_user(self):
 
         # for test development
         # self.headless = False
 
         b1 = self.new_browser()
 
-        # non-logged in user
-        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+        def _test_procedure():
+            b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
-        # assert that no form is displayed:
-        # (using JS is faster and more reliable than using splinter directly)
+            # assert that no form is displayed:
+            # (using JS is faster and more reliable than using splinter directly)
 
-        js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+            js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
+            self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
 
-        seg_id_text_0 = b1.find_by_id("seg_id_display")[0].text
-        self.assertEqual(seg_id_text_0, "")
-        trigger_mouseover_event(b1, id="a3")
-        seg_id_text_1 = b1.find_by_id("seg_id_display")[0].text
-        self.assertEqual(seg_id_text_1, "a3")
+            seg_id_text_0 = b1.find_by_id("seg_id_display")[0].text
+            self.assertEqual(seg_id_text_0, "")
+            trigger_mouseover_event(b1, id="a3")
+            seg_id_text_1 = b1.find_by_id("seg_id_display")[0].text
+            self.assertEqual(seg_id_text_1, "a3")
 
-        full_html_1 = b1.html
+            full_html_1 = b1.html
 
-        # assert that nothing changed
-        b1.find_by_id("a3").click()
-        full_html_2 = b1.html
-        self.assertEqual(full_html_2, full_html_1)
+            # assert that nothing changed
+            b1.find_by_id("a3").click()
+            full_html_2 = b1.html
+            self.assertEqual(full_html_2, full_html_1)
 
-        # now test that elements appear
-        trigger_mouseover_event(b1, id="a2")
-        seg_id_text_1 = b1.find_by_id("seg_id_display")[0].text
-        self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2")
+            # now test that elements appear
+            trigger_mouseover_event(b1, id="a2")
+            seg_id_text_1 = b1.find_by_id("seg_id_display")[0].text
+            self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2")
 
-        self.assertFalse(b1.find_by_id("answer_a2b")[0].is_visible())
-        b1.find_by_id("a2").click()
-        self.assertTrue(b1.find_by_id("answer_a2b")[0].is_visible())
+            self.assertFalse(b1.find_by_id("answer_a2b")[0].is_visible())
+            b1.find_by_id("a2").click()
+            self.assertTrue(b1.find_by_id("answer_a2b")[0].is_visible())
 
-        # investigate child answer
-        self.assertFalse(b1.find_by_id("answer_a2b1a")[0].is_visible())
-        b1.find_by_id("a2b1").click()
-        self.assertTrue(b1.find_by_id("answer_a2b1a")[0].is_visible())
+            # investigate child answer
+            self.assertFalse(b1.find_by_id("answer_a2b1a")[0].is_visible())
+            b1.find_by_id("a2b1").click()
+            self.assertTrue(b1.find_by_id("answer_a2b1a")[0].is_visible())
 
-        self.assertFalse(b1.find_by_id("answer_a2b1a3b")[0].is_visible())
-        b1.find_by_id("a2b1a3").click()
-        self.assertTrue(b1.find_by_id("answer_a2b1a3b")[0].is_visible())
+            self.assertFalse(b1.find_by_id("answer_a2b1a3b")[0].is_visible())
+            b1.find_by_id("a2b1a3").click()
+            self.assertTrue(b1.find_by_id("answer_a2b1a3b")[0].is_visible())
 
-        # also test for non-appearance of answer dialog after child segment click
-        trigger_mouseover_event(b1, id="a2b1a3b1")
-        self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2b1a3b1")
+            # also test for non-appearance of answer dialog after child segment click
+            trigger_mouseover_event(b1, id="a2b1a3b1")
+            self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2b1a3b1")
 
-        # assert that a click on it nothing changes
-        b1.find_by_id("a2b1a3b1").click()
-        self.assertEqual(full_html_2, full_html_1)
+            # assert that a click on it nothing changes
+            b1.find_by_id("a2b1a3b1").click()
+            self.assertEqual(full_html_2, full_html_1)
 
-    def test_g032__gui_behavior_for_correct_user(self):
+            # end of def _test_procedure
+
+        # test desired behavior for anonymous user
+        _test_procedure()
+
+        # the same behavior should occur for no-role-user
+        self.perform_login(browser=b1, username="testuser_3")
+        _test_procedure()
+
+    def test_g032__gui_behavior_for_users(self):
 
         # self.headless = False
         b1 = self.new_browser()
 
+        # testuser_2 (role b)
         self.perform_login(browser=b1, username="testuser_2")
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
@@ -524,19 +534,41 @@ class TestGUI(StaticLiveServerTestCase):
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
         self.assertIsNotNone(self.fast_get_by_id(b1, "a3b1"))
 
+        #
+        # end of testuser_2 phase
+        #
+
         # new contribution should not be contained in response for anonymous user
         self.perform_logout(b1)
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
         self.assertIsNone(self.fast_get_by_id(b1, "a3b1"))
 
+        #
+        # testuser_1 phase (role a)
+        #
         # for testuser_1 segment a3b1 should also not be present
         self.perform_login(browser=b1, username="testuser_1")
 
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
         self.assertIsNone(self.fast_get_by_id(b1, "a3b1"))
 
+        # testuser_1 should be able to answer to a2b2
+        b1.find_by_id("a2").click()  # open existing answer
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+        b1.find_by_id("a2b2").click()
+
+        # does the form appear as expected?
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+
+        # does the warning appear as expected?
+        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+        b1.find_by_id("a3").click()
+        self.assertIsNotNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
 
     def test_g04__segment_answer_level1(self):
+        """
+        This test somewhat overlaps with g032 but is useful for development (faster)
+        """
 
         # self.headless = False
 
