@@ -90,8 +90,8 @@ add content
 {% endblock %}
 
 {# store some (more) json data #}
-{% if data.unit_test_data %}
-    {{ data.unit_test_data|json_script:"data-utd_page_type" }}
+{% if data.utd_page_type %}
+    {{ data.utd_page_type|json_script:"data-utd_page_type" }}
 {% endif %}
 
 {{ request.user.username | json_script:"data-user_name" }}

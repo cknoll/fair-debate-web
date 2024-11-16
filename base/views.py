@@ -36,8 +36,7 @@ class MainView(View):
             # nested dict for easier debugging in the template
             "data": {
                 "sp": None,
-                "unit_test_comment": "utc_landingpage",
-                "unit_test_data": "utd_landingpage",
+                "utd_page_type": "utd_landingpage",
             }
         }
 
@@ -70,8 +69,7 @@ class NewDebateView(View):
 
         context = {
             "data": {
-                "unit_test_comment": "utc_new_debate",
-                "unit_test_data": "utd_new_debate",
+                "utd_page_type": "utd_new_debate",
                 "md_with_keys": md_with_keys,
                 "segmented_html": segmented_html,
                 "submit_label": submit_label,
@@ -197,8 +195,7 @@ class ShowDebateView(View):
 
         context = {
             "data": {
-                "unit_test_comment": "utc_new_debate",
-                "unit_test_data": f"utd_new_debate",
+                "utd_page_type": f"utd_new_debate",
                 "segmented_html": body_content_html,
                 "debate_title": "untitled debate",
                 "debate_key": debate_obj.debate_key,
@@ -240,7 +237,7 @@ def js_error_page(request):
         title="deliberate javascript error (for testing purposes)",
         msg="This page contains a deliberate javascript error (for testing purposes).",
         status=200,
-        extra_data={"trigger_js_error": True, "unit_test_data": f"utd_trigger_js_error_page",},
+        extra_data={"trigger_js_error": True, "utd_page_type": f"utd_trigger_js_error_page",},
     )
 
     return res
@@ -261,8 +258,7 @@ def error_page(request, title, msg, status=500, extra_data: dict = None):
         "data": {
             "sp": sp,
             "main_class": "error_container",
-            "unit_test_comment": f"utc_{sp_type}",
-            "unit_test_data": f"utd_{sp_type}",
+            "utd_page_type": f"utd_{sp_type}",
         }
     }
 
@@ -281,8 +277,7 @@ def about_page(request):
         "data": {
             "sp": get_sp("about"),
             # "main_class": "error_container",
-            "unit_test_comment": "utc_about_page",
-            "unit_test_data": f"utd_about_page",
+            "utd_page_type": f"utd_about_page",
         }
     }
 

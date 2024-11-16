@@ -84,28 +84,36 @@ class TestCore1(TestCase):
     def test_010__index(self):
         response = self.client.get(reverse("landingpage"))
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"utc_landingpage", response.content)
+        utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
+        self.assertEqual(utd, "utd_landingpage")
 
     def test_020__error(self):
         response = self.client.get(reverse("errorpage"))
         self.assertEqual(response.status_code, 500)
-        self.assertIn(b"utc_general_exception", response.content)
+        utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
+        self.assertEqual(utd, "utd_general_exception")
         self.assertIn(b"intentionally raised assertion error", response.content)
 
         # provoke 404
         response = self.client.get("/does/not/exist")
+
+        # this comment is inserted by the error handler (-> no easy transformation to utd possible)
         self.assertIn(b"utc_404_error", response.content)
         self.assertEqual(response.status_code, 404)
 
     def test_030__new_debate(self):
         response = self.client.get(reverse("new_debate"))
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"utc_new_debate", response.content)
+
+        utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
+        self.assertEqual(utd, "utd_new_debate")
+
         self.assertNotIn(b"utc_segmented_html", response.content)
 
         with open(fdmd.fixtures.txt1_md_fpath) as fp:
             content = fp.read()
 
+        # now the preview is available
         response = self.post_to_view(viewname="new_debate", spec_values={"body_content": content})
         self.assertIn(b"utc_segmented_html", response.content)
 
@@ -199,7 +207,7 @@ class TestCore1(TestCase):
         self.assertIn(b"utc_contribution_with_wrong_mode_not_allowed_for_user", response.content)
 
         response = self.client.get(reverse("test_show_debate"))
-        user_role = get_parsed_element_by_id(id="data-user_role", response_content=response.content)
+        user_role = get_parsed_element_by_id(id="data-user_role", res=response)
         self.assertEqual(user_role, "a")
 
         # second wrong user (testuser_3, role: None)
@@ -209,14 +217,14 @@ class TestCore1(TestCase):
         self.assertIn(b"utc_no_contribution_allowed_for_user", response.content)
 
         response = self.client.get(reverse("test_show_debate"))
-        user_role = get_parsed_element_by_id(id="data-user_role", response_content=response.content)
+        user_role = get_parsed_element_by_id(id="data-user_role", res=response)
         self.assertEqual(user_role, None)
 
         # correct user (testuser_2, role: b)
         self.perform_login(username="testuser_2", logout_first=True)
 
         response = self.client.get(reverse("test_show_debate"))
-        user_role = get_parsed_element_by_id(id="data-user_role", response_content=response.content)
+        user_role = get_parsed_element_by_id(id="data-user_role", res=response)
         self.assertEqual(user_role, "b")
 
         self.assertEqual(len(c.debate_obj1.contribution_set.all()), 0)
@@ -484,16 +492,16 @@ def get_js_error_list(browser):
     return js_errors
 
 
-def get_parsed_element_by_id(id: str, response_content: bytes = None, browser: Browser = None):
+def get_parsed_element_by_id(id: str, res: HttpResponse = None, browser: Browser = None):
 
 
     if browser is None:
-        assert isinstance(response_content, bytes)
+        assert isinstance(res, HttpResponse)
         # for usage with http response
-        soup = BeautifulSoup(response_content, "html.parser")
+        soup = BeautifulSoup(res.content, "html.parser")
         element = soup.find(id=id)
         content_str = "".join(element.contents)
-    elif response_content is None:
+    elif res is None:
         assert isinstance(browser, BaseWebDriver)
         # for usage with splinter browser
         element = browser.find_by_id(id)[0]

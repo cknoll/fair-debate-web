@@ -30,8 +30,14 @@ We use `black -l 120 ./` to ensure coding style consistency.
 
 ## Development notes
 
+### Terminology:
 
-helpful commands:
+- "utc": unit test comment
+- "utd": unit test data
+
+
+
+### Helpful Commands:
 
 - fdmd unpack-repos ./content_repos
 - py3 manage.py shell
