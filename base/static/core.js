@@ -194,6 +194,7 @@ function insertAnswerForm(segmentElement, returnMode=null) {
     // change ids from the template for the real elements
     const form_container = clonedFormTemplate.getElementById("__segment_answer_form_container_id");
     form_container.id = "segment_answer_form_container";
+    form_container.setAttribute("data-related_segment", segmentElement.id);
 
     // add warning
     if (userIsAuthenticated) {
@@ -329,7 +330,6 @@ function getSeparatorDiv(segment_span, answerDiv){
 
     editButton.addEventListener('click', function() {
 
-        // insertAnswerFormOrHint(segment_span, answer_key);
 
         // append update form (specify optional second argument)
         const formElement = insertAnswerForm(segment_span, true);

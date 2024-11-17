@@ -604,7 +604,7 @@ class TestGUI(StaticLiveServerTestCase):
         b1.find_by_id("a3").click()
         self.assertIsNotNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
 
-    def test_g04__segment_answer_level1(self):
+    def test_g040__segment_answer_level1(self):
         """
         This test somewhat overlaps with g032 but is useful for development (faster)
         """
@@ -635,6 +635,33 @@ class TestGUI(StaticLiveServerTestCase):
         user_role_element = b1.find_by_id("data-user_role")[0]
         user_role = json.loads(user_role_element.html)
         self.assertEqual(user_role, "b")
+
+    def test_g050__segment_answer_form_toggling(self):
+
+        # self.headless = False
+        b1 = self.new_browser()
+
+        # testuser_2 -> role b
+        self.perform_login(browser=b1, username="testuser_2")
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+
+        js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+
+        b1.find_by_id("a8").click()
+        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+        form_container_div = b1.find_by_id("segment_answer_form_container")
+        # check data attribute
+        self.assertEqual(form_container_div["data-related_segment"], "a8")
+
+        b1.find_by_id("a9").click()
+        form_container_div = b1.find_by_id("segment_answer_form_container")
+        self.assertEqual(form_container_div["data-related_segment"], "a9")
+
+        # reactivate the form which we deactivated before
+        b1.find_by_id("a8").click()
+        form_container_div = b1.find_by_id("segment_answer_form_container")
+        self.assertEqual(form_container_div["data-related_segment"], "a8")
 
 
 # #################################################################################################
