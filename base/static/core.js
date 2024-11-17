@@ -283,22 +283,8 @@ function onLoadForShowDebatePage(){
             if (answerDiv.classList.contains("db_ctb")){
                 segment_span.classList.add("dba");  // distinguish the segment
 
-                // insert separator
-                const separatorDiv = document.createElement("div");
-                separatorDiv.classList.add("answer_form_separator")
-                separatorDiv.appendChild(document.createTextNode(`You can update your contribution ${answer_key} here:`));
+                const separatorDiv = getSeparatorDiv(segment_span, answerDiv);
                 answerDiv.appendChild(separatorDiv);
-
-
-                // append update form (specify optional second argument)
-                const formElement = insertAnswerForm(segment_span, true);
-                answerDiv.appendChild(formElement);
-
-                // read original md source from data-attribute and insert it to textarea
-                const originalMdSrc = answerDiv.getAttribute("data-plain_md_src");
-                if (originalMdSrc != null) {
-                    answerDiv.getElementsByClassName("custom-textarea")[0].innerHTML = JSON.parse(originalMdSrc);
-                }
 
             }
         } else {
@@ -318,8 +304,45 @@ function onLoadForShowDebatePage(){
             });
         }
     });
+}
 
 
+function getSeparatorDiv(segment_span, answerDiv){
+    // insert separator
+    const separatorDiv = document.createElement("div");
+    const answer_key = answerDiv.id;
+
+    // convert "answer_a3b" to "a3b"
+    const answer_key_short = answer_key.replace("answer_", "");
+    separatorDiv.classList.add("answer_form_separator")
+    const textDiv = document.createElement("div");
+    let info = `Your contribution ${answer_key_short} is not yet published. `
+    info += "You can update it here:"
+    textDiv.appendChild(document.createTextNode(info));
+    separatorDiv.appendChild(textDiv);
+    const buttonContainerDiv = document.createElement("div");
+    buttonContainerDiv.classList.add("button-container")
+    separatorDiv.appendChild(buttonContainerDiv);
+    const editButton = document.createElement("button");
+    editButton.innerHTML = "Edit";
+    buttonContainerDiv.appendChild(editButton);
+
+    editButton.addEventListener('click', function() {
+
+        // insertAnswerFormOrHint(segment_span, answer_key);
+
+        // append update form (specify optional second argument)
+        const formElement = insertAnswerForm(segment_span, true);
+        answerDiv.appendChild(formElement);
+
+        // read original md source from data-attribute and insert it to textarea
+        const originalMdSrc = answerDiv.getAttribute("data-plain_md_src");
+        if (originalMdSrc != null) {
+            answerDiv.getElementsByClassName("custom-textarea")[0].innerHTML = JSON.parse(originalMdSrc);
+        }
+    });
+
+    return separatorDiv
 }
 
 function onLoadForSimplePage(){
