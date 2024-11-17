@@ -26,6 +26,8 @@ from ipydex import IPS
 class Container:
     pass
 
+N_CTB_IN_FIXTURES = 1
+
 
 class TestCore1(TestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
@@ -227,11 +229,11 @@ class TestCore1(TestCase):
         user_role = get_parsed_element_by_id(id="data-user_role", res=response)
         self.assertEqual(user_role, "b")
 
-        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 0)
+        self.assertEqual(len(c.debate_obj1.contribution_set.all()), N_CTB_IN_FIXTURES)
 
         response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 1)
+        self.assertEqual(len(c.debate_obj1.contribution_set.all()), N_CTB_IN_FIXTURES + 1)
         soup = BeautifulSoup(response.content, "html.parser")
         answer_div = soup.find(id="answer_a3b")
         self.assertIsNotNone(answer_div)
@@ -248,7 +250,7 @@ class TestCore1(TestCase):
         response = self.client.post(c.action_url, c.post_data_a3_updated)
 
         # ensure that no additional object is created
-        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 1)
+        self.assertEqual(len(c.debate_obj1.contribution_set.all()), N_CTB_IN_FIXTURES + 1)
         expected_res = (
             "This is an updated level 1\n     <strong>\n      answer\n     </strong>\n     from a unittest."
         )
@@ -277,7 +279,7 @@ class TestCore1(TestCase):
         # correct user (testuser_1 which has role a)
         response = self.perform_login(username="testuser_1", logout_first=True)
         response = self.client.post(c.action_url, c.post_data_a4b4)
-        self.assertEqual(len(c.debate_obj1.contribution_set.all()), 1)
+        self.assertEqual(len(c.debate_obj1.contribution_set.all()), N_CTB_IN_FIXTURES + 1)
         expected_res = (
             "This is a level 2\n        <em>\n         answer\n        </em>\n        from a unittest."
         )
@@ -516,9 +518,9 @@ class TestGUI(StaticLiveServerTestCase):
         msg_content1 = "This is an answer from a unittest."
         ta.type(msg_content1)
 
-        self.assertEqual(len(models.Contribution.objects.all()), 0)
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         form.find_by_css("._submit_button").click()
-        self.assertEqual(len(models.Contribution.objects.all()), 1)
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         # test for new element
         self.assertFalse(b1.find_by_id("answer_a3b")[0].is_visible())
@@ -662,6 +664,20 @@ class TestGUI(StaticLiveServerTestCase):
         b1.find_by_id("a8").click()
         form_container_div = b1.find_by_id("segment_answer_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a8")
+
+        # now we make use of the db_contribution from the fixtures
+        b1.find_by_id("a15").click()
+        answer_div = b1.find_by_id("answer_a15b")
+        edit_button = answer_div.find_by_tag("button")[0]
+        edit_button.click()
+        form_container_div = b1.find_by_id("segment_answer_form_container")
+        self.assertEqual(form_container_div["data-related_segment"], "a15")
+
+        b1.find_by_id("a8").click()
+        form_container_div = b1.find_by_id("segment_answer_form_container")
+        self.assertEqual(form_container_div["data-related_segment"], "a8")
+
+
 
 
 # #################################################################################################

@@ -97,5 +97,15 @@
       },
     "model" : "base.debateuser",
     "pk" : 4
+  },
+  {
+    "fields" : {
+        "author" : 3,
+        "body" : "This is an contribution defined in the fixtures.",
+        "contribution_key" : "a15b",
+        "debate" : 1
+      },
+    "model" : "base.contribution",
+    "pk" : 1
   }
 ]

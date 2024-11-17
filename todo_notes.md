@@ -11,14 +11,14 @@
         - [x] and have their own css class (moderately highlighted) -> db_ctb
         - [x] for all but the author: should not be displayed
     - [] consider preview view with possibility to update -> edit already created answer:
-        - [.] implement update mechanism
+        - [x] implement update mechanism
             - [x] backend
-            - [.] frontend
+            - [x] frontend
                 - [x] insert form
                 - [x] insert body source into form
                 - [x] gui test
                 - [x] ui friendly styling
-                - [] fix gui behavior when opening different forms
+                - [x] fix gui behavior when opening different forms
                 - [x] insert only separator with edit-button
                 - [x] edit button shows actual form
         - [] implement mechanism to publish answer from db to repo
