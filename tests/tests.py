@@ -539,9 +539,19 @@ class TestGUI(StaticLiveServerTestCase):
 
         # test updating of new contribution
 
-        self.assertFalse(b1.find_by_id("segment_answer_form_container")[0].is_visible())
+        answer_div = b1.find_by_id("answer_a3b")
+        separator_div = answer_div.find_by_css(".answer_form_separator")[0]
+        self.assertFalse(separator_div.is_visible())
         b1.find_by_id("a3").click()
-        self.assertTrue(b1.find_by_id("segment_answer_form_container")[0].is_visible())
+        self.assertTrue(separator_div.is_visible())
+        edit_button = separator_div.find_by_tag("button")[0]
+
+        # form does not exist until edit-button is pressed
+        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_form_container"))
+        edit_button.click()
+
+        form_container_div = answer_div.find_by_css(".segment_answer_form_container")[0]
+        self.assertTrue(form_container_div.is_visible())
 
         form = b1.find_by_id("segment_answer_form")[0]
         ta = form.find_by_tag("textarea")[0]
