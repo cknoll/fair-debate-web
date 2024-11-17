@@ -39,4 +39,4 @@ class Contribution(models.Model):
 
     # key like "a" or "a3b24a7b"
     contribution_key = models.CharField(max_length=255)
-    body = models.TextField()
+    body = models.TextField()  # store plain markdown source

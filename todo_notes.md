@@ -1,5 +1,6 @@
+- [] first test-deployment on the web
 - [] improve landing page
-- [] fix bug for empty contribution (1. dont accept, 2. ignore them if they occur anyway)
+- [] fix bug for empty contribution (1. don't accept, 2. ignore them if they occur anyway)
 - [] js based buttons: level visibility ← →
 - [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
 - [] add answer via gui
@@ -12,7 +13,11 @@
     - [] consider preview view with possibility to update -> edit already created answer:
         - [.] implement update mechanism
             - [x] backend
-            - [] frontend
+            - [.] frontend
+                - [x] insert form
+                - [] insert body source into form
+                - [] gui test
+                - [] ui friendly styling
         - [] implement mechanism to publish answer from db to repo
             - [] backend
             - [] frontend

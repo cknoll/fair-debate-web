@@ -116,6 +116,10 @@ h3:has(+ .rendered_content_preview) {
   background-color: red;
 }
 
+.sqn.dba::after {
+  background-color: hsla(200, 100%, 45%, 100%);
+}
+
 .answer {
   display: none;
   margin-left: 0.5em;

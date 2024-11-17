@@ -130,8 +130,6 @@ function insertAnswerFormOrHint(segment_element, answer_key) {
         return
     }
 
-    console.log("AnswerFormOrHint", segment_element, answer_key, user_role);
-
     if (answer_key.endsWith(user_role)) {
         return insertAnswerForm(segment_element);
     } else {
@@ -187,7 +185,10 @@ function getHintMessage(segmentId, answer_key, userRole){
 }
 
 
-function insertAnswerForm(segment_element) {
+function insertAnswerForm(segmentElement, returnMode=null) {
+
+    // in case there already is an opened answer form -> close it
+    removeSegmentAnswerFormContainer();
 
     const clonedFormTemplate =  document.getElementById("segment_answer_form_template").content.cloneNode(true);
     // change ids from the template for the real elements
@@ -203,20 +204,33 @@ function insertAnswerForm(segment_element) {
     form.id = "segment_answer_form";
 
     form.getElementsByClassName("custom-textarea")[0].name = "body"
-    form.getElementsByClassName("_reference_segment")[0].value = segment_element.id;
+    form.getElementsByClassName("_reference_segment")[0].value = segmentElement.id;
     form.getElementsByClassName("_cancel_button")[0].addEventListener('click', function() {
-        cancelSegmentAnswerForm(segment_element.id);
+        cancelSegmentAnswerForm(segmentElement.id);
     });
 
-    insertAfter(clonedFormTemplate, segment_element);
-    segment_element.setAttribute('data-active', "true");
-}
+    if (returnMode === null) {
+        insertAfter(clonedFormTemplate, segmentElement);
+    } else {
+        // this is used to edit existing answers
+        // (append the form to the answerDiv element)
+        return clonedFormTemplate;
+    }
 
+    segmentElement.setAttribute('data-active', "true");
+}
 
 function cancelSegmentAnswerForm(segment_id) {
     const segment_element = document.getElementById(segment_id);
     segment_element.setAttribute('data-active', false);
-    document.getElementById("segment_answer_form_container").remove();
+    removeSegmentAnswerFormContainer();
+}
+
+function removeSegmentAnswerFormContainer(){
+    const segment_answer_form_container = document.getElementById("segment_answer_form_container");
+    if (segment_answer_form_container != null) {
+        segment_answer_form_container.remove();
+    }
 }
 
 
@@ -258,10 +272,22 @@ function onLoadForShowDebatePage(){
             // -> add square symbol
             segment_span.classList.add("sqn");
 
+            const answerDiv = answerMap[answer_key];
+
             // -> add function to toggle the visibility of the answer
             segment_span.addEventListener('click', function() {
-                toggleDisplayNoneBlock(answerMap[answer_key]);
+                toggleDisplayNoneBlock(answerDiv);
             });
+
+            // special treatment for db_contributions
+            if (answerDiv.classList.contains("db_ctb")){
+                segment_span.classList.add("dba");  // distinguish the segment
+
+                // append update form (specify optional argument)
+                const formElement = insertAnswerForm(segment_span, true);
+                answerDiv.appendChild(formElement);
+
+            }
         } else {
             // This segment does not yet have an answer
             if (!userIsAuthenticated){
