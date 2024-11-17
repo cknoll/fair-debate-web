@@ -26,7 +26,7 @@ from ipydex import IPS
 class Container:
     pass
 
-N_CTB_IN_FIXTURES = 1
+N_CTB_IN_FIXTURES = 2
 
 
 class TestCore1(TestCase):
@@ -481,8 +481,13 @@ class TestGUI(StaticLiveServerTestCase):
 
         # for existing committed element
         self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+
+        # side quest: check if `unfoldAllUncommittedContributions` worked
+        self.assertTrue(b1.find_by_id("answer_a2b").is_visible())
+        self.assertTrue(b1.find_by_id("answer_a2b1a").is_visible())
+        self.assertTrue(b1.find_by_id("answer_a2b1a1b").is_visible())
+
         # this should currently trigger a warning (this answer is already committed)
-        b1.find_by_id("a2").click()
         b1.find_by_id("a2b2").click()
         hint_div = self.fast_get_by_id(b1, "segment_answer_hint_container")
         self.assertIsNotNone(hint_div)
@@ -524,7 +529,9 @@ class TestGUI(StaticLiveServerTestCase):
         form.find_by_css("._submit_button").click()
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
-        # test for new element
+        # test for new element (should be visible by default)
+        self.assertTrue(b1.find_by_id("answer_a3b")[0].is_visible())
+        b1.find_by_id("a3").click()
         self.assertFalse(b1.find_by_id("answer_a3b")[0].is_visible())
         b1.find_by_id("a3").click()
         self.assertTrue(b1.find_by_id("answer_a3b")[0].is_visible())
@@ -545,8 +552,6 @@ class TestGUI(StaticLiveServerTestCase):
 
         answer_div = b1.find_by_id("answer_a3b")
         separator_div = answer_div.find_by_css(".answer_form_separator")[0]
-        self.assertFalse(separator_div.is_visible())
-        b1.find_by_id("a3").click()
         self.assertTrue(separator_div.is_visible())
         edit_button = separator_div.find_by_tag("button")[0]
 
@@ -668,8 +673,9 @@ class TestGUI(StaticLiveServerTestCase):
         self.assertEqual(form_container_div["data-related_segment"], "a8")
 
         # now we make use of the db_contribution from the fixtures
-        b1.find_by_id("a15").click()
+        # should be already visible (contains uncommitted contribution)
         answer_div = b1.find_by_id("answer_a15b")
+        self.assertTrue(answer_div.is_visible())
         edit_button = answer_div.find_by_tag("button")[0]
         edit_button.click()
         form_container_div = b1.find_by_id("segment_answer_form_container")

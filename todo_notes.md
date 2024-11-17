@@ -5,12 +5,15 @@
 - [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
 - [] add answer via gui
     - [.] specify repo and db-concept
+    - [] implement mechanism to publish answer from db to repo
+        - [] backend
+        - [] frontend
     - all uncommitted answers
         - for the author:
-        - [] should be displayed by default (and thus their parents)
+        - [x] should be displayed by default (and thus their parents)
         - [x] and have their own css class (moderately highlighted) -> db_ctb
         - [x] for all but the author: should not be displayed
-    - [] consider preview view with possibility to update -> edit already created answer:
+    - [x] consider preview view with possibility to update -> edit already created answer:
         - [x] implement update mechanism
             - [x] backend
             - [x] frontend
@@ -21,9 +24,6 @@
                 - [x] fix gui behavior when opening different forms
                 - [x] insert only separator with edit-button
                 - [x] edit button shows actual form
-        - [] implement mechanism to publish answer from db to repo
-            - [] backend
-            - [] frontend
         - [x] create roles for users in repos
             - [x] implement tests
                 - [x] testuser_1 has role a in d1-lorem_ipsum. Thus they cannot create a b-contribution, but an a-contribution

@@ -308,6 +308,31 @@ function onLoadForShowDebatePage(){
             });
         }
     });
+
+    unfoldAllUncommittedContributions();
+}
+
+function unfoldAllUncommittedContributions() {
+
+    dbCtbDivList = Array.from(document.getElementsByClassName("db_ctb"));
+    dbCtbDivList.forEach(ansDiv => {
+        // convert "answer_a3b4a12b" to "a3b4a12"
+        const key = ansDiv.id.replace("answer_", "").slice(0, -1);
+        let parts = key.match(/[ab]\d+/g);
+        let cumKey = "";
+        // let cumKeys = [];
+        parts.forEach(part => {
+            cumKey += part;
+            // create strings like "a3", "a3b4", "a3b4a12"
+            // cumKeys.push(cumKey);
+
+            // ensure element is visible
+            document.getElementById(getAnswerKey(cumKey)).style.display = "block";
+        });
+
+        // console.log("cumKeys", cumKeys);
+
+    });
 }
 
 

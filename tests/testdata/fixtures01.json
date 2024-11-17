@@ -101,11 +101,21 @@
   {
     "fields" : {
         "author" : 3,
-        "body" : "This is an contribution defined in the fixtures.",
+        "body" : "This is a level 1 contribution defined in the fixtures.",
         "contribution_key" : "a15b",
         "debate" : 1
       },
     "model" : "base.contribution",
     "pk" : 1
+  },
+  {
+    "fields" : {
+        "author" : 3,
+        "body" : "This is a level 3 contribution defined in the fixtures.",
+        "contribution_key" : "a2b1a1b",
+        "debate" : 1
+      },
+    "model" : "base.contribution",
+    "pk" : 2
   }
 ]
