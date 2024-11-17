@@ -3,6 +3,7 @@
 - [] fix bug for empty contribution (1. don't accept, 2. ignore them if they occur anyway)
 - [] js based buttons: level visibility ← →
 - [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
+- [x] css: make second sticky bar actually sticky
 - [] add answer via gui
     - [.] specify repo and db-concept
     - all uncommitted answers
@@ -18,6 +19,7 @@
                 - [x] insert body source into form
                 - [x] gui test
                 - [x] ui friendly styling
+                - [] fix gui behavior when opening different forms (also remove separator)
         - [] implement mechanism to publish answer from db to repo
             - [] backend
             - [] frontend

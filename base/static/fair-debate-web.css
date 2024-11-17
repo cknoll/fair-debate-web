@@ -2,11 +2,22 @@
   --color-answer-green: hsla(130, 50%, 50%, 100%);
   --color-dba: hsla(130, 50%, 50%, 100%);
   --color-nice-blue: hsla(200, 100%, 45%, 100%);
+  --color-rendered-content: #ce9a5e;
 }
 
 
+#second_sticky_bar {
+  position: sticky;
+  top: calc(var(--header-height) + 0.1em);
+  background-color: var(--color-global-bg);
+  border-bottom: 1px solid var(--color-rendered-content);
+  /* background-color: red; */
+}
+
 .rendered_content_preview {
-    border: 1px solid #ce9a5e;
+    border-left: 1px solid var(--color-rendered-content);
+    border-bottom: 1px solid var(--color-rendered-content);
+    border-right: 1px solid var(--color-rendered-content);
     padding: 1em;
     margin-bottom: 1em;
 }

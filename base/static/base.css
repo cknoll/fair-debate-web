@@ -23,7 +23,7 @@
     --color-error-border: hsl(5, 100%, 50%);
     --color-alert-background: hsl(40, 80%, 80%);
     --color-alert-border: hsl(40, 100%, 50%);
-    --header-height: 2em;
+    --header-height: 2.0em;
     --padding-header: 0.3em;
     --padding-v-quote: 4px;
     --padding-h-quote: 1em;
@@ -105,7 +105,8 @@ body a:hover{
     background-color: var(--color-header-background);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 
-    /* height: var(--header-height); */
+    /* explicit specification is important for second_sticky_bar */
+    height: var(--header-height);
 
 }
 .vertical-center0 {
