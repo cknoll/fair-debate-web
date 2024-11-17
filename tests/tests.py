@@ -422,6 +422,8 @@ class TestGUI(StaticLiveServerTestCase):
 
             seg_id_text_0 = b1.find_by_id("seg_id_display")[0].text
             self.assertEqual(seg_id_text_0, "")
+
+            # note: we use this hack to work around problems in headless mode
             trigger_mouseover_event(b1, id="a3")
             seg_id_text_1 = b1.find_by_id("seg_id_display")[0].text
             self.assertEqual(seg_id_text_1, "a3")
@@ -673,7 +675,8 @@ class TestGUI(StaticLiveServerTestCase):
         form_container_div = b1.find_by_id("segment_answer_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a15")
 
-        b1.find_by_id("a8").click()
+        trigger_click_event(b1, id="a8")
+        # b1.find_by_id("a8").click()  # does somehow not work in headless mode
         form_container_div = b1.find_by_id("segment_answer_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a8")
 
@@ -693,7 +696,18 @@ def send_key_to_browser(browser, key):
     actions.perform()
 
 
+def trigger_click_event(splinter_browser: BaseWebDriver, id: str):
+    """
+    Motivation: prevent (strange) click problems in headless mode
+    """
+
+    script = f'document.getElementById("{id}").click()'
+    splinter_browser.execute_script(script)
+
 def trigger_mouseover_event(splinter_browser: BaseWebDriver, id: str):
+    """
+    Motivation: prevent (strange) mouseover problems in headless mode
+    """
     element = splinter_browser.find_by_id(id)[0]
     script = "var event = new MouseEvent('mouseover', {'bubbles': true, 'cancelable': true}); arguments[0].dispatchEvent(event);"
     splinter_browser.execute_script(script, element._element)
