@@ -197,7 +197,7 @@ BLEACH_ALLOWED_ATTRIBUTES = {
     "img": ["src"],
     "a": ["href"],
     "span": ["class", "id"],
-    "div": ["class", "id", "data-debate-key"],
+    "div": ["class", "id", "data-debate-key", "data-plain_md_src"],
 }
 
 BLEACH_ALLOWED_STYLES = ["font-family", "font-weight", "text-decoration", "font-variant"]

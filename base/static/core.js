@@ -287,6 +287,11 @@ function onLoadForShowDebatePage(){
                 const formElement = insertAnswerForm(segment_span, true);
                 answerDiv.appendChild(formElement);
 
+                const originalMdSrc = answerDiv.getAttribute("data-plain_md_src");
+                if (originalMdSrc != null) {
+                    answerDiv.getElementsByClassName("custom-textarea")[0].innerHTML = JSON.parse(originalMdSrc);
+                }
+
             }
         } else {
             // This segment does not yet have an answer
