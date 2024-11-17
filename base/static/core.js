@@ -283,10 +283,18 @@ function onLoadForShowDebatePage(){
             if (answerDiv.classList.contains("db_ctb")){
                 segment_span.classList.add("dba");  // distinguish the segment
 
-                // append update form (specify optional argument)
+                // insert separator
+                const separatorDiv = document.createElement("div");
+                separatorDiv.classList.add("answer_form_separator")
+                separatorDiv.appendChild(document.createTextNode(`You can update your contribution ${answer_key} here:`));
+                answerDiv.appendChild(separatorDiv);
+
+
+                // append update form (specify optional second argument)
                 const formElement = insertAnswerForm(segment_span, true);
                 answerDiv.appendChild(formElement);
 
+                // read original md source from data-attribute and insert it to textarea
                 const originalMdSrc = answerDiv.getAttribute("data-plain_md_src");
                 if (originalMdSrc != null) {
                     answerDiv.getElementsByClassName("custom-textarea")[0].innerHTML = JSON.parse(originalMdSrc);
