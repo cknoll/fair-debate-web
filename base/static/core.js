@@ -24,8 +24,6 @@ itemMenus.forEach((ddms, idx) => {
     var im_id = ddms.id.replace("ddms_", "ddm_");
     var itemMenu = document.getElementById(im_id);
 
-    console.log(ddms.id);
-
     ddms.addEventListener('click', function() {
         console.log("click", ddms.id);
 
@@ -55,9 +53,7 @@ window.addEventListener('click', function(event) {
     }
 
     if ((activeItemMenu.contains(event.target) || activeItemMenu.associatedSymbol.contains(event.target))) {
-        // console.log("inside");
     } else {
-        // console.log("outside");
         closeActiveMenu();
     }
 });
@@ -121,19 +117,20 @@ function insertAfter(newNode, referenceNode) {
 /**
  * Insert answer-form after after the segment element (when clicked on it)
  * If the current user has the wrong role insert a hint-element instead
- * @param {*} segment_element
+ * @param {*} segmentElement
  * @param {*} answer_key
  */
-function insertAnswerFormOrHint(segment_element, answer_key) {
+function insertAnswerFormOrHint(segmentElement, answer_key) {
+
     // prevent insertion if current element is already marked as active
-    if (segment_element.getAttribute('data-active') === "true") {
+    if (segmentElement.getAttribute('data-active') === "true") {
         return
     }
 
     if (answer_key.endsWith(user_role)) {
-        return insertAnswerForm(segment_element);
+        return insertAnswerForm(segmentElement);
     } else {
-        return insertHintField(segment_element, answer_key, user_role);
+        return insertHintField(segmentElement, answer_key, user_role);
     }
 }
 
@@ -230,6 +227,12 @@ function cancelSegmentAnswerForm(segment_id) {
 function removeSegmentAnswerFormContainer(){
     const segment_answer_form_container = document.getElementById("segment_answer_form_container");
     if (segment_answer_form_container != null) {
+
+        const relatedSegmentId = segment_answer_form_container.getAttribute("data-related_segment");
+        if (relatedSegmentId != null) {
+            document.getElementById(relatedSegmentId).setAttribute('data-active', "false");
+        }
+
         segment_answer_form_container.remove();
     }
 }
