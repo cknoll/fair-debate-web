@@ -16,7 +16,7 @@
             - [.] frontend
                 - [x] insert form
                 - [x] insert body source into form
-                - [] gui test
+                - [x] gui test
                 - [] ui friendly styling
         - [] implement mechanism to publish answer from db to repo
             - [] backend

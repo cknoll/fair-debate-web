@@ -468,7 +468,7 @@ class TestGUI(StaticLiveServerTestCase):
 
     def test_g032__gui_behavior_for_users(self):
 
-        # self.headless = False
+        # self.headless = True
         b1 = self.new_browser()
 
         # testuser_2 (role b)
@@ -512,7 +512,9 @@ class TestGUI(StaticLiveServerTestCase):
         # fill and submit the form
         form = b1.find_by_id("segment_answer_form")[0]
         ta = form.find_by_tag("textarea")[0]
-        ta.type("This is an answer from a unittest.")
+
+        msg_content1 = "This is an answer from a unittest."
+        ta.type(msg_content1)
 
         self.assertEqual(len(models.Contribution.objects.all()), 0)
         form.find_by_css("._submit_button").click()
@@ -534,6 +536,32 @@ class TestGUI(StaticLiveServerTestCase):
         b1.visit(f"{self.live_server_url}{reverse('landingpage')}")  # goto unrelated url
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
         self.assertIsNotNone(self.fast_get_by_id(b1, "a3b1"))
+
+        # test updating of new contribution
+
+        self.assertFalse(b1.find_by_id("segment_answer_form_container")[0].is_visible())
+        b1.find_by_id("a3").click()
+        self.assertTrue(b1.find_by_id("segment_answer_form_container")[0].is_visible())
+
+        form = b1.find_by_id("segment_answer_form")[0]
+        ta = form.find_by_tag("textarea")[0]
+        self.assertEqual(ta.html, msg_content1)
+        ta.type("\n\nNow with one **more** line!")
+        form.find_by_css("._submit_button").click()
+        b1.find_by_id("a3").click()
+        answer_div = b1.find_by_id("answer_a3b")[0]
+
+        self.assertEqual(len(answer_div.find_by_css(".p_level1")), 2)
+        paragraph1 = answer_div.find_by_css(".p_level1")[0].html.strip()
+        paragraph1_exp = '<span class="segment" id="a3b1">\n     This is an answer from a unittest.\n    </span>'
+        self.assertEqual(paragraph1, paragraph1_exp)
+
+        paragraph2 = answer_div.find_by_css(".p_level1")[1].html.strip()
+        paragraph2_exp = (
+            '<span class="segment" id="a3b2">\n     Now with one\n     '
+            '<strong>\n      more\n     </strong>\n     line!\n    </span>'
+        )
+        self.assertEqual(paragraph2, paragraph2_exp)
 
         #
         # end of testuser_2 phase
