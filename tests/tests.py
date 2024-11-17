@@ -153,9 +153,10 @@ class TestCore1(TestCase):
 
         # ensure file system based test data exists:
 
-        TEST_REPO1_PATH = os.path.join(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY, ".git")
-        if not os.path.isdir(TEST_REPO1_PATH):
-            raise FileNotFoundError(TEST_REPO1_PATH)
+        res = Container()
+        res.TEST_REPO1_PATH = os.path.join(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY, ".git")
+        if not os.path.isdir(res.TEST_REPO1_PATH):
+            raise FileNotFoundError(res.TEST_REPO1_PATH)
 
         settings.CATCH_EXCEPTIONS = False
 
@@ -165,11 +166,11 @@ class TestCore1(TestCase):
         # if this fails, probably ./content_repos is not initialized
         # solution: `fdmd unpack-repos ./content_repos``
         self.assertEqual(response.status_code, 200)
-        res = Container()
-        res.action_url, csrf_token = get_form_base_data_from_html_template_host(response.content)
+
+        res.action_url, res.csrf_token = get_form_base_data_from_html_template_host(response.content)
 
         res.post_data_a3 = {
-            "csrfmiddlewaretoken": csrf_token,
+            "csrfmiddlewaretoken": res.csrf_token,
             # hard coded data
             "reference_segment": "a3",
             "debate_key": fdmd.TEST_DEBATE_KEY,
@@ -288,6 +289,38 @@ class TestCore1(TestCase):
         segment_span = soup.find(id="a4b4a1")
         res = "".join(map(str, segment_span.contents)).strip()
         self.assertEqual(res, expected_res)
+
+    def _07x__common(self):
+        res = Container()
+        res06x = self._06x__common()
+        res.csrf_token = res06x.csrf_token
+
+        res.post_data_a15b = {
+            "csrfmiddlewaretoken": res.csrf_token,
+            # hard coded data
+            "debate_key": fdmd.TEST_DEBATE_KEY,
+            "contribution_key": "a15b"
+        }
+        res.post_data_a2b1a1b = res.post_data_a15b.copy()
+        res.post_data_a2b1a1b.update({"contribution_key": "a2b1a1b"})
+        res.action_url = reverse("process_contribution")
+
+        return res
+
+    def test_070__commit_contributions(self):
+        c = self._07x__common()
+
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
+
+        self.perform_login(username="testuser_2")
+        response = self.client.post(c.action_url, c.post_data_a15b)
+
+        self.assertEqual(response.status_code, 302)
+        target_url = response["Location"]
+        self.assertEqual(target_url, reverse("test_show_debate"))
+
+        # TODO:
+        # self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - 1)
 
 
 def get_form_base_data_from_html_template_host(response_content: bytes) -> str:

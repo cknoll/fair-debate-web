@@ -12,8 +12,15 @@ urlpatterns = [
     path("new/test", views.test_new_debate, name="test_new_debate"),
     path("d/<slug:debate_key>", views.ShowDebateView.as_view(), name="show_debate"),
     path(
-        "d/d1-lorem_ipsum", views.ShowDebateView.as_view(), name="test_show_debate", kwargs={"slug": "d1-lorem_ipsum"}
+        "d/d1-lorem_ipsum", views.ShowDebateView.as_view(), name="test_show_debate", kwargs={"debate_key": "d1-lorem_ipsum"}
     ),
+    path(
+        "process_contribution",
+        views.ProcessContribution.as_view(),
+        name="process_contribution",
+        kwargs={"action": "commit"}
+    ),
+
     path("menu/", views.menu_page, name="menupage"),
     path("debug/", views.debugpage, name="debugpage"),
     path("about/", views.about_page, name="aboutpage"),

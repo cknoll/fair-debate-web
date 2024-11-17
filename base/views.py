@@ -93,6 +93,16 @@ def test_new_debate(request):
     return NewDebateView().render_result_from_md(request, body_content_md=body_content)
 
 
+class ProcessContribution(View):
+    def post(self, request,  action="commit"):
+        debate_key = request.POST["debate_key"]
+        return redirect("show_debate", debate_key=debate_key)
+
+    def get(self, request, **kwargs):
+        msg = f"Get request not allowed for path {request.path}!"
+        return error_page(request, title="Invalid Request", msg=msg, status=403)
+
+
 class ShowDebateView(View):
     def get(self, request, debate_key=None, test=False):
 

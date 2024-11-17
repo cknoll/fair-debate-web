@@ -3,15 +3,24 @@
 - [] fix bug for empty contribution (1. don't accept, 2. ignore them if they occur anyway)
 - [] js based buttons: level visibility ← →
 - [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
+    - → is not intentionally not allowed
+    - [] implement modal warning dialog
 - [] add answer via gui
     - [.] specify repo and db-concept
     - [] implement mechanism to publish answer from db to repo
-        - [] backend
+        - [.] backend
+            - [x] add basic view and test
+            - [] write contribution to file in repo
+            - [] create commit in repo (as correct user)
+            - [] adapt tearDown to restore repo state
         - [] frontend
     - all uncommitted answers
         - for the author:
-        - [x] should be displayed by default (and thus their parents)
-        - [x] and have their own css class (moderately highlighted) -> db_ctb
+            - [x] should be displayed by default (and thus their parents)
+            - [x] and have their own css class (moderately highlighted) -> db_ctb
+            - [ ] add delete button
+                - [] backend
+                - [] frontend
         - [x] for all but the author: should not be displayed
     - [x] consider preview view with possibility to update -> edit already created answer:
         - [x] implement update mechanism
