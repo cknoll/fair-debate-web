@@ -94,9 +94,16 @@ def test_new_debate(request):
 
 
 class ProcessContribution(View):
-    def post(self, request,  action="commit"):
+    def post(self, request,  action=None):
         debate_key = request.POST["debate_key"]
-        self.commit_contribution(request)
+
+        if action == "commit":
+            self.commit_contribution(request)
+        elif action == "commit_all":
+            self.commit_all_uc_contribution(request)
+        else:
+            msg = f"Unexpected action: ('{action}') for view ProcessContribution"
+            error_page(request, title="Error during ProcessContribution", msg=msg)
         return redirect("show_debate", debate_key=debate_key)
 
     def get(self, request, **kwargs):
@@ -109,10 +116,26 @@ class ProcessContribution(View):
 
         debate_obj = Debate.objects.get(debate_key=debate_key)
         ctb_objs: list[Contribution] = list(debate_obj.contribution_set.filter(contribution_key=contribution_key))
-        assert len(ctb_objs) == 1
+        msg = f"Unexpected number of contribution objects ({len(ctb_objs)}) for {debate_key} ctb {contribution_key}"
+        assert len(ctb_objs) == 1, msg
         ctb = fdmd.DBContribution(ctb_objs[0].contribution_key, ctb_objs[0].body)
         fdmd.commit_ctb(settings.REPO_HOST_DIR, debate_key, ctb)
         ctb_objs[0].delete()
+
+    def commit_all_uc_contribution(self, request):
+        debate_key = request.POST["debate_key"]
+
+        debate_obj = Debate.objects.get(debate_key=debate_key)
+
+        ctb_obj_set = debate_obj.contribution_set.all()
+
+        ctb_list = []
+        ctb_obj: Contribution
+        for ctb_obj in ctb_obj_set:
+            ctb_list.append(fdmd.DBContribution(ctb_key=ctb_obj.contribution_key, body=ctb_obj.body))
+
+        fdmd.commit_ctb_list(settings.REPO_HOST_DIR, debate_key, ctb_list)
+        ctb_obj_set.delete()
 
 
 class ShowDebateView(View):

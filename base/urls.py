@@ -15,10 +15,17 @@ urlpatterns = [
         "d/d1-lorem_ipsum", views.ShowDebateView.as_view(), name="test_show_debate", kwargs={"debate_key": "d1-lorem_ipsum"}
     ),
     path(
-        "process_contribution",
+        "commit_contribution",
         views.ProcessContribution.as_view(),
-        name="process_contribution",
+        name="commit_contribution",
         kwargs={"action": "commit"}
+    ),
+
+    path(
+        "commit_all_contributions",
+        views.ProcessContribution.as_view(),
+        name="commit_all_contributions",
+        kwargs={"action": "commit_all"}
     ),
 
     path("menu/", views.menu_page, name="menupage"),

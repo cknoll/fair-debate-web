@@ -317,15 +317,29 @@ class TestCore1(TestCase):
         res06x = self._06x__common()
         res.csrf_token = res06x.csrf_token
 
+        res.repo_dir = os.path.join(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY)
+
         res.post_data_a15b = {
             "csrfmiddlewaretoken": res.csrf_token,
             # hard coded data
             "debate_key": fdmd.TEST_DEBATE_KEY,
             "contribution_key": "a15b"
         }
+
+        res.fpaths_a15b = [os.path.join(res.repo_dir, "b", f'{res.post_data_a15b["contribution_key"]}.md')]
+
+
         res.post_data_a2b1a1b = res.post_data_a15b.copy()
         res.post_data_a2b1a1b.update({"contribution_key": "a2b1a1b"})
-        res.action_url = reverse("process_contribution")
+        res.action_url_single = reverse("commit_contribution")
+        res.action_url_all = reverse("commit_all_contributions")
+
+        res.post_data_all = res.post_data_a15b.copy()
+        res.post_data_all.pop("contribution_key")
+        res.fpaths_all = [
+            os.path.join(res.repo_dir, "b", f'{res.post_data_a15b["contribution_key"]}.md'),
+            os.path.join(res.repo_dir, "b", f'{res.post_data_a2b1a1b["contribution_key"]}.md')
+        ]
 
         return res
 
@@ -338,26 +352,56 @@ class TestCore1(TestCase):
 
         repo_dir = os.path.join(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY)
 
-        fpath = os.path.join(repo_dir, "b", c.post_data_a15b["contribution_key"])
-        self.assertFalse(os.path.exists(fpath))
+        for fpath in c.fpaths_a15b:
+            self.assertFalse(os.path.exists(fpath))
 
         nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=repo_dir)
         self.mark_repo_for_reset(repo_dir)
         self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
 
         # now send the post request
-        response = self.client.post(c.action_url, c.post_data_a15b)
+        response = self.client.post(c.action_url_single, c.post_data_a15b)
 
         self.assertEqual(response.status_code, 302)
         target_url = response["Location"]
         self.assertEqual(target_url, reverse("test_show_debate"))
-        self.assertFalse(os.path.exists(fpath))
+
+        for fpath in c.fpaths_a15b:
+            self.assertTrue(os.path.exists(fpath))
 
         nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=repo_dir)
         self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO + 1)
 
         # check that one contribution in db is gone
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - 1)
+
+    def test_071__commit_contributions(self):
+        c = self._07x__common()
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
+        self.perform_login(username="testuser_2")
+
+        nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=c.repo_dir)
+        self.mark_repo_for_reset(c.repo_dir)
+        self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
+
+        for fpath in c.fpaths_all:
+            self.assertFalse(os.path.exists(fpath))
+
+        # now send the post request
+        response = self.client.post(c.action_url_all, c.post_data_a15b)
+
+        self.assertEqual(response.status_code, 302)
+        target_url = response["Location"]
+        self.assertEqual(target_url, reverse("test_show_debate"))
+
+        nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=c.repo_dir)
+        self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO + 1)
+
+        for fpath in c.fpaths_all:
+            self.assertTrue(os.path.exists(fpath))
+
+        # check that all contributions in db are
+        self.assertEqual(len(models.Contribution.objects.all()), 0)
 
 
 def get_form_base_data_from_html_template_host(response_content: bytes) -> str:

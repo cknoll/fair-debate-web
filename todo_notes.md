@@ -8,7 +8,8 @@
 - [] add answer via gui
     - [.] specify repo and db-concept
     - [] implement mechanism to publish all answers in one commit
-        - [] backend
+        - [x] backend
+            - [] test that new contributions are rendered correctly
         - [] frontend
     - [] implement mechanism to publish answer from db to repo
         - [x] backend
