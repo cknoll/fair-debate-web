@@ -18,6 +18,8 @@ from selenium.webdriver.chrome.options import Options
 
 from packaging.version import Version
 
+import git
+
 import fair_debate_md as fdmd
 from base import models
 
@@ -27,10 +29,30 @@ class Container:
     pass
 
 N_CTB_IN_FIXTURES = 2
+N_COMMITS_TEST_REPO = 4
 
 
 class TestCore1(TestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
+
+    def setUp(self):
+        self.git_reset_id: str = None
+        self.git_reset_repo: str = None
+
+    def tearDown(self):
+        if self.git_reset_id is not None:
+            self.reset_git_repo()
+
+    def mark_repo_for_reset(self, repo_dir: str):
+        self.git_reset_repo = repo_dir
+        repo = git.Repo(self.git_reset_repo)
+        self.git_reset_id = repo.refs[0].commit.hexsha
+
+    def reset_git_repo(self):
+
+        repo = git.Repo(self.git_reset_repo)
+        repo.head.reset(self.git_reset_id, index=True, working_tree=True)
+
 
     def post_to_view(self, viewname, **kwargs):
 
@@ -81,7 +103,7 @@ class TestCore1(TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.3"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.4"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landingpage"))
@@ -313,14 +335,29 @@ class TestCore1(TestCase):
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
 
         self.perform_login(username="testuser_2")
+
+        repo_dir = os.path.join(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY)
+
+        fpath = os.path.join(repo_dir, "b", c.post_data_a15b["contribution_key"])
+        self.assertFalse(os.path.exists(fpath))
+
+        nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=repo_dir)
+        self.mark_repo_for_reset(repo_dir)
+        self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
+
+        # now send the post request
         response = self.client.post(c.action_url, c.post_data_a15b)
 
         self.assertEqual(response.status_code, 302)
         target_url = response["Location"]
         self.assertEqual(target_url, reverse("test_show_debate"))
+        self.assertFalse(os.path.exists(fpath))
 
-        # TODO:
-        # self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - 1)
+        nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=repo_dir)
+        self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO + 1)
+
+        # check that one contribution in db is gone
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - 1)
 
 
 def get_form_base_data_from_html_template_host(response_content: bytes) -> str:

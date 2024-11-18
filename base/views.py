@@ -96,11 +96,23 @@ def test_new_debate(request):
 class ProcessContribution(View):
     def post(self, request,  action="commit"):
         debate_key = request.POST["debate_key"]
+        self.commit_contribution(request)
         return redirect("show_debate", debate_key=debate_key)
 
     def get(self, request, **kwargs):
         msg = f"Get request not allowed for path {request.path}!"
         return error_page(request, title="Invalid Request", msg=msg, status=403)
+
+    def commit_contribution(self, request):
+        debate_key = request.POST["debate_key"]
+        contribution_key = request.POST["contribution_key"]
+
+        debate_obj = Debate.objects.get(debate_key=debate_key)
+        ctb_objs: list[Contribution] = list(debate_obj.contribution_set.filter(contribution_key=contribution_key))
+        assert len(ctb_objs) == 1
+        ctb = fdmd.DBContribution(ctb_objs[0].contribution_key, ctb_objs[0].body)
+        fdmd.commit_ctb(settings.REPO_HOST_DIR, debate_key, ctb)
+        ctb_objs[0].delete()
 
 
 class ShowDebateView(View):

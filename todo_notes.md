@@ -7,12 +7,15 @@
     - [] implement modal warning dialog
 - [] add answer via gui
     - [.] specify repo and db-concept
+    - [] implement mechanism to publish all answers in one commit
+        - [] backend
+        - [] frontend
     - [] implement mechanism to publish answer from db to repo
-        - [.] backend
+        - [x] backend
             - [x] add basic view and test
-            - [] write contribution to file in repo
-            - [] create commit in repo (as correct user)
-            - [] adapt tearDown to restore repo state
+            - [x] write contribution to file in repo
+            - [x] create commit in repo (as correct user)
+            - [x] adapt tearDown to restore repo state
         - [] frontend
     - all uncommitted answers
         - for the author:
