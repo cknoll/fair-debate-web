@@ -335,29 +335,28 @@ function unfoldAllUncommittedContributions() {
     });
 }
 
-
+/**
+ * create a div-element as separator below an uncommitted contribution
+ * (above the edit field which might be inserted)
+ */
 function getSeparatorDiv(segment_span, answerDiv){
-    // insert separator
-    const separatorDiv = document.createElement("div");
+
+
+    const clonedSeparatorTemplateFragment =  document.getElementById("_UCCtbSeparatorTemplate").content.cloneNode(true);
+    // note: .getElementsByClassName is not available for Fragments, but querySelector is
+    const separatorDiv = clonedSeparatorTemplateFragment.querySelector(".answer_form_separator");
     const answer_key = answerDiv.id;
 
     // convert "answer_a3b" to "a3b"
     const answer_key_short = answer_key.replace("answer_", "");
-    separatorDiv.classList.add("answer_form_separator")
-    const textDiv = document.createElement("div");
+    const textDiv = separatorDiv.getElementsByClassName("_text")[0];
     let info = `Your contribution ${answer_key_short} is not yet published. `
     info += "You can update it here:"
-    textDiv.appendChild(document.createTextNode(info));
-    separatorDiv.appendChild(textDiv);
-    const buttonContainerDiv = document.createElement("div");
-    buttonContainerDiv.classList.add("button-container")
-    separatorDiv.appendChild(buttonContainerDiv);
-    const editButton = document.createElement("button");
-    editButton.innerHTML = "Edit";
-    buttonContainerDiv.appendChild(editButton);
+    textDiv.innerHTML = info;
+    //const buttonContainerDiv = separatorDiv.getElementsByClassName("container")[0];
+    const editButton = separatorDiv.getElementsByClassName("_edit_button")[0];
 
     editButton.addEventListener('click', function() {
-
 
         // append update form (specify optional second argument)
         const formElement = insertAnswerForm(segment_span, true);
