@@ -245,6 +245,8 @@ const userIsAuthenticated = readJsonWithDefault("data-user_is_authenticated", fa
 const user_role = readJsonWithDefault("data-user_role", null);
 const segIdDisplay = document.getElementById('seg_id_display');
 const utdPageType = readJsonWithDefault("data-utd_page_type", null);
+const apiData = JSON.parse(readJsonWithDefault("data-api_data", "null"));
+const csrfToken = readJsonWithDefault("data-csrf_token", null);
 
 function onLoadForShowDebatePage(){
     answerObjects = Array.from(document.getElementsByClassName("answer"));

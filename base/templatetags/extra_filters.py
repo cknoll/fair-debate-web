@@ -43,3 +43,9 @@ def settings_value(name):
         raise ValueError(msg)
 
     return getattr(settings, name, None)
+
+
+@register.filter
+def debug(arg):
+    from ipydex import IPS
+    IPS()

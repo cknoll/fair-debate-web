@@ -24,5 +24,6 @@ class ErrorHandlerMiddleware:
         if settings.CATCH_EXCEPTIONS:
 
             if exception:
+                print(repr(exception))
                 err_page = error_page(request, title="general exception", msg=repr(exception), status=500)
                 return err_page

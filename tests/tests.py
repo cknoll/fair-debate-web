@@ -431,9 +431,9 @@ def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
     This function helps to create it manually.
     """
     soup = BeautifulSoup(response_content, "html.parser")
-    template_tag = soup.find(id="form_base_data_host")
-    action_url = template_tag.attrs["data-action-url"]
-    csrf_token = template_tag.find("input").attrs["value"]
+    # api_data = json.loads(soup.find(id="data-api_data").text)
+    action_url = json.loads(soup.find(id="data-action_url").text)
+    csrf_token = json.loads(soup.find(id="data-csrf_token").text)
 
     return action_url, csrf_token
 

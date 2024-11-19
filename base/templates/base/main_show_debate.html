@@ -34,11 +34,11 @@
 
 {% block templates_and_data %}
 
+{{ csrf_token.format|json_script:"data-csrf_token" }}
 {{ data.user_role|json_script:"data-user_role" }}
+{{ data.api_data|json_script:"data-api_data" }}
+{{ request.path|json_script:"data-action_url" }}
 
-<template id="form_base_data_host" data-action-url="{{ request.path }}">
-    {% csrf_token %}
-</template>
 
 <template id="segment_answer_form_template">
     <div id="__segment_answer_form_container_id" class="segment_answer_form_container ta-container">

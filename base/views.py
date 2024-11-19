@@ -1,8 +1,13 @@
 import os
+import json
+from urllib.parse import urlencode
+
 from django.conf import settings
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse
+
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -264,7 +269,14 @@ class ShowDebateView(View):
                 "segmented_html": body_content_html,
                 "debate_title": "untitled debate",
                 "debate_key": debate_obj.debate_key,
-                "user_role": debate_obj.get_user_role(request.user)
+                "user_role": debate_obj.get_user_role(request.user),
+                # make some data available for js api
+                "api_data": json.dumps({
+                    "delete_url": reverse("delete_contribution"),
+                    "commit_url": reverse("commit_contribution"),
+                    "commit_all_url": reverse("commit_all_contributions"),
+                    "debate_key": debate_obj.debate_key,
+                }),
             }
         }
         template = "base/main_show_debate.html"
