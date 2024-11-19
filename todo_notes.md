@@ -23,7 +23,7 @@
             - [x] should be displayed by default (and thus their parents)
             - [x] and have their own css class (moderately highlighted) -> db_ctb
             - [ ] add delete button
-                - [] backend
+                - [x] backend
                 - [] frontend
         - [x] for all but the author: should not be displayed
     - [x] consider preview view with possibility to update -> edit already created answer:

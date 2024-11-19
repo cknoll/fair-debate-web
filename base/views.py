@@ -8,8 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from django.contrib.auth import authenticate, login, logout
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.utils import OperationalError
+from django.db.models import QuerySet
 
 from .forms import UserCreationForm, LoginForm
 from .models import Debate, Contribution, DebateUser
@@ -101,6 +100,8 @@ class ProcessContribution(View):
             self.commit_contribution(request)
         elif action == "commit_all":
             self.commit_all_uc_contribution(request)
+        elif action == "delete":
+            self.delete_contribution(request)
         else:
             msg = f"Unexpected action: ('{action}') for view ProcessContribution"
             error_page(request, title="Error during ProcessContribution", msg=msg)
@@ -110,16 +111,16 @@ class ProcessContribution(View):
         msg = f"Get request not allowed for path {request.path}!"
         return error_page(request, title="Invalid Request", msg=msg, status=403)
 
-
     def _get_contribution_set_from_request(self, request, all=False):
         debate_key = request.POST["debate_key"]
         debate_obj = Debate.objects.get(debate_key=debate_key)
 
+        ctb_objs: QuerySet
         if all:
             ctb_objs = debate_obj.contribution_set.all()
         else:
             ctb_key = request.POST["contribution_key"]
-            ctb_objs: list[Contribution] = list(debate_obj.contribution_set.filter(contribution_key=ctb_key))
+            ctb_objs = debate_obj.contribution_set.filter(contribution_key=ctb_key)
             msg = f"Unexpected number of contribution objects ({len(ctb_objs)}) for {debate_key} ctb {ctb_key}"
             assert len(ctb_objs) == 1, msg
 
@@ -148,6 +149,9 @@ class ProcessContribution(View):
         fdmd.commit_ctb_list(settings.REPO_HOST_DIR, c.debate_key, ctb_list)
         c.ctb_objs.delete()
 
+    def delete_contribution(self, request):
+        c = self._get_contribution_set_from_request(request)
+        c.ctb_objs.delete()
 
 
 class ShowDebateView(View):

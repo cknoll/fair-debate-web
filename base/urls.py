@@ -28,6 +28,13 @@ urlpatterns = [
         kwargs={"action": "commit_all"}
     ),
 
+    path(
+        "delete_contribution",
+        views.ProcessContribution.as_view(),
+        name="delete_contribution",
+        kwargs={"action": "delete"}
+    ),
+
     path("menu/", views.menu_page, name="menupage"),
     path("debug/", views.debugpage, name="debugpage"),
     path("about/", views.about_page, name="aboutpage"),

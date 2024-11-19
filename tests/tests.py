@@ -403,6 +403,24 @@ class TestCore1(TestCase):
         # check that all contributions in db are
         self.assertEqual(len(models.Contribution.objects.all()), 0)
 
+    def _08x__common(self):
+        res = self._07x__common()
+        del res.action_url_single
+        del res.action_url_all
+
+        res.action_url_delete = reverse("delete_contribution")
+        return res
+
+    def test_080__delete_contribution(self):
+        c = self._08x__common()
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
+        self.perform_login(username="testuser_2")
+
+        # send delete request
+        response = self.client.post(c.action_url_delete, c.post_data_a15b)
+
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - 1)
+
 
 def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
     """
