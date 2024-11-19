@@ -110,32 +110,44 @@ class ProcessContribution(View):
         msg = f"Get request not allowed for path {request.path}!"
         return error_page(request, title="Invalid Request", msg=msg, status=403)
 
-    def commit_contribution(self, request):
-        debate_key = request.POST["debate_key"]
-        contribution_key = request.POST["contribution_key"]
 
+    def _get_contribution_set_from_request(self, request, all=False):
+        debate_key = request.POST["debate_key"]
         debate_obj = Debate.objects.get(debate_key=debate_key)
-        ctb_objs: list[Contribution] = list(debate_obj.contribution_set.filter(contribution_key=contribution_key))
-        msg = f"Unexpected number of contribution objects ({len(ctb_objs)}) for {debate_key} ctb {contribution_key}"
-        assert len(ctb_objs) == 1, msg
-        ctb = fdmd.DBContribution(ctb_objs[0].contribution_key, ctb_objs[0].body)
-        fdmd.commit_ctb(settings.REPO_HOST_DIR, debate_key, ctb)
-        ctb_objs[0].delete()
+
+        if all:
+            ctb_objs = debate_obj.contribution_set.all()
+        else:
+            ctb_key = request.POST["contribution_key"]
+            ctb_objs: list[Contribution] = list(debate_obj.contribution_set.filter(contribution_key=ctb_key))
+            msg = f"Unexpected number of contribution objects ({len(ctb_objs)}) for {debate_key} ctb {ctb_key}"
+            assert len(ctb_objs) == 1, msg
+
+        res = Container()
+        res.ctb_objs = ctb_objs
+        res.debate_key = debate_key
+
+        return res
+
+    def commit_contribution(self, request):
+        c = self._get_contribution_set_from_request(request)
+
+        ctb = fdmd.DBContribution(c.ctb_objs[0].contribution_key, c.ctb_objs[0].body)
+        fdmd.commit_ctb(settings.REPO_HOST_DIR, c.debate_key, ctb)
+        c.ctb_objs[0].delete()
 
     def commit_all_uc_contribution(self, request):
-        debate_key = request.POST["debate_key"]
 
-        debate_obj = Debate.objects.get(debate_key=debate_key)
-
-        ctb_obj_set = debate_obj.contribution_set.all()
+        c = self._get_contribution_set_from_request(request, all=True)
 
         ctb_list = []
         ctb_obj: Contribution
-        for ctb_obj in ctb_obj_set:
+        for ctb_obj in c.ctb_objs:
             ctb_list.append(fdmd.DBContribution(ctb_key=ctb_obj.contribution_key, body=ctb_obj.body))
 
-        fdmd.commit_ctb_list(settings.REPO_HOST_DIR, debate_key, ctb_list)
-        ctb_obj_set.delete()
+        fdmd.commit_ctb_list(settings.REPO_HOST_DIR, c.debate_key, ctb_list)
+        c.ctb_objs.delete()
+
 
 
 class ShowDebateView(View):

@@ -388,7 +388,7 @@ class TestCore1(TestCase):
             self.assertFalse(os.path.exists(fpath))
 
         # now send the post request
-        response = self.client.post(c.action_url_all, c.post_data_a15b)
+        response = self.client.post(c.action_url_all, c.post_data_all)
 
         self.assertEqual(response.status_code, 302)
         target_url = response["Location"]
