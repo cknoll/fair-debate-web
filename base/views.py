@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.views import View
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, QueryDict
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -98,7 +98,20 @@ def test_new_debate(request):
 
 
 class ProcessContribution(View):
+    def _preprocess_post(self, request):
+        """
+        Motivation: if we send a post request via javascript the request.POST-dict is empty.
+        -> We construct it manually from the body-data
+        """
+        if len(request.POST) == 0:
+            body_data = json.loads(request.body)
+            if not isinstance(body_data, dict):
+                msg = f"Unexpected type of parsed request.body: {type(body_data)}"
+                raise TypeError(msg)
+            request.POST =  QueryDict(urlencode(json.loads(request.body)))
+
     def post(self, request,  action=None):
+        self._preprocess_post(request)
         debate_key = request.POST["debate_key"]
 
         if action == "commit":

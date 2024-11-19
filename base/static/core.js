@@ -371,8 +371,24 @@ function getSeparatorDiv(segment_span, answerDiv){
         }
     });
 
-    separatorDiv.getElementsByClassName("_commit_button")[0].addEventListener('click', function() {
-        console.log("commit", answerDiv.id);
+    separatorDiv.getElementsByClassName("_commit_button")[0].addEventListener('click', async function() {
+        await fetch(apiData.commit_url, {
+            method: "POST",
+            body: JSON.stringify({
+              debate_key: apiData.debate_key,
+              csrfmiddlewaretoken: csrfToken,
+              contribution_key: answer_key_short
+            }),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              'X-CSRFToken': csrfToken
+            }
+          })
+          .then((response) => console.log(response));
+        //   .then((response) => response.json())
+        //   .then((json) => console.log(json));
+          //location.reload();
+
     });
 
     separatorDiv.getElementsByClassName("_delete_button")[0].addEventListener('click', function() {
