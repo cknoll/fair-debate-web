@@ -369,6 +369,15 @@ function getSeparatorDiv(segment_span, answerDiv){
         }
     });
 
+    separatorDiv.getElementsByClassName("_commit_button")[0].addEventListener('click', function() {
+        console.log("commit", answerDiv.id);
+    });
+
+    separatorDiv.getElementsByClassName("_delete_button")[0].addEventListener('click', function() {
+        console.log("delete", answerDiv.id);
+    });
+
+
     return separatorDiv
 }
 
