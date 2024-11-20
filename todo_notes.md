@@ -5,11 +5,12 @@
 - [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
     - → is not intentionally not allowed
     - [] implement modal warning dialog
+        - see: https://www.w3schools.com/howto/howto_css_modals.asp
 - [] add answer via gui
     - [.] specify repo and db-concept
     - [] implement mechanism to publish all answers in one commit
         - [x] backend
-            - [] test that new contributions are rendered correctly
+            - [] test that new contributions are rendered correctly (without class "db_ctb")
         - [] frontend
     - [] implement mechanism to publish answer from db to repo
         - [x] backend
@@ -17,14 +18,14 @@
             - [x] write contribution to file in repo
             - [x] create commit in repo (as correct user)
             - [x] adapt tearDown to restore repo state
-        - [] frontend
+        - [x] frontend
     - all uncommitted answers
         - for the author:
             - [x] should be displayed by default (and thus their parents)
             - [x] and have their own css class (moderately highlighted) -> db_ctb
             - [ ] add delete button
                 - [x] backend
-                - [] frontend
+                - [.] frontend
         - [x] for all but the author: should not be displayed
     - [x] consider preview view with possibility to update -> edit already created answer:
         - [x] implement update mechanism
