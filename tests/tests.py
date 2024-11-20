@@ -32,9 +32,7 @@ N_CTB_IN_FIXTURES = 2
 N_COMMITS_TEST_REPO = 4
 
 
-class TestCore1(TestCase):
-    fixtures = ["tests/testdata/fixtures01.json"]
-
+class RepoResetMixin:
     def setUp(self):
         self.git_reset_id: str = None
         self.git_reset_repo: str = None
@@ -48,11 +46,21 @@ class TestCore1(TestCase):
         repo = git.Repo(self.git_reset_repo)
         self.git_reset_id = repo.refs[0].commit.hexsha
 
+
     def reset_git_repo(self):
 
         repo = git.Repo(self.git_reset_repo)
         repo.head.reset(self.git_reset_id, index=True, working_tree=True)
 
+
+class TestCore1(RepoResetMixin, TestCase):
+    fixtures = ["tests/testdata/fixtures01.json"]
+
+    def setUp(self):
+        super(RepoResetMixin, self).setUp()
+
+    def tearDown(self):
+        super(RepoResetMixin, self).tearDown()
 
     def post_to_view(self, viewname, **kwargs):
 
@@ -685,7 +693,7 @@ class TestGUI(StaticLiveServerTestCase):
         answer_div = b1.find_by_id("answer_a3b")
         separator_div = answer_div.find_by_css(".answer_form_separator")[0]
         self.assertTrue(separator_div.is_visible())
-        edit_button = separator_div.find_by_tag("button")[0]
+        edit_button = separator_div.find_by_css("._edit_button")[0]
 
         # form does not exist until edit-button is pressed
         self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_form_container"))
@@ -808,7 +816,7 @@ class TestGUI(StaticLiveServerTestCase):
         # should be already visible (contains uncommitted contribution)
         answer_div = b1.find_by_id("answer_a15b")
         self.assertTrue(answer_div.is_visible())
-        edit_button = answer_div.find_by_tag("button")[0]
+        edit_button = answer_div.find_by_css("._edit_button")[0]
         edit_button.click()
         form_container_div = b1.find_by_id("segment_answer_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a15")
