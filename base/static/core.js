@@ -371,7 +371,13 @@ function getSeparatorDiv(segment_span, answerDiv){
         }
     });
 
-    separatorDiv.getElementsByClassName("_commit_button")[0].addEventListener('click', async function() {
+    // add unique ids to identify the buttons in unittests
+    const commitButton = separatorDiv.getElementsByClassName("_commit_button")[0];
+    const deleteButton = separatorDiv.getElementsByClassName("_delete_button")[0];
+    commitButton.id = `commit_btn_${answer_key}`;
+    deleteButton.id = `delete_btn_${answer_key}`;
+
+    commitButton.addEventListener('click', async function() {
         await fetch(apiData.commit_url, {
             method: "POST",
             body: JSON.stringify({
@@ -383,15 +389,13 @@ function getSeparatorDiv(segment_span, answerDiv){
               "Content-type": "application/json; charset=UTF-8",
               'X-CSRFToken': csrfToken
             }
-          })
-          .then((response) => console.log(response));
-        //   .then((response) => response.json())
-        //   .then((json) => console.log(json));
-          //location.reload();
+          });
+        //   .then((response) => console.log(response));
+        location.reload();
 
     });
 
-    separatorDiv.getElementsByClassName("_delete_button")[0].addEventListener('click', function() {
+    deleteButton.addEventListener('click', function() {
         console.log("delete", answerDiv.id);
     });
 

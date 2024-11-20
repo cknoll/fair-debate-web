@@ -1,14 +1,17 @@
 import os
 import json
+import time
+
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-
-from bs4 import BeautifulSoup, element as bs24_element
 from django.urls import reverse
 from django.conf import settings
 from django.http.response import HttpResponse
 from django.contrib import auth
-from base import models
+
+from bs4 import BeautifulSoup, element as bs24_element
+from packaging.version import Version
+import git
 
 from splinter import Browser, Config
 from splinter.driver.webdriver import BaseWebDriver
@@ -16,14 +19,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 
-from packaging.version import Version
-
-import git
-
+from ipydex import IPS
 import fair_debate_md as fdmd
 from base import models
 
-from ipydex import IPS
 
 class Container:
     pass
@@ -33,15 +32,25 @@ N_COMMITS_TEST_REPO = 4
 
 
 class RepoResetMixin:
-    def setUp(self):
+    def set_up(self):
         self.git_reset_id: str = None
         self.git_reset_repo: str = None
 
-    def tearDown(self):
+    def tear_down(self):
         if self.git_reset_id is not None:
             self.reset_git_repo()
 
-    def mark_repo_for_reset(self, repo_dir: str):
+    def mark_repo_for_reset(self, repo_dir: str = None, repo_host_dir: str = None, debate_key: str = None):
+        if repo_dir is not None:
+            assert repo_host_dir is None
+            assert debate_key is None
+        else:
+            assert debate_key is not None
+            if repo_host_dir is None:
+                repo_host_dir = settings.REPO_HOST_DIR
+            repo_dir = os.path.join(repo_host_dir, debate_key)
+
+        assert os.path.isdir(repo_dir)
         self.git_reset_repo = repo_dir
         repo = git.Repo(self.git_reset_repo)
         self.git_reset_id = repo.refs[0].commit.hexsha
@@ -57,10 +66,10 @@ class TestCore1(RepoResetMixin, TestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
 
     def setUp(self):
-        super(RepoResetMixin, self).setUp()
+        self.set_up()
 
     def tearDown(self):
-        super(RepoResetMixin, self).tearDown()
+        self.tear_down()
 
     def post_to_view(self, viewname, **kwargs):
 
@@ -446,18 +455,18 @@ def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
     return action_url, csrf_token
 
 
-class TestGUI(StaticLiveServerTestCase):
+class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
     # headless = True
     headless = "new"  # recommended by ai
 
     def setUp(self) -> None:
+        self.set_up()
         # docs: https://splinter.readthedocs.io/en/latest/config.html
         self.browsers = []
 
-        return
-
     def tearDown(self):
+        self.tear_down()
 
         # quit all browser instances (also those which where not created by setUp)
         for browser in self.browsers:
@@ -826,6 +835,47 @@ class TestGUI(StaticLiveServerTestCase):
         form_container_div = b1.find_by_id("segment_answer_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a8")
 
+    def test_g080__commit_contribution1(self):
+
+        # self.headless = False
+        b1 = self.new_browser()
+
+        repo_dir = os.path.join(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY)
+        self.mark_repo_for_reset(repo_dir)
+
+        nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=repo_dir)
+        self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
+
+        # testuser_2 -> role b
+        self.perform_login(browser=b1, username="testuser_2")
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+
+        def _test_procedure(answer_id: str, delta0: int):
+            answer_div = b1.find_by_id(answer_id)
+            self.assertTrue(answer_div.is_visible())
+            self.assertIn("db_ctb", answer_div["class"])
+
+            self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - delta0)
+
+            commit_button = answer_div.find_by_css("._commit_button")[0]
+
+            # workaround for headless problem with .click()
+            trigger_click_event(b1, f'commit_btn_{answer_div["id"]}')
+
+            # this might depend on the test-hardware
+            time.sleep(1)
+
+            self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - delta0 - 1)
+
+            nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=repo_dir)
+            self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO + delta0 + 1)
+
+            answer_div_new = b1.find_by_id(answer_id)
+            self.assertNotIn("db_ctb", answer_div_new["class"])
+
+        _test_procedure("answer_a15b", delta0=0)
+        _test_procedure("answer_a2b1a1b", delta0=1)
+
 
 
 
@@ -865,7 +915,6 @@ def get_js_error_list(browser):
 
 
 def get_parsed_element_by_id(id: str, res: HttpResponse = None, browser: Browser = None):
-
 
     if browser is None:
         assert isinstance(res, HttpResponse)

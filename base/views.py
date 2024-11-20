@@ -113,7 +113,6 @@ class ProcessContribution(View):
     def post(self, request,  action=None):
         self._preprocess_post(request)
         debate_key = request.POST["debate_key"]
-
         if action == "commit":
             self.commit_contribution(request)
         elif action == "commit_all":
