@@ -204,10 +204,12 @@ class ShowDebateView(View):
 
         self.create_or_update_contribution(request, debate_obj, contribution_key)
 
-        ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=debate_obj)
-        ddl: fdmd.DebateDirLoader = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
+        return redirect("show_debate", debate_key=debate_key)
 
-        return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_obj_or_key=ddl.debate_key)
+        # ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=debate_obj)
+        # ddl: fdmd.DebateDirLoader = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
+
+        # return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_obj_or_key=ddl.debate_key)
 
     def create_or_update_contribution(self, request, debate_obj: Debate, contribution_key: str) -> Contribution:
         """

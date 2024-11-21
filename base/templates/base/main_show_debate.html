@@ -31,10 +31,14 @@
 {% if data.num_db_ctbs %}
 <div id="bottom_toolbar">
     <div class="_text">
-        You have {{ data.num_db_ctbs }} uncommitted contributions.
+        {% if data.num_db_ctbs == 1 %}
+            You have {{ data.num_db_ctbs }} uncommitted contribution.
+        {% else %}
+            You have {{ data.num_db_ctbs }} uncommitted contributions.
+        {% endif %}
     </div>
     <div class="button-container">
-        <button class="_commit_button" type="button">Commit all</button>
+        <button id="_commit_all_ctbs_button" class="_commit_button" type="button">Commit all</button>
     </div>
 </div>
 {% endif %}
