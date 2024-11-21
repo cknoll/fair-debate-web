@@ -378,30 +378,46 @@ function getSeparatorDiv(segment_span, answerDiv){
     deleteButton.id = `delete_btn_${answer_key}`;
 
     commitButton.addEventListener('click', async function() {
-        await fetch(apiData.commit_url, {
-            method: "POST",
-            body: JSON.stringify({
-              debate_key: apiData.debate_key,
-              csrfmiddlewaretoken: csrfToken,
-              contribution_key: answer_key_short
-            }),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              'X-CSRFToken': csrfToken
-            }
-          });
-        //   .then((response) => console.log(response));
-        location.reload();
-
+        try {
+            const response = await fetch(apiData.commit_url, generateRequestObject(
+                apiData.debate_key, answer_key_short
+            ));
+            location.reload();
+        } catch(err) {
+            console.error(err);
+        }
     });
 
     deleteButton.addEventListener('click', function() {
         console.log("delete", answerDiv.id);
     });
 
-
     return separatorDiv
 }
+
+function generateRequestObject(debateKey, answer_key_short=null) {
+
+    const body_obj = {
+        debate_key: debateKey,
+        csrfmiddlewaretoken: csrfToken,
+    }
+
+    if (answer_key_short !== null) {
+        body_obj.contribution_key = answer_key_short
+    }
+
+    const requestObj = {
+        method: "POST",
+        body: JSON.stringify(body_obj),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          'X-CSRFToken': csrfToken
+        }
+    }
+
+    return requestObj
+}
+
 
 function onLoadForSimplePage(){
     if (utdPageType === "utd_trigger_js_error_page"){
