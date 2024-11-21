@@ -282,7 +282,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         self.assertEqual(len(c.debate_obj1.contribution_set.all()), N_CTB_IN_FIXTURES)
 
-        response = self.client.post(c.action_url, c.post_data_a3)
+        response = self.post_and_follow_redirect(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(c.debate_obj1.contribution_set.all()), N_CTB_IN_FIXTURES + 1)
         soup = BeautifulSoup(response.content, "html.parser")
@@ -298,7 +298,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         # we are still testuser_2
         # send data for that segment key again with different body (update post)
-        response = self.client.post(c.action_url, c.post_data_a3_updated)
+        response = self.post_and_follow_redirect(c.action_url, c.post_data_a3_updated)
 
         # ensure that no additional object is created
         self.assertEqual(len(c.debate_obj1.contribution_set.all()), N_CTB_IN_FIXTURES + 1)
@@ -329,7 +329,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         # correct user (testuser_1 which has role a)
         response = self.perform_login(username="testuser_1", logout_first=True)
-        response = self.client.post(c.action_url, c.post_data_a4b4)
+        response = self.post_and_follow_redirect(c.action_url, c.post_data_a4b4)
         self.assertEqual(len(c.debate_obj1.contribution_set.all()), N_CTB_IN_FIXTURES + 1)
         expected_res = (
             "This is a level 2\n        <em>\n         answer\n        </em>\n        from a unittest."

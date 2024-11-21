@@ -172,20 +172,12 @@ class ProcessContribution(View):
 
 
 class ShowDebateView(View):
-    def get(self, request, debate_key=None, test=False):
-
-        if test:
-            # Show the display (show) mode with some preloaded fixture data (containing answers)
-            # This view simplifies interactive testing during development
-            debate_key = fdmd.TEST_DEBATE_KEY
-
-            # TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
+    def get(self, request, debate_key=None):
 
         assert debate_key is not None
 
         ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=fdmd.TEST_DEBATE_KEY)
         ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
-        # ddl = fdmd.load_dir(TEST_DEBATE_DIR1, ctb_list=ctb_list)
         return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_obj_or_key=ddl.debate_key)
 
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
@@ -205,11 +197,6 @@ class ShowDebateView(View):
         self.create_or_update_contribution(request, debate_obj, contribution_key)
 
         return redirect("show_debate", debate_key=debate_key)
-
-        # ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=debate_obj)
-        # ddl: fdmd.DebateDirLoader = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
-
-        # return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_obj_or_key=ddl.debate_key)
 
     def create_or_update_contribution(self, request, debate_obj: Debate, contribution_key: str) -> Contribution:
         """
@@ -277,7 +264,10 @@ class ShowDebateView(View):
             debate_obj = debate_obj_or_key
         assert isinstance(debate_obj, Debate)
 
-        ctb_obj_set = debate_obj.contribution_set.filter(author=request.user)
+        if request.user.is_authenticated:
+            len_ctb_obj_set = len(debate_obj.contribution_set.filter(author=request.user))
+        else:
+            len_ctb_obj_set = 0
 
         context = {
             "data": {
@@ -286,7 +276,7 @@ class ShowDebateView(View):
                 "debate_title": "untitled debate",
                 "debate_key": debate_obj.debate_key,
                 "user_role": debate_obj.get_user_role(request.user),
-                "num_db_ctbs": len(ctb_obj_set),
+                "num_db_ctbs": len_ctb_obj_set,
                 # make some data available for js api
                 "api_data": json.dumps({
                     "delete_url": reverse("delete_contribution"),
