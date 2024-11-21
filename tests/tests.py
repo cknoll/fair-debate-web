@@ -464,6 +464,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.set_up()
         # docs: https://splinter.readthedocs.io/en/latest/config.html
         self.browsers = []
+        self.repo_dir1 = os.path.join(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY)
 
     def tearDown(self):
         self.tear_down()
@@ -840,10 +841,9 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # self.headless = False
         b1 = self.new_browser()
 
-        repo_dir = os.path.join(settings.REPO_HOST_DIR, fdmd.TEST_DEBATE_KEY)
-        self.mark_repo_for_reset(repo_dir)
+        self.mark_repo_for_reset(self.repo_dir1)
 
-        nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=repo_dir)
+        nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=self.repo_dir1)
         self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
 
         # testuser_2 -> role b
@@ -857,8 +857,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
             self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - delta0)
 
-            commit_button = answer_div.find_by_css("._commit_button")[0]
-
             # workaround for headless problem with .click()
             trigger_click_event(b1, f'commit_btn_{answer_div["id"]}')
 
@@ -867,7 +865,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
             self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - delta0 - 1)
 
-            nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=repo_dir)
+            nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=self.repo_dir1)
             self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO + delta0 + 1)
 
             answer_div_new = b1.find_by_id(answer_id)
@@ -875,6 +873,43 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         _test_procedure("answer_a15b", delta0=0)
         _test_procedure("answer_a2b1a1b", delta0=1)
+
+    def test_g090__delete_contribution1(self):
+
+        # self.headless = False
+        b1 = self.new_browser()
+
+        nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=self.repo_dir1)
+        self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
+
+        # testuser_2 -> role b
+        self.perform_login(browser=b1, username="testuser_2")
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+
+        def _test_procedure(answer_id: str, delta0: int):
+            answer_div = b1.find_by_id(answer_id)
+            self.assertTrue(answer_div.is_visible())
+            self.assertIn("db_ctb", answer_div["class"])
+
+            self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - delta0)
+
+            # workaround for headless problem with .click()
+            trigger_click_event(b1, f'delete_btn_{answer_div["id"]}')
+
+            # this might depend on the test-hardware
+            time.sleep(.3)
+
+            self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - delta0 - 1)
+
+            nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=self.repo_dir1)
+            self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
+
+            answer_div_new = self.fast_get_by_id(b1, answer_id)
+            self.assertIsNone(answer_div_new)
+
+        _test_procedure("answer_a15b", delta0=0)
+        _test_procedure("answer_a2b1a1b", delta0=1)
+
 
 
 

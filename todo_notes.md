@@ -12,7 +12,7 @@
         - [x] backend
             - [] test that new contributions are rendered correctly (without class "db_ctb")
         - [] frontend
-    - [] implement mechanism to publish answer from db to repo
+    - [x] implement mechanism to publish answer from db to repo
         - [x] backend
             - [x] add basic view and test
             - [x] write contribution to file in repo
@@ -23,9 +23,9 @@
         - for the author:
             - [x] should be displayed by default (and thus their parents)
             - [x] and have their own css class (moderately highlighted) -> db_ctb
-            - [ ] add delete button
+            - [x] add delete button
                 - [x] backend
-                - [.] frontend
+                - [x] frontend
         - [x] for all but the author: should not be displayed
     - [x] consider preview view with possibility to update -> edit already created answer:
         - [x] implement update mechanism

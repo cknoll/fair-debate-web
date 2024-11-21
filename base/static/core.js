@@ -379,7 +379,7 @@ function getSeparatorDiv(segment_span, answerDiv){
 
     commitButton.addEventListener('click', async function() {
         try {
-            const response = await fetch(apiData.commit_url, generateRequestObject(
+            const response = await fetch(apiData.commit_url, generateRequestObjectForCtb(
                 apiData.debate_key, answer_key_short
             ));
             location.reload();
@@ -388,14 +388,21 @@ function getSeparatorDiv(segment_span, answerDiv){
         }
     });
 
-    deleteButton.addEventListener('click', function() {
-        console.log("delete", answerDiv.id);
+    deleteButton.addEventListener('click', async function() {
+        try {
+            const response = await fetch(apiData.delete_url, generateRequestObjectForCtb(
+                apiData.debate_key, answer_key_short
+            ));
+            location.reload();
+        } catch(err) {
+            console.error(err);
+        }
     });
 
     return separatorDiv
 }
 
-function generateRequestObject(debateKey, answer_key_short=null) {
+function generateRequestObjectForCtb(debateKey, answer_key_short=null) {
 
     const body_obj = {
         debate_key: debateKey,
