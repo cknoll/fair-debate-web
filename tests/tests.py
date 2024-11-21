@@ -62,7 +62,18 @@ class RepoResetMixin:
         repo.head.reset(self.git_reset_id, index=True, working_tree=True)
 
 
-class TestCore1(RepoResetMixin, TestCase):
+class FollowRedirectMixin:
+    def post_and_follow_redirect(self, action_url: str, post_data: dict) -> HttpResponse:
+        response = self.client.post(action_url, post_data)
+
+        # redirect
+        self.assertEqual(response.status_code, 302)
+        new_url = response["Location"]
+        response = self.client.get(new_url)
+        return response
+
+
+class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
 
     def setUp(self):
@@ -404,12 +415,16 @@ class TestCore1(RepoResetMixin, TestCase):
         for fpath in c.fpaths_all:
             self.assertFalse(os.path.exists(fpath))
 
-        # now send the post request
-        response = self.client.post(c.action_url_all, c.post_data_all)
+        response = self.client.get(reverse("test_show_debate"))
+        ctb_divs = BeautifulSoup(response.content, "html.parser").find_all("div", attrs={"class":"db_ctb"})
+        self.assertEqual(len(ctb_divs), 2)
 
-        self.assertEqual(response.status_code, 302)
-        target_url = response["Location"]
-        self.assertEqual(target_url, reverse("test_show_debate"))
+        response = self.post_and_follow_redirect(c.action_url_all, c.post_data_all)
+        self.assertEqual(response.request["PATH_INFO"], reverse("test_show_debate"))
+
+        # now no divs with this class should be in the response
+        ctb_divs = BeautifulSoup(response.content, "html.parser").find_all("div", attrs={"class":"db_ctb"})
+        self.assertEqual(len(ctb_divs), 0)
 
         nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=c.repo_dir)
         self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO + 1)
@@ -417,7 +432,7 @@ class TestCore1(RepoResetMixin, TestCase):
         for fpath in c.fpaths_all:
             self.assertTrue(os.path.exists(fpath))
 
-        # check that all contributions in db are
+        # check that all contributions in db are gone
         self.assertEqual(len(models.Contribution.objects.all()), 0)
 
     def _08x__common(self):

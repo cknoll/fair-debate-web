@@ -18,6 +18,7 @@
             - [x] write contribution to file in repo
             - [x] create commit in repo (as correct user)
             - [x] adapt tearDown to restore repo state
+            - [x] test that new contributions are rendered correctly (without class "db_ctb")
         - [x] frontend
     - all uncommitted answers
         - for the author:
