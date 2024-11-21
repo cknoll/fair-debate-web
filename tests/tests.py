@@ -889,6 +889,28 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         _test_procedure("answer_a15b", delta0=0)
         _test_procedure("answer_a2b1a1b", delta0=1)
 
+    def test_g081__commit_all_contribution(self):
+        # self.headless = False
+        b1 = self.new_browser()
+        self.mark_repo_for_reset(self.repo_dir1)
+        self.perform_login(browser=b1, username="testuser_2")
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+
+        db_ctb_divs = b1.find_by_css(".db_ctb")
+        self.assertEqual(len(db_ctb_divs), N_CTB_IN_FIXTURES)
+
+        # workaround for headless problem with .click()
+        trigger_click_event(b1, "commit_all_ctbs_button")
+        time.sleep(0.5)
+
+        self.assertEqual(len(models.Contribution.objects.all()), 0)
+
+        nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=self.repo_dir1)
+        self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO + 1)
+
+        db_ctb_divs = b1.find_by_css(".db_ctb")
+        self.assertEqual(len(db_ctb_divs), 0)
+
     def test_g090__delete_contribution1(self):
 
         # self.headless = False
