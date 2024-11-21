@@ -6,12 +6,13 @@
     - → is not intentionally not allowed
     - [] implement modal warning dialog
         - see: https://www.w3schools.com/howto/howto_css_modals.asp
-- [] add answer via gui
-    - [.] specify repo and db-concept
-    - [] implement mechanism to publish all answers in one commit
+
+- [x] add answer via gui
+    - [x] specify repo and db-concept
+    - [x] implement mechanism to publish all answers in one commit
         - [x] backend
-            - [] test that new contributions are rendered correctly (without class "db_ctb")
-        - [] frontend
+            - [x] test that new contributions are rendered correctly (without class "db_ctb")
+        - [x] frontend
     - [x] implement mechanism to publish answer from db to repo
         - [x] backend
             - [x] add basic view and test
