@@ -48,6 +48,22 @@
 
 <div id="outer-container">
 
+{% block modal_dialog %}
+<div id="modal-dialog" class="modal">
+
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-content-inner">
+            <p id="modal-dialog-text-message">With this action you will lose your unsaved text.</p>
+            <div class="button-container">
+                <button id="modal-dialog-cancel-button" type="button">Cancel</button>
+                <button id="modal-dialog-ok-button" type="button">Proceed</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
 
 <div id="id_main" class="{% block main_class %}main{% endblock %}">
 {% block content %}

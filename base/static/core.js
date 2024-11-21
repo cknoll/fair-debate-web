@@ -313,6 +313,7 @@ function onLoadForShowDebatePage(){
 
     unfoldAllUncommittedContributions();
     connectCommitAllCtbsButton();
+    initializeModalWarningElement();
 }
 
 function connectCommitAllCtbsButton() {
@@ -441,6 +442,35 @@ function generateRequestObjectForCtb(debateKey, answer_key_short=null) {
 
     return requestObj
 }
+
+// TODO: move to other global variables
+const modalDialog = document.getElementById("modal-dialog");
+
+function initializeModalWarningElement(){
+    // Get the modal
+    const modalDialogCloseWidget = modalDialog.getElementsByClassName("close-modal")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    modalDialogCloseWidget.onclick = closeModalWarning;
+    document.getElementById("modal-dialog-cancel-button").onclick = function() {
+        closeModalWarning();
+    }
+    document.getElementById("modal-dialog-ok-button").onclick = function() {
+        closeModalWarning();
+    }
+
+    // // When the user clicks on the button, open the modal
+    // btn.onclick = function() {
+    // modal.style.display = "block";
+    // }
+
+}
+
+
+function closeModalWarning() {
+    modalDialog.classList.add("hidden");
+}
+
 
 
 function onLoadForSimplePage(){

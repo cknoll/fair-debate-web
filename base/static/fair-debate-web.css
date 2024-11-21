@@ -192,9 +192,7 @@ h3:has(+ .rendered_content_preview) {
 
 }
 
-.hidden{
-  display: none;
-}
+/* class .hidden moved to base.css */
 
 .answer_form_separator {
   padding: 1em 0em 0.3em 0em;
