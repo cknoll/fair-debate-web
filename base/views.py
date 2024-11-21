@@ -275,6 +275,8 @@ class ShowDebateView(View):
             debate_obj = debate_obj_or_key
         assert isinstance(debate_obj, Debate)
 
+        ctb_obj_set = debate_obj.contribution_set.filter(author=request.user)
+
         context = {
             "data": {
                 "utd_page_type": f"utd_new_debate",
@@ -282,6 +284,7 @@ class ShowDebateView(View):
                 "debate_title": "untitled debate",
                 "debate_key": debate_obj.debate_key,
                 "user_role": debate_obj.get_user_role(request.user),
+                "num_db_ctbs": len(ctb_obj_set),
                 # make some data available for js api
                 "api_data": json.dumps({
                     "delete_url": reverse("delete_contribution"),

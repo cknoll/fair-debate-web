@@ -28,8 +28,18 @@
 </div>
 {% endif %}
 
+{% if data.num_db_ctbs %}
+<div id="bottom_toolbar">
+    <div class="_text">
+        You have {{ data.num_db_ctbs }} uncommitted contributions.
+    </div>
+    <div class="button-container">
+        <button class="_commit_button" type="button">Commit all</button>
+    </div>
+</div>
+{% endif %}
 
-{% endblock %}
+{% endblock %} {# end of content #}
 
 
 {% block templates_and_data %}
