@@ -377,16 +377,20 @@ function getSeparatorDiv(segment_span, answerDiv){
     const editButton = separatorDiv.getElementsByClassName("_edit_button")[0];
 
     editButton.addEventListener('click', function() {
+        function okFunc() {
+            console.log("edit", segment_span.id)
 
-        // append update form (specify optional second argument)
-        const formElement = insertAnswerForm(segment_span, true);
-        answerDiv.appendChild(formElement);
+            // append update form (specify optional second argument)
+            const formElement = insertAnswerForm(segment_span, true);
+            answerDiv.appendChild(formElement);
 
-        // read original md source from data-attribute and insert it to textarea
-        const originalMdSrc = answerDiv.getAttribute("data-plain_md_src");
-        if (originalMdSrc != null) {
-            answerDiv.getElementsByClassName("custom-textarea")[0].innerHTML = JSON.parse(originalMdSrc);
+            // read original md source from data-attribute and insert it to textarea
+            const originalMdSrc = answerDiv.getAttribute("data-plain_md_src");
+            if (originalMdSrc != null) {
+                answerDiv.getElementsByClassName("custom-textarea")[0].innerHTML = JSON.parse(originalMdSrc);
+            }
         }
+        activateModalWarning(okFunc);
     });
 
     // add unique ids to identify the buttons in unittests
@@ -455,17 +459,17 @@ function initializeModalWarningElement(){
     document.getElementById("modal-dialog-cancel-button").onclick = function() {
         closeModalWarning();
     }
-    document.getElementById("modal-dialog-ok-button").onclick = function() {
-        closeModalWarning();
-    }
-
-    // // When the user clicks on the button, open the modal
-    // btn.onclick = function() {
-    // modal.style.display = "block";
-    // }
-
 }
 
+
+function activateModalWarning(okFunc) {
+    modalDialog.classList.remove("hidden");
+
+    document.getElementById("modal-dialog-ok-button").addEventListener("click", function() {
+        okFunc();
+        closeModalWarning();
+    }, { once: true });
+}
 
 function closeModalWarning() {
     modalDialog.classList.add("hidden");
