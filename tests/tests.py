@@ -1024,15 +1024,15 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertTrue(modal_div.is_visible())
         trigger_click_event(b1, f'modal-dialog-cancel-button')
 
+        # cancel button of this textarea
+        trigger_click_event(b1, f'cancel_btn_{answer_key1}')
+        self.assertTrue(modal_div.is_visible())
+        trigger_click_event(b1, f'modal-dialog-cancel-button')
 
-        IPS()
-
-
-
-
-
-
-
+        # commit-all-button
+        trigger_click_event(b1, f'commit_all_ctbs_button')
+        self.assertTrue(modal_div.is_visible())
+        trigger_click_event(b1, f'modal-dialog-cancel-button')
 
 
 # #################################################################################################

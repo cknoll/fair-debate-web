@@ -1,14 +1,15 @@
 - [] first test-deployment on the web
 - [] improve landing page
-- [] fix bug for empty contribution (1. don't accept, 2. ignore them if they occur anyway)
 - [] js based buttons: level visibility ← →
-- [] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
+- [] fix bug for empty contribution (1. don't accept, 2. ignore them if they occur anyway)
+
+- [x] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
     - → is not intentionally not allowed
-    - [] implement modal warning dialog
+    - [x] implement modal warning dialog
         - see: https://www.w3schools.com/howto/howto_css_modals.asp
-        - [] should appear only if one textarea is shown and has changed
-        - [.] should appear if any of the buttons are pressed
-            - [] splinter test
+        - [x] should appear only if one textarea is shown and has changed
+        - [x] should appear if any of the buttons are pressed
+            - [x] splinter test
 
 - [x] add answer via gui
     - [x] specify repo and db-concept

@@ -207,7 +207,10 @@ function insertAnswerForm(segmentElement, answerKey, returnMode=null) {
     const cancelButton = form.getElementsByClassName("_cancel_button")[0];
     cancelButton.id = `cancel_btn_${answerKey}`
     cancelButton.addEventListener('click', function() {
-        cancelSegmentAnswerForm(segmentElement.id);
+        async function okFunc() {
+            cancelSegmentAnswerForm(segmentElement.id);
+        }
+        activateModalWarningIfNecessary(okFunc);
     });
 
     if (returnMode === null) {
@@ -329,14 +332,17 @@ function connectCommitAllCtbsButton() {
     }
 
     btn.addEventListener('click', async function () {
-        try {
-            const response = await fetch(apiData.commit_all_url, generateRequestObjectForCtb(
-                apiData.debate_key
-            ));
-            location.reload();
-        } catch(err) {
-            console.error(err);
+        async function okFunc() {
+            try {
+                const response = await fetch(apiData.commit_all_url, generateRequestObjectForCtb(
+                    apiData.debate_key
+                ));
+                location.reload();
+            } catch(err) {
+                console.error(err);
+            }
         }
+        activateModalWarningIfNecessary(okFunc);
     });
 
 }
@@ -414,25 +420,31 @@ function getSeparatorDiv(segment_span, answerDiv){
     deleteButton.id = `delete_btn_${answerKey}`;
 
     commitButton.addEventListener('click', async function() {
-        try {
-            const response = await fetch(apiData.commit_url, generateRequestObjectForCtb(
-                apiData.debate_key, answerKeyShort
-            ));
-            location.reload();
-        } catch(err) {
-            console.error(err);
+        async function okFunc() {
+            try {
+                const response = await fetch(apiData.commit_url, generateRequestObjectForCtb(
+                    apiData.debate_key, answerKeyShort
+                ));
+                location.reload();
+            } catch(err) {
+                console.error(err);
+            }
         }
+        activateModalWarningIfNecessary(okFunc);
     });
 
     deleteButton.addEventListener('click', async function() {
-        try {
-            const response = await fetch(apiData.delete_url, generateRequestObjectForCtb(
-                apiData.debate_key, answerKeyShort
-            ));
-            location.reload();
-        } catch(err) {
-            console.error(err);
+        async function okFunc() {
+            try {
+                const response = await fetch(apiData.delete_url, generateRequestObjectForCtb(
+                    apiData.debate_key, answerKeyShort
+                ));
+                location.reload();
+            } catch(err) {
+                console.error(err);
+            }
         }
+        activateModalWarningIfNecessary(okFunc);
     });
 
     return separatorDiv
