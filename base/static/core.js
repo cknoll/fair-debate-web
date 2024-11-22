@@ -472,7 +472,7 @@ function initializeModalWarningElement(){
  */
 function activateModalWarningIfNecessary(okFunc) {
     if (activeTextArea !== null) {
-        if (activeTextArea.getAttribute("data-has_changed") === true) {
+        if (activeTextArea.getAttribute("data-has_changed") === "true") {
             // modal warning dialog is necessary
             activateModalWarning(okFunc);
             return
@@ -485,11 +485,10 @@ function activateModalWarningIfNecessary(okFunc) {
 
 function initActiveTextArea(taElement) {
     activeTextArea = taElement;
-    taElement.setAttribute("data-has_changed", false);
+    taElement.setAttribute("data-has_changed", "false");
 
     taElement.addEventListener('keydown', function(){
-        console.log("has changed:", taElement)
-        taElement.setAttribute("data-has_changed", true);
+        taElement.setAttribute("data-has_changed", "true");
     }, { once: true });
 }
 

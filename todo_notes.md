@@ -7,7 +7,7 @@
     - [] implement modal warning dialog
         - see: https://www.w3schools.com/howto/howto_css_modals.asp
         - [] should appear only if one textarea is shown and has changed
-        - [] should appear if any of the buttons are pressed
+        - [.] should appear if any of the buttons are pressed
             - [] splinter test
 
 - [x] add answer via gui
