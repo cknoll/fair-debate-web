@@ -509,7 +509,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # ensure that the login was successful
 
-        failed_login_attempt = self.fast_get_by_id(browser, id_str="data-failed_login_attempt")
+        failed_login_attempt = self.fast_get(browser, id_str="data-failed_login_attempt")
 
         if failed_login_attempt and failed_login_attempt.html == "true":
             msg = f"Login process unexpectedly failed ({username=})"
@@ -519,16 +519,24 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         browser.visit(f"{self.live_server_url}{reverse('logout')}")
         self.assertFalse(auth.get_user(self.client).is_authenticated)
 
-    def fast_get_by_id(self, browser: Browser, id_str: str):
+    def fast_get(self, browser: Browser, id_str: str, class_str: str = None):
         """
-        This function is faster in cases where the
+        Look with JS if the item is present, then return it as splinter object.
+
+        This function is faster in cases where the item could not be found.
         """
         js_get_data = f'document.getElementById("{id_str}")'
+        if class_str is not None:
+            js_get_data = f'{js_get_data}.getElementsByClassName("{class_str}")'
+
         js_res = browser.evaluate_script(js_get_data)
         if not js_res:
             return None
         else:
-            return browser.find_by_id(id_str)[0]
+            res = browser.find_by_id(id_str)[0]
+            if class_str:
+                res = res.find_by_css(f".{class_str}")
+            return res
 
     def new_browser(self):
         """
@@ -645,7 +653,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
         # for existing committed element
-        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_answer_hint_container"))
 
         # side quest: check if `unfoldAllUncommittedContributions` worked
         self.assertTrue(b1.find_by_id("answer_a2b").is_visible())
@@ -654,12 +662,12 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # this should currently trigger a warning (this answer is already committed)
         b1.find_by_id("a2b2").click()
-        hint_div = self.fast_get_by_id(b1, "segment_answer_hint_container")
+        hint_div = self.fast_get(b1, "segment_answer_hint_container")
         self.assertIsNotNone(hint_div)
 
         # close hint
         hint_div.find_by_tag("button").click()
-        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_answer_hint_container"))
 
         # investigate the (non) appearance of the answer form
         # (this is not solved via `self.fast_get_by_id` to possibly receive more then 1 result)
@@ -703,15 +711,15 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         trigger_mouseover_event(b1, id="a3b1")
 
-        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_answer_hint_container"))
         # this should currently trigger a warning in the future an edit-dialog
         b1.find_by_id("a3b1").click()
-        self.assertIsNotNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+        self.assertIsNotNone(self.fast_get(b1, "segment_answer_hint_container"))
 
         # test that the new contribution is displayed in response to get request
         b1.visit(f"{self.live_server_url}{reverse('landingpage')}")  # goto unrelated url
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
-        self.assertIsNotNone(self.fast_get_by_id(b1, "a3b1"))
+        self.assertIsNotNone(self.fast_get(b1, "a3b1"))
 
         # test updating of new contribution
 
@@ -721,7 +729,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         edit_button = separator_div.find_by_css("._edit_button")[0]
 
         # form does not exist until edit-button is pressed
-        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_form_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_answer_form_container"))
         edit_button.click()
 
         form_container_div = answer_div.find_by_css(".segment_answer_form_container")[0]
@@ -754,7 +762,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # new contribution should not be contained in response for anonymous user
         self.perform_logout(b1)
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
-        self.assertIsNone(self.fast_get_by_id(b1, "a3b1"))
+        self.assertIsNone(self.fast_get(b1, "a3b1"))
 
         #
         # testuser_1 phase (role a)
@@ -763,7 +771,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.perform_login(browser=b1, username="testuser_1")
 
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
-        self.assertIsNone(self.fast_get_by_id(b1, "a3b1"))
+        self.assertIsNone(self.fast_get(b1, "a3b1"))
 
         # testuser_1 should be able to answer to a2b2
         b1.find_by_id("a2").click()  # open existing answer
@@ -774,9 +782,9 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
 
         # does the warning appear as expected?
-        self.assertIsNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_answer_hint_container"))
         b1.find_by_id("a3").click()
-        self.assertIsNotNone(self.fast_get_by_id(b1, "segment_answer_hint_container"))
+        self.assertIsNotNone(self.fast_get(b1, "segment_answer_hint_container"))
 
     def test_g040__segment_answer_level1(self):
         """
@@ -941,11 +949,87 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=self.repo_dir1)
             self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
 
-            answer_div_new = self.fast_get_by_id(b1, answer_id)
+            answer_div_new = self.fast_get(b1, answer_id)
             self.assertIsNone(answer_div_new)
 
         _test_procedure("answer_a15b", delta0=0)
         _test_procedure("answer_a2b1a1b", delta0=1)
+
+    def test_g100__modal_behavior(self):
+        # self.headless = False
+        b1 = self.new_browser()
+
+        # testuser_2 -> role b
+        self.perform_login(browser=b1, username="testuser_2")
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+
+        modal_div = b1.find_by_id("modal-dialog")
+        self.assertFalse(modal_div.is_visible())
+        answer_key1 = "answer_a15b"
+        answer_key2 = "answer_a2b1a1b"
+        answer_div1 = b1.find_by_id(answer_key1)[0]
+        answer_div2 = b1.find_by_id(answer_key2)[0]
+
+        trigger_click_event(b1, f'edit_btn_{answer_key1}')
+        self.assertFalse(modal_div.is_visible())
+
+        trigger_click_event(b1, f'edit_btn_{answer_key2}')
+        self.assertFalse(modal_div.is_visible())
+
+        # now type something in the textarea, then press other edit button
+        ta2 = answer_div2.find_by_tag("textarea")[0]
+        ta2.type("abc")
+        trigger_click_event(b1, f'edit_btn_{answer_key1}')
+        self.assertTrue(modal_div.is_visible())
+        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        self.assertFalse(modal_div.is_visible())
+
+        # the textarea should not have changed
+        res1 = self.fast_get(b1, id_str=answer_key1, class_str="custom-textarea")
+        res2 = self.fast_get(b1, id_str=answer_key2, class_str="custom-textarea")
+        self.assertIsNone(res1)
+        self.assertIsNotNone(res2)
+
+        # now do it again but this time clicking "Proceed" (OK)
+        trigger_click_event(b1, f'edit_btn_{answer_key1}')
+        self.assertTrue(modal_div.is_visible())
+        trigger_click_event(b1, f'modal-dialog-ok-button')
+        self.assertFalse(modal_div.is_visible())
+
+        # textarea should have changed
+        res1 = self.fast_get(b1, id_str=answer_key1, class_str="custom-textarea")
+        res2 = self.fast_get(b1, id_str=answer_key2, class_str="custom-textarea")
+        self.assertIsNone(res2)
+        self.assertIsNotNone(res1)
+
+        # edit textarea 1 then test all the other relevant buttons
+        answer_div1.find_by_tag("textarea")[0].type("abc")
+
+        # both commit buttons
+        trigger_click_event(b1, f'commit_btn_{answer_key1}')
+        self.assertTrue(modal_div.is_visible())
+        trigger_click_event(b1, f'modal-dialog-cancel-button')
+
+
+        trigger_click_event(b1, f'commit_btn_{answer_key2}')
+        self.assertTrue(modal_div.is_visible())
+        trigger_click_event(b1, f'modal-dialog-cancel-button')
+
+        # both delete buttons
+        trigger_click_event(b1, f'delete_btn_{answer_key1}')
+        self.assertTrue(modal_div.is_visible())
+        trigger_click_event(b1, f'modal-dialog-cancel-button')
+
+        trigger_click_event(b1, f'delete_btn_{answer_key2}')
+        self.assertTrue(modal_div.is_visible())
+        trigger_click_event(b1, f'modal-dialog-cancel-button')
+
+
+        IPS()
+
+
+
+
 
 
 

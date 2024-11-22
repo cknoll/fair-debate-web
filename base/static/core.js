@@ -118,24 +118,24 @@ function insertAfter(newNode, referenceNode) {
  * Insert answer-form after after the segment element (when clicked on it)
  * If the current user has the wrong role insert a hint-element instead
  * @param {*} segmentElement
- * @param {*} answer_key
+ * @param {*} answerKey
  */
-function insertAnswerFormOrHint(segmentElement, answer_key) {
+function insertAnswerFormOrHint(segmentElement, answerKey) {
 
     // prevent insertion if current element is already marked as active
     if (segmentElement.getAttribute('data-active') === "true") {
         return
     }
 
-    if (answer_key.endsWith(user_role)) {
-        return insertAnswerForm(segmentElement);
+    if (answerKey.endsWith(user_role)) {
+        return insertAnswerForm(segmentElement, answerKey);
     } else {
-        return insertHintField(segmentElement, answer_key, user_role);
+        return insertHintField(segmentElement, answerKey, user_role);
     }
 }
 
 
-function insertHintField(segment_element, answer_key, user_role) {
+function insertHintField(segment_element, answerKey, user_role) {
 
     const clonedHintTemplate =  document.getElementById("segment_answer_hint").content.cloneNode(true);
     const hintContainer = clonedHintTemplate.getElementById("__segment_answer_hint_container_id");
@@ -143,7 +143,7 @@ function insertHintField(segment_element, answer_key, user_role) {
 
     const hintDiv = hintContainer.getElementsByClassName("segment_answer_hint")[0];
 
-    hintDiv.innerHTML = getHintMessage(segment_element.id, answer_key, user_role);
+    hintDiv.innerHTML = getHintMessage(segment_element.id, answerKey, user_role);
 
     // define action of OK button (-> make the hint removable)
     hintContainer.getElementsByClassName("_ok_button")[0].addEventListener('click', function() {
@@ -156,7 +156,7 @@ function insertHintField(segment_element, answer_key, user_role) {
 
 }
 
-function getHintMessage(segmentId, answer_key, userRole){
+function getHintMessage(segmentId, answerKey, userRole){
     if (!userIsAuthenticated) {
         // this should not occur because segments without answers should not be clickable for non-logged-in users.
         // We have this as 'second line of defense' (if something goes wrong)
@@ -164,7 +164,7 @@ function getHintMessage(segmentId, answer_key, userRole){
     }
 
     const username = readJsonWithDefault("data-user_name", null);
-    const requiredRole = answer_key.slice(-1);
+    const requiredRole = answerKey.slice(-1);
     if (["a", "b"].includes(userRole)) {
         const part1 = `You cannot answer to your own segment (${segmentId}). `;
         const part2 = `You ("${username}") have role <b>${userRole}</b> in this debate. `;
@@ -182,7 +182,7 @@ function getHintMessage(segmentId, answer_key, userRole){
 }
 
 
-function insertAnswerForm(segmentElement, returnMode=null) {
+function insertAnswerForm(segmentElement, answerKey, returnMode=null) {
 
     // in case there already is an opened answer form -> close it
     removeSegmentAnswerFormContainer();
@@ -203,7 +203,10 @@ function insertAnswerForm(segmentElement, returnMode=null) {
 
     form.getElementsByClassName("custom-textarea")[0].name = "body"
     form.getElementsByClassName("_reference_segment")[0].value = segmentElement.id;
-    form.getElementsByClassName("_cancel_button")[0].addEventListener('click', function() {
+
+    const cancelButton = form.getElementsByClassName("_cancel_button")[0];
+    cancelButton.id = `cancel_btn_${answerKey}`
+    cancelButton.addEventListener('click', function() {
         cancelSegmentAnswerForm(segmentElement.id);
     });
 
@@ -273,14 +276,14 @@ function onLoadForShowDebatePage(){
 
     // add square symbols and click-event-handler to those segments which have an answer
     segmentObjects.forEach(segment_span => {
-        const answer_key = getAnswerKey(segment_span.id);
-        if (answer_key in answerMap) {
+        const answerKey = getAnswerKey(segment_span.id);
+        if (answerKey in answerMap) {
 
             // for this segment there is already an answer
             // -> add square symbol
             segment_span.classList.add("sqn");
 
-            const answerDiv = answerMap[answer_key];
+            const answerDiv = answerMap[answerKey];
 
             // -> add function to toggle the visibility of the answer
             segment_span.addEventListener('click', function() {
@@ -308,7 +311,7 @@ function onLoadForShowDebatePage(){
 
             segment_span.addEventListener('click', function() {
 
-                insertAnswerFormOrHint(segment_span, answer_key);
+                insertAnswerFormOrHint(segment_span, answerKey);
             });
         }
     });
@@ -371,23 +374,26 @@ function getSeparatorDiv(segment_span, answerDiv){
     const clonedSeparatorTemplateFragment =  document.getElementById("_UCCtbSeparatorTemplate").content.cloneNode(true);
     // note: .getElementsByClassName is not available for Fragments, but querySelector is
     const separatorDiv = clonedSeparatorTemplateFragment.querySelector(".answer_form_separator");
-    const answer_key = answerDiv.id;
+    const answerKey = answerDiv.id;
 
     // convert "answer_a3b" to "a3b"
-    const answer_key_short = answer_key.replace("answer_", "");
+    const answerKeyShort = answerKey.replace("answer_", "");
     const textDiv = separatorDiv.getElementsByClassName("_text")[0];
-    let info = `Your contribution ${answer_key_short} is not yet published. `
+    let info = `Your contribution ${answerKeyShort} is not yet published. `
     info += "You can update it here:"
     textDiv.innerHTML = info;
     //const buttonContainerDiv = separatorDiv.getElementsByClassName("container")[0];
     const editButton = separatorDiv.getElementsByClassName("_edit_button")[0];
+
+    // add unique ids to identify the buttons in unittests
+    editButton.id = `edit_btn_${answerKey}`
 
     editButton.addEventListener('click', function() {
         function okFunc() {
             console.log("edit", segment_span.id)
 
             // append update form (specify optional second argument)
-            const formElement = insertAnswerForm(segment_span, true);
+            const formElement = insertAnswerForm(segment_span, answerKey, true);
             answerDiv.appendChild(formElement);
 
             // read original md source from data-attribute and insert it to textarea
@@ -404,13 +410,13 @@ function getSeparatorDiv(segment_span, answerDiv){
     // add unique ids to identify the buttons in unittests
     const commitButton = separatorDiv.getElementsByClassName("_commit_button")[0];
     const deleteButton = separatorDiv.getElementsByClassName("_delete_button")[0];
-    commitButton.id = `commit_btn_${answer_key}`;
-    deleteButton.id = `delete_btn_${answer_key}`;
+    commitButton.id = `commit_btn_${answerKey}`;
+    deleteButton.id = `delete_btn_${answerKey}`;
 
     commitButton.addEventListener('click', async function() {
         try {
             const response = await fetch(apiData.commit_url, generateRequestObjectForCtb(
-                apiData.debate_key, answer_key_short
+                apiData.debate_key, answerKeyShort
             ));
             location.reload();
         } catch(err) {
@@ -421,7 +427,7 @@ function getSeparatorDiv(segment_span, answerDiv){
     deleteButton.addEventListener('click', async function() {
         try {
             const response = await fetch(apiData.delete_url, generateRequestObjectForCtb(
-                apiData.debate_key, answer_key_short
+                apiData.debate_key, answerKeyShort
             ));
             location.reload();
         } catch(err) {
@@ -432,15 +438,15 @@ function getSeparatorDiv(segment_span, answerDiv){
     return separatorDiv
 }
 
-function generateRequestObjectForCtb(debateKey, answer_key_short=null) {
+function generateRequestObjectForCtb(debateKey, answerKeyShort=null) {
 
     const body_obj = {
         debate_key: debateKey,
         csrfmiddlewaretoken: csrfToken,
     }
 
-    if (answer_key_short !== null) {
-        body_obj.contribution_key = answer_key_short
+    if (answerKeyShort !== null) {
+        body_obj.contribution_key = answerKeyShort
     }
 
     const requestObj = {
