@@ -247,6 +247,8 @@ const segIdDisplay = document.getElementById('seg_id_display');
 const utdPageType = readJsonWithDefault("data-utd_page_type", null);
 const apiData = JSON.parse(readJsonWithDefault("data-api_data", "null"));
 const csrfToken = readJsonWithDefault("data-csrf_token", null);
+const modalDialog = document.getElementById("modal-dialog");
+var activeTextArea = null;
 
 function onLoadForShowDebatePage(){
     answerObjects = Array.from(document.getElementsByClassName("answer"));
@@ -387,10 +389,12 @@ function getSeparatorDiv(segment_span, answerDiv){
             // read original md source from data-attribute and insert it to textarea
             const originalMdSrc = answerDiv.getAttribute("data-plain_md_src");
             if (originalMdSrc != null) {
-                answerDiv.getElementsByClassName("custom-textarea")[0].innerHTML = JSON.parse(originalMdSrc);
+
+                initActiveTextArea(answerDiv.getElementsByClassName("custom-textarea")[0]);
+                activeTextArea.innerHTML = JSON.parse(originalMdSrc);
             }
         }
-        activateModalWarning(okFunc);
+        activateModalWarningIfNecessary(okFunc);
     });
 
     // add unique ids to identify the buttons in unittests
@@ -447,9 +451,6 @@ function generateRequestObjectForCtb(debateKey, answer_key_short=null) {
     return requestObj
 }
 
-// TODO: move to other global variables
-const modalDialog = document.getElementById("modal-dialog");
-
 function initializeModalWarningElement(){
     // Get the modal
     const modalDialogCloseWidget = modalDialog.getElementsByClassName("close-modal")[0];
@@ -461,6 +462,32 @@ function initializeModalWarningElement(){
     }
 }
 
+/**
+ *
+ * @param {*} oKFunc  function which is executed on OK
+ */
+function activateModalWarningIfNecessary(okFunc) {
+    if (activeTextArea !== null) {
+        if (activeTextArea.getAttribute("data-has_changed") === true) {
+            // modal warning dialog is necessary
+            activateModalWarning(okFunc);
+            return
+        }
+    }
+
+    // modal warning dialog was not necessary
+    okFunc();
+}
+
+function initActiveTextArea(taElement) {
+    activeTextArea = taElement;
+    taElement.setAttribute("data-has_changed", false);
+
+    taElement.addEventListener('keydown', function(){
+        console.log("has changed:", taElement)
+        taElement.setAttribute("data-has_changed", true);
+    }, { once: true });
+}
 
 function activateModalWarning(okFunc) {
     modalDialog.classList.remove("hidden");
