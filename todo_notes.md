@@ -1,7 +1,10 @@
 - [] first test-deployment on the web
 - [] improve landing page
 - [] js based buttons: level visibility ← →
-- [] fix bug for empty contribution (1. don't accept, 2. ignore them if they occur anyway)
+- [] fix bug for empty contribution
+    - [ ] ignore them if they occur anyway,
+    - [ ] backend: refuse to accept them
+    - [ ] frontend: dot let them be posted,
 
 - [x] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
     - → is not intentionally not allowed
