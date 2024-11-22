@@ -320,17 +320,21 @@ function onLoadForShowDebatePage(){
 
 function connectCommitAllCtbsButton() {
 
-    document.getElementById('commit_all_ctbs_button')
-        .addEventListener('click', async function () {
-            try {
-                const response = await fetch(apiData.commit_all_url, generateRequestObjectForCtb(
-                    apiData.debate_key
-                ));
-                location.reload();
-            } catch(err) {
-                console.error(err);
-            }
-        });
+    const btn = document.getElementById('commit_all_ctbs_button');
+    if (btn === null){
+        return
+    }
+
+    btn.addEventListener('click', async function () {
+        try {
+            const response = await fetch(apiData.commit_all_url, generateRequestObjectForCtb(
+                apiData.debate_key
+            ));
+            location.reload();
+        } catch(err) {
+            console.error(err);
+        }
+    });
 
 }
 
