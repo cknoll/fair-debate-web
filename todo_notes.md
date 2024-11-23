@@ -4,6 +4,7 @@
 - [] fix bug for empty contribution
     - [ ] ignore them if they occur anyway,
     - [ ] backend: refuse to accept them
+        - [x] implement failing test
     - [ ] frontend: dot let them be posted,
 
 - [x] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)

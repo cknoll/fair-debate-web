@@ -192,7 +192,6 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         res.debate_obj1 = models.Debate.objects.get(debate_key=fdmd.TEST_DEBATE_KEY)
 
-
         return res
 
     def test_060__add_answer_level1_without_login(self):
@@ -293,6 +292,14 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         segment_span = soup.find(id="a4b4a1")
         res = "".join(map(str, segment_span.contents)).strip()
         self.assertEqual(res, expected_res)
+
+    def test_063__add_empty_answer(self):
+        c = self._06x__common()
+        self.perform_login(username="testuser_2")
+
+        c.post_data_a3.update({"body": "",})
+        response = self.post_and_follow_redirect(c.action_url, c.post_data_a3)
+        self.assertEqual(response.status_code, 200)
 
     def _07x__common(self):
         res = Container()
