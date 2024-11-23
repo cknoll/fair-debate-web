@@ -1,9 +1,14 @@
+import logging
+
 from django.http import HttpResponse
 from django.conf import settings
-import traceback
+
 import ipydex
 
 from .views import error_page
+from .utils import UsageError
+
+logger = logging.getLogger("fair-debate")
 
 
 class ErrorHandlerMiddleware:
@@ -24,6 +29,10 @@ class ErrorHandlerMiddleware:
         if settings.CATCH_EXCEPTIONS:
 
             if exception:
-                print(repr(exception))
-                err_page = error_page(request, title="general exception", msg=repr(exception), status=500)
+                msg = repr(exception)
+                if not isinstance(exception, UsageError):
+                    # we only write a logfile entry for serious problems
+                    logger.warning(msg)
+                title = type(exception).__name__
+                err_page = error_page(request, title=title, msg=msg, status=500)
                 return err_page

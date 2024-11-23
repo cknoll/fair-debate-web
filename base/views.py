@@ -210,7 +210,6 @@ class ShowDebateView(View):
         contribution_obj: Contribution
         if contribution_obj := utils.get_or_none(debate_obj.contribution_set, contribution_key=contribution_key):
             contribution_obj.body = request.POST["body"]
-            contribution_obj.save()
 
         else:
             contribution_obj = Contribution(
@@ -219,6 +218,13 @@ class ShowDebateView(View):
                 contribution_key=contribution_key,
                 body=request.POST["body"],
             )
+
+        if contribution_obj.body == "":
+            msg = (
+                    f"Unexpectedly received empty body for contribution {contribution_key}. "
+                    "-> Contribution ignored."
+                )
+            raise utils.UsageError(msg)
 
         contribution_obj.save()
         return contribution_obj

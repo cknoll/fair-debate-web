@@ -6,3 +6,12 @@ def get_or_none(manager_obj, **kwargs):
         return manager_obj.get(**kwargs)
     except ObjectDoesNotExist:
         return None
+
+
+class UsageError(ValueError):
+    """
+    This error class means, that the error was caused by bad app usage, which is to distinguish from
+    some internal process error.
+    """
+    # The exception class is handled differently in `error_handler.py`
+    pass

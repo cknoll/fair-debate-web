@@ -108,7 +108,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         response = self.client.get(reverse("errorpage"))
         self.assertEqual(response.status_code, 500)
         utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
-        self.assertEqual(utd, "utd_general_exception")
+        self.assertEqual(utd, "utd_assertionerror")
         self.assertIn(b"intentionally raised assertion error", response.content)
 
         # provoke 404
@@ -173,7 +173,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         if not os.path.isdir(res.TEST_REPO1_PATH):
             raise FileNotFoundError(res.TEST_REPO1_PATH)
 
-        settings.CATCH_EXCEPTIONS = False
+        # settings.CATCH_EXCEPTIONS = False
 
         url = reverse("test_show_debate")
         response = self.client.get(url)
@@ -309,8 +309,10 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.perform_login(username="testuser_2")
 
         c.post_data_a3.update({"body": "",})
-        response = self.post_and_follow_redirect(c.action_url, c.post_data_a3)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(c.action_url, c.post_data_a3)
+        self.assertEqual(response.status_code, 500)
+        utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
+        self.assertEqual(utd, "utd_usageerror")
 
     def _07x__common(self):
         res = Container()

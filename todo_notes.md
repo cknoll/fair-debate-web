@@ -2,10 +2,11 @@
 - [] improve landing page
 - [] js based buttons: level visibility ← →
 - [] fix bug for empty contribution
-    - [ ] ignore them if they occur anyway,
-        - [] emit a logging-warning
-    - [ ] backend: refuse to accept them
+    - [x] ignore them if they occur anyway,
+        - [x] emit a logging-warning
+    - [x] backend: refuse to accept them
         - [x] implement failing test
+        - [x] fix test
     - [ ] frontend: dot let them be posted,
 
 - [x] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
