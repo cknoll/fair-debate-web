@@ -1,8 +1,8 @@
 - [] first test-deployment on the web
 - [] improve landing page
 - [] reevaluate process of new debate creation
-- [] js based buttons: level visibility ← →
-    - [] add buttons in frontend
+- [.] js based buttons: level visibility ← →
+    - [x] add buttons in frontend
     - [] implement -> direction (js)
         - [] frontend test
     - [] implement <- direction (js)

@@ -15,11 +15,26 @@
     <span id="debate_title">
         <h2>{{data.debate_title}}</h2>
         <span class="clickable_span" title="copy url to clipboard" onclick="copyFullURL()">&#x1F517;</span>
+        {% if data.num_answers %}
+        <span>({{ data.num_answers }}
+            {% if data.num_answers == 1 %}
+                answer)
+            {% else %}
+                answers)
+            {% endif %}
+        </span>
+        {% endif %}
     </span>
     <div style="display: block;">
         <div id="seg_id_display"></div>
         {% if data.user_role %}
-            <div id="user_role_display">{{ data.user_role }}</div>
+        <div id="user_role_display">{{ data.user_role }}</div>
+        {% endif %}
+        {% if data.num_answers %}
+        <div id="fold_button_display">
+            <div class="boxed clickable_span" onclick="hideCurrentAnswerLevel()">&laquo;</div>
+            <div class="boxed clickable_span" onclick="showNextAnswerLevel()">&raquo;</div>
+        </div>
         {% endif %}
     </div>
 </div>

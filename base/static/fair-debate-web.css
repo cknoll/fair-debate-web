@@ -95,6 +95,17 @@ h3:has(+ .rendered_content_preview) {
   background-color: hsla(0, 0%, 0%, 10%);
 }
 
+#fold_button_display {
+  --box-grey: #BBB;
+  display: inline;
+
+}
+
+#fold_button_display .boxed:hover {
+  --box-grey: #777;
+
+}
+
 
 /* debate body (segment and answers) */
 

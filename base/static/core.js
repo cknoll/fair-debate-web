@@ -58,6 +58,43 @@ window.addEventListener('click', function(event) {
     }
 });
 
+// end of menu-specific code ↑
+
+// start of debate-specific code ↓
+
+function readJsonWithDefault(dataId, defaultValue) {
+    const dataElement = document.getElementById(dataId);
+    let result = defaultValue; // Default value
+
+    if (dataElement) {
+        try {
+            result = JSON.parse(dataElement.text);
+        } catch (error) {
+            // Handle JSON parsing error if needed
+            // console.error("Parsing error:", error);
+            result = defaultValue; // Set it once again
+        }
+    }
+    return result
+}
+
+
+var answerObjects = null;
+var answerMap = {};
+var segmentObjects = null;
+const userIsAuthenticated = readJsonWithDefault("data-user_is_authenticated", false);
+const user_role = readJsonWithDefault("data-user_role", null);
+const segIdDisplay = document.getElementById('seg_id_display');
+const utdPageType = readJsonWithDefault("data-utd_page_type", null);
+const apiData = JSON.parse(readJsonWithDefault("data-api_data", "null"));
+const csrfToken = readJsonWithDefault("data-csrf_token", null);
+const modalDialog = document.getElementById("modal-dialog");
+var activeTextArea = null;
+
+
+
+
+
 
 function getAnswerKey(key){
     var parts = key.match(/[ab]\d+/g);
@@ -77,22 +114,6 @@ function toggleDisplayNoneBlock(element) {
     } else {
         element.style.display = "none";
     }
-}
-
-function readJsonWithDefault(dataId, defaultValue) {
-    const dataElement = document.getElementById(dataId);
-    let result = defaultValue; // Default value
-
-    if (dataElement) {
-        try {
-            result = JSON.parse(dataElement.text);
-        } catch (error) {
-            // Handle JSON parsing error if needed
-            // console.error("Parsing error:", error);
-            result = defaultValue; // Set it once again
-        }
-    }
-    return result
 }
 
 /**
@@ -255,19 +276,6 @@ function removeSegmentAnswerFormContainer(){
         segment_answer_form_container.remove();
     }
 }
-
-
-var answerObjects = null;
-var answerMap = {};
-var segmentObjects = null;
-const userIsAuthenticated = readJsonWithDefault("data-user_is_authenticated", false);
-const user_role = readJsonWithDefault("data-user_role", null);
-const segIdDisplay = document.getElementById('seg_id_display');
-const utdPageType = readJsonWithDefault("data-utd_page_type", null);
-const apiData = JSON.parse(readJsonWithDefault("data-api_data", "null"));
-const csrfToken = readJsonWithDefault("data-csrf_token", null);
-const modalDialog = document.getElementById("modal-dialog");
-var activeTextArea = null;
 
 function onLoadForShowDebatePage(){
     answerObjects = Array.from(document.getElementsByClassName("answer"));
@@ -550,7 +558,18 @@ async function copyFullURL(){
     // TODO: add some visual feedback here (like stack overflow does)
 }
 
+function showNextAnswerLevel(){
+    console.log("showNextAnswerLevel");
+}
 
+function hideCurrentAnswerLevel(){
+    console.log("hideCurrentAnswerLevel");
+}
+
+/**
+ * This function serves to deliberatively trigger a js error
+ * (to detect it via unittests)
+ */
 function onLoadForSimplePage(){
     if (utdPageType === "utd_trigger_js_error_page"){
         const x = notExistingVariable*0;

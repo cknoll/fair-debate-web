@@ -279,6 +279,9 @@ class ShowDebateView(View):
         else:
             len_ctb_obj_set = 0
 
+        # TODO: get correct number here
+        num_answers = 300
+
         context = {
             "data": {
                 "utd_page_type": f"utd_new_debate",
@@ -287,6 +290,7 @@ class ShowDebateView(View):
                 "debate_key": debate_obj.debate_key,
                 "user_role": debate_obj.get_user_role(request.user),
                 "num_db_ctbs": len_ctb_obj_set,
+                "num_answers": num_answers,
                 # make some data available for js api
                 "api_data": json.dumps({
                     "delete_url": reverse("delete_contribution"),
