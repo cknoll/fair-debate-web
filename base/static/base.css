@@ -48,6 +48,9 @@ html, body {
     height:100%;
     width:98%;
     font-size: var(--font-size-all);
+
+    /* prevent horizontal scrolling */
+    overflow-x: hidden;
 }
 
 
