@@ -66,17 +66,24 @@ h3:has(+ .rendered_content_preview) {
 }
 
 #second_sticky_bar h2 {
-  flex: 1;
   display: inline-block;
+  margin-top: 0em;
+  margin-bottom: 0em;
 
   /* for debugging the div containers */
   /* background-color: red; */
 }
 
 #debate_title {
-  margin-top: 0em;
-  margin-bottom: 0em;
+  flex: 1;
+  display: inline-block;
 }
+
+.clickable_span {
+  cursor: pointer;
+}
+
+
 
 #seg_id_display {
   display: inline;

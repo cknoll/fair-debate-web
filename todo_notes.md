@@ -1,6 +1,17 @@
 - [] first test-deployment on the web
 - [] improve landing page
+- [] reevaluate process of new debate creation
 - [] js based buttons: level visibility ← →
+    - [] add buttons in frontend
+    - [] implement -> direction (js)
+        - [] frontend test
+    - [] implement <- direction (js)
+        - [] frontend test
+
+- [x] improve debate heading
+    - [x] display debate_key (slug) in title
+    - [x] copy link to this debate
+
 - [x] fix bug for empty contribution
     - [x] ignore them if they occur anyway,
         - [x] emit a logging-warning

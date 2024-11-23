@@ -12,7 +12,10 @@
 <!-- {{data.unit_test_comment}} -->
 
 <div id="second_sticky_bar">
-    <h2 id="debate_title">{{data.debate_title}}</h2>
+    <span id="debate_title">
+        <h2>{{data.debate_title}}</h2>
+        <span class="clickable_span" title="copy url to clipboard" onclick="copyFullURL()">&#x1F517;</span>
+    </span>
     <div style="display: block;">
         <div id="seg_id_display"></div>
         {% if data.user_role %}

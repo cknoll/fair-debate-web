@@ -283,7 +283,7 @@ class ShowDebateView(View):
             "data": {
                 "utd_page_type": f"utd_new_debate",
                 "segmented_html": body_content_html,
-                "debate_title": "untitled debate",
+                "debate_title": debate_obj.debate_key,  # TODO: the title should come from metadata.toml
                 "debate_key": debate_obj.debate_key,
                 "user_role": debate_obj.get_user_role(request.user),
                 "num_db_ctbs": len_ctb_obj_set,

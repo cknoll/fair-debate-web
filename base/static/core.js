@@ -537,6 +537,19 @@ function closeModalWarning() {
 }
 
 
+async function copyFullURL(){
+    const fullURL = document.URL;  //readJsonWithDefault("data-full_url", null);
+
+    https://stackoverflow.com/a/30810322
+    navigator.clipboard.writeText(fullURL).then(function () {
+        console.log('Async: Copying to clipboard was successful!');
+    }, function (err) {
+        console.error('Async: Could not copy text: ', err);
+    });
+
+    // TODO: add some visual feedback here (like stack overflow does)
+}
+
 
 function onLoadForSimplePage(){
     if (utdPageType === "utd_trigger_js_error_page"){
