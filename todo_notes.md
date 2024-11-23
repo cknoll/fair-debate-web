@@ -3,9 +3,10 @@
 - [] reevaluate process of new debate creation
 - [.] js based buttons: level visibility ← →
     - [x] add buttons in frontend
-    - [] implement -> direction (js)
+    - [x] implement -> direction (js)
+        - [] improve logic: stop counter from increasing over deepest level
         - [] frontend test
-    - [] implement <- direction (js)
+    - [x] implement <- direction (js)
         - [] frontend test
 
 - [x] improve debate heading

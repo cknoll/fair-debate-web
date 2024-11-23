@@ -90,6 +90,7 @@ const apiData = JSON.parse(readJsonWithDefault("data-api_data", "null"));
 const csrfToken = readJsonWithDefault("data-csrf_token", null);
 const modalDialog = document.getElementById("modal-dialog");
 var activeTextArea = null;
+let currentLevel = 0;
 
 
 
@@ -343,6 +344,7 @@ function onLoadForShowDebatePage(){
     unfoldAllUncommittedContributions();
     connectCommitAllCtbsButton();
     initializeModalWarningElement();
+    connectKeyboardKeys();
 }
 
 function connectCommitAllCtbsButton() {
@@ -559,11 +561,63 @@ async function copyFullURL(){
 }
 
 function showNextAnswerLevel(){
-    console.log("showNextAnswerLevel");
+    console.log("showNextAnswerLevel", currentLevel);
+    currentLevel +=1;
+
+    function workerFunc(levelDiv) {
+        levelDiv.style.display = "block"
+    }
+
+    processLevel(currentLevel, workerFunc);
 }
 
 function hideCurrentAnswerLevel(){
-    console.log("hideCurrentAnswerLevel");
+    console.log("hideCurrentAnswerLevel", currentLevel);
+    if (currentLevel == 0) {
+        return
+    }
+
+    function workerFunc(levelDiv) {
+        levelDiv.style.display = "none"
+    }
+
+    processLevel(currentLevel, workerFunc);
+
+    currentLevel -=1 ;
+}
+
+/**
+ *
+ * @param {int} level non-negative int; specify the level which should be (un)folded
+ * @param {function} workerFunc function which will be applied to every div
+ */
+
+function processLevel(level, workerFunc) {
+
+    const className = `level${level}`;
+    const levelDivList = Array.from(document.getElementsByClassName(className));
+    levelDivList.forEach(levelDiv => {
+        workerFunc(levelDiv);
+    });
+
+    return levelDivList
+}
+
+function connectKeyboardKeys() {
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') {
+            hideCurrentAnswerLevel();
+        } else if (event.key === 'ArrowRight') {
+            showNextAnswerLevel();
+            //   } else if (event.key === 'ArrowUp') {
+            //     event.preventDefault();
+            //     doSomething();
+            //   } else if (event.key === 'ArrowDown') {
+            //     doSomething();
+            //     activateOther("next_vertical");
+        }
+    });
 }
 
 /**
