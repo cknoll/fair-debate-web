@@ -16,6 +16,7 @@ import fair_debate_md as fdmd
 from base import models
 
 from .utils import (
+    logger,
     RepoResetMixin,
     FollowRedirectMixin,
     Container,
@@ -29,6 +30,16 @@ from .utils import (
 
 class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
+
+    @classmethod
+    def setUpClass(cls):
+        # this is necessary to handle the fixtures
+        super().setUpClass()
+        logger.info(f"start of TestClass `{cls}`")
+
+    @classmethod
+    def tearDownClass(cls):
+        logger.info(f"end of TestClass `{cls}`")
 
     def setUp(self):
         self.set_up()
@@ -85,7 +96,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.4"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.5"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landingpage"))

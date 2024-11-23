@@ -46,6 +46,10 @@ STATIC_ROOT = "__BASEDIR__/collected_static"
 MEDIA_ROOT = "__BASEDIR__/media"
 REPO_HOST_DIR = "__BASEDIR__/content_repos"
 
+DJANGO_LOGFILE = "__BASEDIR__/django_logfile.log"
+BASE_APP_LOGFILE = "__BASEDIR__/base_app_logfile.log"
+
+
 
 # this path sould be located outside <BASEDIR> because the deployment might delete that completely
 BACKUP_PATH = "__BASEDIR__/../%(PROJECT_NAME)s_db_backups"

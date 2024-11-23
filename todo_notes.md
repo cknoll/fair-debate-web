@@ -3,6 +3,7 @@
 - [] js based buttons: level visibility ← →
 - [] fix bug for empty contribution
     - [ ] ignore them if they occur anyway,
+        - [] emit a logging-warning
     - [ ] backend: refuse to accept them
         - [x] implement failing test
     - [ ] frontend: dot let them be posted,

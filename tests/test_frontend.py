@@ -22,6 +22,7 @@ from base import models
 
 
 from .utils import (
+    logger,
     RepoResetMixin,
     N_CTB_IN_FIXTURES,
     N_COMMITS_TEST_REPO,
@@ -32,6 +33,16 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
     # headless = True
     headless = "new"  # recommended by ai
+
+    @classmethod
+    def setUpClass(cls):
+        # this is necessary to handle the fixtures
+        super().setUpClass()
+        logger.info(f"start of TestClass `{cls}`")
+
+    @classmethod
+    def tearDownClass(cls):
+        logger.info(f"end of TestClass `{cls}`")
 
     def setUp(self) -> None:
         self.set_up()

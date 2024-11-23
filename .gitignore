@@ -8,3 +8,4 @@ cache*.pcl
 content_repos
 
 _git_bundle_*
+*.log

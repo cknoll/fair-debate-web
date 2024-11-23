@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import logging
 
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -23,6 +24,8 @@ from ipydex import IPS
 import fair_debate_md as fdmd
 from base import models
 
+logger = logging.getLogger("fair-debate")
+logger.debug("fair_debate_web.tests.utils loaded")
 
 class Container:
     pass

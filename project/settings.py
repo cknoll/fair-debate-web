@@ -142,6 +142,49 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "base.DebateUser"
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{asctime} {levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file1': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': cfg("DJANGO_LOGFILE").replace("__BASEDIR__", BASE_DIR),
+            'formatter': 'verbose',
+        },
+        'file2': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': cfg("BASE_APP_LOGFILE").replace("__BASEDIR__", BASE_DIR),
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file1'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+
+        # this key is used in logger = logging.getLogger(...)
+        'fair-debate': {
+            'handlers': ['file2'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

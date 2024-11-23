@@ -1,6 +1,7 @@
 import os
 import json
 from urllib.parse import urlencode
+import logging
 
 from django.conf import settings
 from django.views import View
@@ -28,6 +29,9 @@ from . import utils
 from ipydex import IPS
 
 pjoin = os.path.join
+
+logger = logging.getLogger("fair-debate")
+logger.info("module views.py loaded")
 
 
 class Container:
