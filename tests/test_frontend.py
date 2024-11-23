@@ -264,11 +264,26 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         form = b1.find_by_id("segment_answer_form")[0]
         ta = form.find_by_tag("textarea")[0]
 
+        # ensure that the submit button is disabled
+        submit_button = self.fast_get(browser=b1, id_str="submit_btn_answer_a3b")
+        self.assertEqual(submit_button["disabled"], "true")
+
+        msg_content0 = "ABC"
+        ta.type(msg_content0)
+        self.assertEqual(ta.value, msg_content0)
+        self.assertIsNone(submit_button["disabled"])
+
+        # ta.clear() # this does not trigger the callback
+        send_key_to_browser(b1, Keys.BACKSPACE, n=3)
+        self.assertEqual(ta.value, "")
+        self.assertEqual(submit_button["disabled"], "true")
         msg_content1 = "This is an answer from a unittest."
         ta.type(msg_content1)
+        self.assertIsNone(submit_button["disabled"])
 
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
-        form.find_by_css("._submit_button").click()
+        # form.find_by_css("._submit_button").click()
+        submit_button.click()
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         # test for new element (should be visible by default)
@@ -611,9 +626,10 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 # #################################################################################################
 
 
-def send_key_to_browser(browser, key):
+def send_key_to_browser(browser, key, n=1):
     actions = ActionChains(browser.driver)
-    actions.send_keys(key)
+    for i in range(n):
+        actions.send_keys(key)
     actions.perform()
 
 

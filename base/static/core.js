@@ -208,6 +208,7 @@ function insertAnswerForm(segmentElement, answerKey, returnMode=null) {
     form.getElementsByClassName("_reference_segment")[0].value = segmentElement.id;
 
     const submitButton = form.getElementsByClassName("_submit_button")[0];
+    submitButton.id = `submit_btn_${answerKey}`;
 
     // prevent empty textarea from being submitted
 
