@@ -201,8 +201,20 @@ function insertAnswerForm(segmentElement, answerKey, returnMode=null) {
     const form = clonedFormTemplate.getElementById("__segment_answer_form_id");
     form.id = "segment_answer_form";
 
-    form.getElementsByClassName("custom-textarea")[0].name = "body"
+    const ta = form.getElementsByClassName("custom-textarea")[0];
+    ta.name = "body";
+
+    // store the reference id via hidden input field
     form.getElementsByClassName("_reference_segment")[0].value = segmentElement.id;
+
+    const submitButton = form.getElementsByClassName("_submit_button")[0];
+
+    // prevent empty textarea from being submitted
+
+    ta.addEventListener('input', function() {
+        // Enable or disable the button based on textarea content
+        submitButton.disabled = this.value.trim().length === 0;
+    });
 
     const cancelButton = form.getElementsByClassName("_cancel_button")[0];
     cancelButton.id = `cancel_btn_${answerKey}`
