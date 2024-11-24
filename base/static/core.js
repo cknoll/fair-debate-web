@@ -344,13 +344,14 @@ function onLoadForShowDebatePage(){
 
     unfoldAllUncommittedContributions();
     connectCommitAllCtbsButton();
+    connectShowAllCtbsButton();
     initializeModalWarningElement();
     connectKeyboardKeys();
 }
 
 function connectCommitAllCtbsButton() {
 
-    const btn = document.getElementById('commit_all_ctbs_button');
+    const btn = document.getElementById('btn_commit_all_ctbs');
     if (btn === null){
         return
     }
@@ -368,7 +369,21 @@ function connectCommitAllCtbsButton() {
         }
         activateModalWarningIfNecessary(okFunc);
     });
+}
 
+
+/**
+ * The button related to (#i2), see todo_notes.md
+ *
+ */
+function connectShowAllCtbsButton() {
+    const btn = document.getElementById('btn_show_all_ctbs');
+    if (btn === null){
+        return
+    }
+    btn.addEventListener('click', async function () {
+        unfoldAllUncommittedContributions()
+    });
 }
 
 function unfoldAllUncommittedContributions() {

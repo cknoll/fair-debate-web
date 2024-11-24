@@ -495,7 +495,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(db_ctb_divs), N_CTB_IN_FIXTURES)
 
         # workaround for headless problem with .click()
-        trigger_click_event(b1, "commit_all_ctbs_button")
+        trigger_click_event(b1, "btn_commit_all_ctbs")
         time.sleep(0.5)
 
         self.assertEqual(len(models.Contribution.objects.all()), 0)
@@ -618,7 +618,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         trigger_click_event(b1, f'modal-dialog-cancel-button')
 
         # commit-all-button
-        trigger_click_event(b1, f'commit_all_ctbs_button')
+        trigger_click_event(b1, f'btn_commit_all_ctbs')
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, f'modal-dialog-cancel-button')
 
@@ -635,32 +635,30 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         num_answers = get_parsed_element_by_id("data-num_answers", browser=b1)
         self.assertEqual(num_answers, 6 + N_CTB_IN_FIXTURES - 1)
 
-        btn_show_level = b1.find_by_id("btn_show_level")[0]
-        btn_hide_level = b1.find_by_id("btn_hide_level")[0]
-
         self.assertEqual(b1.evaluate_script("currentLevel"), 0)
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b"))
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a4b"))
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a6b"))
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a7b"))
 
-        btn_show_level.click()
+        # this is faster than finding the elements and calling .click()
+        trigger_click_event(b1, "btn_show_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 1)
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a4b"))
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a6b"))
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a7b"))
 
-        btn_hide_level.click()
+        trigger_click_event(b1, "btn_hide_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 0)
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b"))
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a4b"))
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a6b"))
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a7b"))
 
-        btn_show_level.click()
-        btn_show_level.click()
-        btn_show_level.click()
+        trigger_click_event(b1, "btn_show_level")
+        trigger_click_event(b1, "btn_show_level")
+        trigger_click_event(b1, "btn_show_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 3)
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))  # level 1
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a"))  # level 2
@@ -670,7 +668,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a6b"))
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a7b"))
 
-        btn_hide_level.click()
+        trigger_click_event(b1, "btn_hide_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 2)
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))  # level 1
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a"))  # level 2
@@ -680,10 +678,18 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a6b"))
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a7b"))
 
-        btn_show_level.click()
+        trigger_click_event(b1, "btn_show_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 3)
-        btn_show_level.click()
+        trigger_click_event(b1, "btn_show_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 3)
+        trigger_click_event(b1, "btn_hide_level")
+        trigger_click_event(b1, "btn_hide_level")
+        trigger_click_event(b1, "btn_hide_level")
+        self.assertEqual(b1.evaluate_script("currentLevel"), 0)
+
+        self.assertFalse(get_js_visibility_for_id(b1, "answer_a15b"))
+        trigger_click_event(b1, "btn_show_all_ctbs")
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a15b"))
 
 
 # #################################################################################################

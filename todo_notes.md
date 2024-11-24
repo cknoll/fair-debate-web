@@ -2,7 +2,7 @@
 - [] improve landing page
 - [] reevaluate process of new debate creation
 - [] place answers to h2-tags etc outside of those tags
-- [.] js based buttons: level visibility ← →
+- [x] js based buttons: level visibility ← →
     - [x] add buttons in frontend
     - [x] implement -> direction (js)
         - improve logic:
@@ -11,7 +11,8 @@
                   => stays visible for "→" button, but
                   disappears if `currentLevel` decreases below 3 (also if it decreases from 2->1 or 1->0)
                   => already implemented
-            - [] implement "btn_show_all_uc_ctb"
+            - [x] (#i2) implement "btn_show_all_uc_ctb"
+                - [x] test frontend
             - [x] (#i1) stop counter from increasing over deepest level
                 - [x] failing test
                 - [x] make deepest level available as json-script
