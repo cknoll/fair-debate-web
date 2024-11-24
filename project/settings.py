@@ -226,6 +226,7 @@ BLEACH_ALLOWED_TAGS = [
     "h3",
     "h4",
     "h5",
+    "h6",
     "ul",
     "ol",
     "li",
@@ -241,6 +242,12 @@ BLEACH_ALLOWED_ATTRIBUTES = {
     "a": ["href"],
     "span": ["class", "id"],
     "div": ["class", "id", "data-debate-key", "data-plain_md_src"],
+    "h1": ["class", "id"],
+    "h2": ["class", "id"],
+    "h3": ["class", "id"],
+    "h4": ["class", "id"],
+    "h5": ["class", "id"],
+    "h6": ["class", "id"],
 }
 
 BLEACH_ALLOWED_STYLES = ["font-family", "font-weight", "text-decoration", "font-variant"]

@@ -83,6 +83,13 @@ h3:has(+ .rendered_content_preview) {
   cursor: pointer;
 }
 
+.answered_heading .heading {
+  margin-bottom: 0.1em;
+}
+.answered_heading .answer {
+  margin-bottom: 1em;
+}
+
 
 
 #seg_id_display {

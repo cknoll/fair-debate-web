@@ -1,8 +1,9 @@
 - [] first test-deployment on the web
 - [] improve landing page
 - [] reevaluate process of new debate creation
-- [] (#i3) place answers to h1,h2,h3-tags etc outside of those tags
-    - [] failing backend test
+- [x] (#i3) place answers to h1,h2,h3-tags etc outside of those tags
+    - [x] failing backend test
+    - [x] implement necessary changes in fdmd
 
 - [x] js based buttons: level visibility ← →
     - [x] add buttons in frontend
