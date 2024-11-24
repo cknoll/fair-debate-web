@@ -96,7 +96,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.6"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.7"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landingpage"))
@@ -176,13 +176,13 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         # settings.CATCH_EXCEPTIONS = False
 
         url = reverse("test_show_debate")
-        response = self.client.get(url)
+        res.response = self.client.get(url)
 
         # if this fails, probably ./content_repos is not initialized
         # solution: `fdmd unpack-repos ./content_repos``
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(res.response.status_code, 200)
 
-        res.action_url, res.csrf_token = get_form_base_data_from_html_template_host(response.content)
+        res.action_url, res.csrf_token = get_form_base_data_from_html_template_host(res.response.content)
 
         res.post_data_a3 = {
             "csrfmiddlewaretoken": res.csrf_token,
@@ -207,6 +207,9 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
     def test_060__add_answer_level1_without_login(self):
         c = self._06x__common()
+
+        deepest_level = get_parsed_element_by_id("data-deepest_level", res=c.response)
+        self.assertEqual(deepest_level, 3)
 
         response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 302)

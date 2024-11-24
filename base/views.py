@@ -285,6 +285,7 @@ class ShowDebateView(View):
                 "user_role": debate_obj.get_user_role(request.user),
                 "num_db_ctbs": len_ctb_obj_set,
                 "num_answers": ddl.num_answers,
+                "deepest_level": len(ddl.level_tree) - 1,  # start level counting at 0
                 # make some data available for js api
                 "api_data": json.dumps({
                     "delete_url": reverse("delete_contribution"),
