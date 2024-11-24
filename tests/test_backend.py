@@ -164,6 +164,25 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         new_url = response["Location"]
         self.assertEqual(new_url, reverse("test_show_debate"))
 
+    def test_051__h3_answer_rendering(self):
+        """
+        test for issue (#i3): Answers to h1, h2, h3 tags should be rendered
+        outside of those tags.
+        """
+
+        # login with role b to see the relevant uncommitted contribution
+        response = self.perform_login(username="testuser_2")
+
+        response = self.client.get(reverse("test_show_debate"))
+        soup = BeautifulSoup(response.content, "html.parser")
+        segment_span = soup.find(id="a15")
+        answer_div = soup.find(id="answer_a15b")
+        self.assertEqual(segment_span.parent.name, "h3")
+
+        # currently failing (not yet implemented)
+        self.assertNotEqual(answer_div.parent.name, "h3")
+
+
     def _06x__common(self) -> Container:
 
         # ensure file system based test data exists:

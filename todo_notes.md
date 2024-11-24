@@ -1,7 +1,9 @@
 - [] first test-deployment on the web
 - [] improve landing page
 - [] reevaluate process of new debate creation
-- [] place answers to h2-tags etc outside of those tags
+- [] (#i3) place answers to h1,h2,h3-tags etc outside of those tags
+    - [] failing backend test
+
 - [x] js based buttons: level visibility ← →
     - [x] add buttons in frontend
     - [x] implement -> direction (js)
