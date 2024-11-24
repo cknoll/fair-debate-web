@@ -6,16 +6,18 @@
     - [x] add buttons in frontend
     - [x] implement -> direction (js)
         - improve logic:
-            - [] take parents and children into account (they could be already shown for different reasons)
+            - [x] take parents and children into account (they could be already shown for different reasons)
                 - desired behavior: level 3 child manually shown or automatically due to dtb_status
                   => stays visible for "→" button, but
                   disappears if `currentLevel` decreases below 3 (also if it decreases from 2->1 or 1->0)
                   => already implemented
             - [] implement "btn_show_all_uc_ctb"
-            - stop counter from increasing over deepest level
-        - [] frontend test
+            - [] (#i1) stop counter from increasing over deepest level
+                - [x] failing test
+                - [] make deepest level available as json-script
+        - [x] frontend test
     - [x] implement <- direction (js)
-        - [] frontend test
+        - [x] frontend test
 
 - [x] show number of answers in toolbar
 - [x] improve debate heading

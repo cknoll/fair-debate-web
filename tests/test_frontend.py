@@ -635,10 +635,10 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         num_answers = get_parsed_element_by_id("data-num_answers", browser=b1)
         self.assertEqual(num_answers, 6 + N_CTB_IN_FIXTURES - 1)
 
-        self.assertEqual(b1.evaluate_script("currentLevel"), 0)
         btn_show_level = b1.find_by_id("btn_show_level")[0]
         btn_hide_level = b1.find_by_id("btn_hide_level")[0]
 
+        self.assertEqual(b1.evaluate_script("currentLevel"), 0)
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b"))
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a4b"))
         self.assertFalse(get_js_visibility_for_id(b1, "answer_a6b"))
@@ -650,6 +650,41 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a4b"))
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a6b"))
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a7b"))
+
+        btn_hide_level.click()
+        self.assertEqual(b1.evaluate_script("currentLevel"), 0)
+        self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "answer_a4b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "answer_a6b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "answer_a7b"))
+
+        btn_show_level.click()
+        btn_show_level.click()
+        btn_show_level.click()
+        self.assertEqual(b1.evaluate_script("currentLevel"), 3)
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))  # level 1
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a"))  # level 2
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a3b"))  # level 3
+
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a4b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a6b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a7b"))
+
+        btn_hide_level.click()
+        self.assertEqual(b1.evaluate_script("currentLevel"), 2)
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))  # level 1
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a"))  # level 2
+        self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b1a3b"))  # level 3
+
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a4b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a6b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "answer_a7b"))
+
+        btn_show_level.click()
+        self.assertEqual(b1.evaluate_script("currentLevel"), 3)
+        btn_show_level.click()
+        # this currently fails (not yet implemented)
+        self.assertEqual(b1.evaluate_script("currentLevel"), 3)
 
 
 # #################################################################################################
