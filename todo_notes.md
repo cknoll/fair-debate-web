@@ -12,10 +12,10 @@
                   disappears if `currentLevel` decreases below 3 (also if it decreases from 2->1 or 1->0)
                   => already implemented
             - [] implement "btn_show_all_uc_ctb"
-            - [] (#i1) stop counter from increasing over deepest level
+            - [x] (#i1) stop counter from increasing over deepest level
                 - [x] failing test
                 - [x] make deepest level available as json-script
-        - [] frontend test
+        - [x] frontend test
     - [x] implement <- direction (js)
         - [x] frontend test
 

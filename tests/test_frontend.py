@@ -683,7 +683,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         btn_show_level.click()
         self.assertEqual(b1.evaluate_script("currentLevel"), 3)
         btn_show_level.click()
-        # this currently fails (not yet implemented)
         self.assertEqual(b1.evaluate_script("currentLevel"), 3)
 
 

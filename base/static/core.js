@@ -91,6 +91,7 @@ const csrfToken = readJsonWithDefault("data-csrf_token", null);
 const modalDialog = document.getElementById("modal-dialog");
 var activeTextArea = null;
 let currentLevel = 0;
+const deepestLevel = readJsonWithDefault("data-deepest_level", null);
 
 
 
@@ -562,6 +563,9 @@ async function copyFullURL(){
 
 function showNextAnswerLevel(){
     console.log("showNextAnswerLevel", currentLevel);
+    if (currentLevel == deepestLevel) {
+        return
+    }
     currentLevel +=1;
 
     function workerFunc(levelDiv) {
