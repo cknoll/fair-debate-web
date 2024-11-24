@@ -182,7 +182,7 @@ class ShowDebateView(View):
 
         ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=fdmd.TEST_DEBATE_KEY)
         ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
-        return self.render_result_from_html(request, body_content_html=ddl.final_html, debate_obj_or_key=ddl.debate_key)
+        return self.render_result_from_html(request, ddl)
 
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
     def post(self, request, **kwargs):
@@ -266,21 +266,15 @@ class ShowDebateView(View):
 
         return ctb_list
 
-    def render_result_from_html(self, request, body_content_html, debate_obj_or_key: Debate|str):
+    def render_result_from_html(self, request, ddl: fdmd.DebateDirLoader):
 
-        if isinstance(debate_obj_or_key, str):
-            debate_obj = Debate.objects.get(debate_key=debate_obj_or_key)
-        else:
-            debate_obj = debate_obj_or_key
-        assert isinstance(debate_obj, Debate)
+        body_content_html = ddl.final_html
+        debate_obj = Debate.objects.get(debate_key=ddl.debate_key)
 
         if request.user.is_authenticated:
             len_ctb_obj_set = len(debate_obj.contribution_set.filter(author=request.user))
         else:
             len_ctb_obj_set = 0
-
-        # TODO: get correct number here
-        num_answers = 300
 
         context = {
             "data": {
@@ -290,7 +284,7 @@ class ShowDebateView(View):
                 "debate_key": debate_obj.debate_key,
                 "user_role": debate_obj.get_user_role(request.user),
                 "num_db_ctbs": len_ctb_obj_set,
-                "num_answers": num_answers,
+                "num_answers": ddl.num_answers,
                 # make some data available for js api
                 "api_data": json.dumps({
                     "delete_url": reverse("delete_contribution"),
@@ -301,8 +295,6 @@ class ShowDebateView(View):
             }
         }
         template = "base/main_show_debate.html"
-
-        # TODO: maybe redirect here
         return render(request, template, context)
 
 

@@ -9,6 +9,7 @@
     - [x] implement <- direction (js)
         - [] frontend test
 
+- [x] show number of answers in toolbar
 - [x] improve debate heading
     - [x] display debate_key (slug) in title
     - [x] copy link to this debate
