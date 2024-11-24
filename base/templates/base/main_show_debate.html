@@ -32,8 +32,8 @@
         {% endif %}
         {% if data.num_answers %}
         <div id="fold_button_display">
-            <div class="boxed clickable_span" onclick="hideCurrentAnswerLevel()">&laquo;</div>
-            <div class="boxed clickable_span" onclick="showNextAnswerLevel()">&raquo;</div>
+            <div id="btn_hide_level" class="boxed clickable_span" onclick="hideCurrentAnswerLevel()">&laquo;</div>
+            <div id="btn_show_level" class="boxed clickable_span" onclick="showNextAnswerLevel()">&raquo;</div>
         </div>
         {% endif %}
     </div>
@@ -70,6 +70,7 @@
 {{ data.user_role|json_script:"data-user_role" }}
 {{ data.api_data|json_script:"data-api_data" }}
 {{ request.path|json_script:"data-action_url" }}
+{{ data.num_answers|json_script:"data-num_answers" }}
 
 
 <template id="segment_answer_form_template">

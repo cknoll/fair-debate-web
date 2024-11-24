@@ -1,10 +1,18 @@
 - [] first test-deployment on the web
 - [] improve landing page
 - [] reevaluate process of new debate creation
+- [] place answers to h2-tags etc outside of those tags
 - [.] js based buttons: level visibility ← →
     - [x] add buttons in frontend
     - [x] implement -> direction (js)
-        - [] improve logic: stop counter from increasing over deepest level
+        - improve logic:
+            - [] take parents and children into account (they could be already shown for different reasons)
+                - desired behavior: level 3 child manually shown or automatically due to dtb_status
+                  => stays visible for "→" button, but
+                  disappears if `currentLevel` decreases below 3 (also if it decreases from 2->1 or 1->0)
+                  => already implemented
+            - [] implement "btn_show_all_uc_ctb"
+            - stop counter from increasing over deepest level
         - [] frontend test
     - [x] implement <- direction (js)
         - [] frontend test

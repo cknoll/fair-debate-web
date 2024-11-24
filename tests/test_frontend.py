@@ -618,6 +618,39 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertTrue(modal_div.is_visible())
         trigger_click_event(b1, f'modal-dialog-cancel-button')
 
+    def test_g110__folding_buttons(self):
+        # self.headless = False
+        b1 = self.new_browser()
+
+        # this special contribution would make testing harder here
+        models.Contribution.objects.filter(contribution_key="a2b1a1b").delete()
+
+        # testuser_2 -> role b
+        self.perform_login(browser=b1, username="testuser_2")
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+        num_answers = get_parsed_element_by_id("data-num_answers", browser=b1)
+        self.assertEqual(num_answers, 6 + N_CTB_IN_FIXTURES - 1)
+
+        current_level = b1.evaluate_script("currentLevel")
+        self.assertEqual(current_level, 0)
+        btn_show_level = b1.find_by_id("btn_show_level")[0]
+        btn_hide_level = b1.find_by_id("btn_hide_level")[0]
+
+        self.assertFalse(b1.find_by_id("answer_a2b")[0].is_visible())
+        self.assertFalse(b1.find_by_id("answer_a4b")[0].is_visible())
+        self.assertFalse(b1.find_by_id("answer_a6b")[0].is_visible())
+        self.assertFalse(b1.find_by_id("answer_a7b")[0].is_visible())
+
+        btn_show_level.click()
+        self.assertEqual(current_level, 0)
+        self.assertTrue(b1.find_by_id("answer_a2b")[0].is_visible())
+        self.assertTrue(b1.find_by_id("answer_a4b")[0].is_visible())
+        self.assertTrue(b1.find_by_id("answer_a6b")[0].is_visible())
+        self.assertTrue(b1.find_by_id("answer_a7b")[0].is_visible())
+
+        IPS()
+
+
 
 # #################################################################################################
 
