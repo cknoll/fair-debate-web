@@ -5,6 +5,7 @@
 
     --color-global-bg: #FFF;
     --color-gray-dark-text: #333;
+    --color-gray-dark-text-link-underline: #30303040;
     --color-dim-text: hsl(00, 0%, 50%);
     --color-red-dark-text: #733;
     --color-quote-background: hsl(25, 0%, 97%);
@@ -87,7 +88,9 @@ body {
 
 body a{
     color: inherit;
-    text-decoration: underline dotted;
+    /* text-decoration: underline dotted; */
+    text-decoration: underline;
+    text-decoration-color: var(--color-gray-dark-text-link-underline);
 }
 
 

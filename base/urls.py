@@ -2,12 +2,13 @@ from django.urls import path
 from django.conf import settings
 
 from . import views
+from . import utils
 
 
 main_view = views.MainView.as_view
 
 urlpatterns = [
-    path("", main_view(), name="landingpage"),
+    path("", main_view(), name="landing_page"),
     path("new/", views.NewDebateView.as_view(), name="new_debate"),
     path("new/test", views.test_new_debate, name="test_new_debate"),
     path("d/<slug:debate_key>", views.ShowDebateView.as_view(), name="show_debate"),
@@ -35,11 +36,11 @@ urlpatterns = [
         kwargs={"action": "delete"}
     ),
 
-    path("menu/", views.menu_page, name="menupage"),
-    path("debug/", views.debugpage, name="debugpage"),
-    path("about/", views.about_page, name="aboutpage"),
+    path("menu/", views.menu_page, name="menu_page"),
+    path("debug/", views.debug_page, name="debug_page"),
+    path(utils.ABOUT_PATH, views.about_page, name="about_page"),
     # this is for testing the error handling
-    path("error/", views.errorpage, name="errorpage"),
+    path("error/", views.assertion_error_page, name="error_page"),
     path("error/js", views.js_error_page, name="trigger_js_error"),
     path(settings.LOGIN_URL, views.user_login, name="login"),
     path("signup/", views.user_signup, name="signup"),

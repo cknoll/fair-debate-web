@@ -99,13 +99,13 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.8"))
 
     def test_010__index(self):
-        response = self.client.get(reverse("landingpage"))
+        response = self.client.get(reverse("landing_page"))
         self.assertEqual(response.status_code, 200)
         utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
-        self.assertEqual(utd, "utd_landingpage")
+        self.assertEqual(utd, "utd_landing_page")
 
     def test_020__error(self):
-        response = self.client.get(reverse("errorpage"))
+        response = self.client.get(reverse("error_page"))
         self.assertEqual(response.status_code, 500)
         utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
         self.assertEqual(utd, "utd_assertionerror")
@@ -152,7 +152,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         response = self.perform_login()
         self.assertEqual(response.status_code, 302)
         new_url = response["Location"]
-        self.assertEqual(new_url, reverse("landingpage"))
+        self.assertEqual(new_url, reverse("landing_page"))
         response = self.client.get(new_url)
         self.assertEqual(response.status_code, 200)
 

@@ -129,10 +129,10 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # self.headless = False
 
         b1 = self.new_browser()
-        url = reverse("landingpage")
+        url = reverse("landing_page")
         b1.visit(f"{self.live_server_url}{url}")
         utd = get_parsed_element_by_id(id="data-utd_page_type", browser=b1)
-        self.assertEqual(utd, "utd_landingpage")
+        self.assertEqual(utd, "utd_landing_page")
         self.assertFalse(get_js_error_list(b1))
 
         url = reverse("trigger_js_error")
@@ -302,7 +302,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertIsNotNone(self.fast_get(b1, "segment_answer_hint_container"))
 
         # test that the new contribution is displayed in response to get request
-        b1.visit(f"{self.live_server_url}{reverse('landingpage')}")  # goto unrelated url
+        b1.visit(f"{self.live_server_url}{reverse('landing_page')}")  # goto unrelated url
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
         self.assertIsNotNone(self.fast_get(b1, "a3b1"))
 

@@ -44,13 +44,13 @@ class MainView(View):
             # nested dict for easier debugging in the template
             "data": {
                 "sp": None,
-                "utd_page_type": "utd_landingpage",
+                "utd_page_type": "utd_landing_page",
             }
         }
 
         context["data"]["sp"] = get_sp("landing")
         # template = "base/main_simplepage.html"
-        template = "base/main_landingpage.html"
+        template = "base/main_landing_page.html"
 
         return render(request, template, context)
 
@@ -299,13 +299,13 @@ class ShowDebateView(View):
         return render(request, template, context)
 
 
-def errorpage(request):
+def assertion_error_page(request):
     # serve a page via get request to simplify the display of source code in browser
 
     assert False, "intentionally raised assertion error"
 
 
-def debugpage(request):
+def debug_page(request):
     # serve a page via get request to simplify the display of source code in browser
     msg = f"""
     this is a debug page\n
@@ -417,7 +417,7 @@ def user_login(request):
                 if next_url := request.POST.get("next_url"):
                     return HttpResponseRedirect(next_url)
                 else:
-                    return redirect("landingpage")
+                    return redirect("landing_page")
             else:
                 data["failed_login_attempt"] = True
     else:
@@ -428,7 +428,7 @@ def user_login(request):
 # logout page
 def user_logout(request):
     logout(request)
-    return redirect("landingpage")
+    return redirect("landing_page")
 
 
 # End of medium source

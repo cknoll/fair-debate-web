@@ -8,11 +8,20 @@ from collections import defaultdict
 from django.conf import settings
 
 from .simple_pages_core import SimplePage
+from . import utils
+
+
+def reverse(*args, **kwargs):
+    # this import is placed here to prevent circular imports
+    from django.urls import reverse as orig_reverse
+    return orig_reverse(*args, **kwargs)
+
+
 
 
 dupurls = {
     "contact-page": "/contact",
-    "about-page": "/about",
+    "about_page": utils.ABOUT_PATH,
 }
 duplicated_urls = defaultdict(lambda: "__invalid_url__", dupurls)
 
@@ -228,12 +237,14 @@ new_sp(type="about", title="About the app", content=_(about_text_en))
 
 new_sp(
     type="landing",
-    title="landingpage",
+    title="landing page",
     content=_(
         f"""
 # Fair-Debate-Web
 
-Fair-Debate-Web is an experimental web application to facilitate controversial text-based debates.
+Fair-Debate-Web is an experimental web application to facilitate text-based debates on controversial topics.
+
+[Learn more ...]({dupurls["about_page"]})
 
 """
     ),

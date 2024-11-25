@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+{% load bleach_tags %}
+{% load extra_filters %}
+
+
+{% block title %}{{data.sp.title}}: {{ block.super }}{% endblock %}
+
+{% block content %}
+
+{# TODO: remove code duplication with main_simplepage.html #}
+<div>
+    {{data.sp.content|render_markdown|bleach}}
+</div>
+
+<div>
+    <hr>
+    {% if request.user.is_authenticated %}
+    You participated in the following debates:
+    <ul>
+      <li>foo (8 answers)</li>
+      <li>bar (8 answers)</li>
+      <li>baz (8 answers)</li>
+    </ul>
+    {% else %}
+    To actively participate in debates you need to <a href="{% url 'login' %}">login</a>
+    or <a href="{% url 'signup' %}">sign up</a> first.
+    {% endif %}
+
+    <hr>
+    Debates with most recent activity:
+    <ul>
+      <li>lorm (8 answers)</li>
+      <li>ipsum (8 answers)</li>
+      <li>etincidunt (8 answers)</li>
+    </ul>
+
+</div>
+
+
+{% endblock %}

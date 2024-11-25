@@ -1,6 +1,11 @@
 - [] first test-deployment on the web
-- [] improve landing page
 - [] reevaluate process of new debate creation
+- [.] improve landing page
+    - [] for logged in user
+        - [] make debates of user available on landing page
+        - [] list those three with most recent changes
+    - [] for anonymous user
+        - [] list of debates with most recent activity
 - [x] (#i3) place answers to h1,h2,h3-tags etc outside of those tags
     - [x] failing backend test
     - [x] implement necessary changes in fdmd

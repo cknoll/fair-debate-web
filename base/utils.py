@@ -15,3 +15,7 @@ class UsageError(ValueError):
     """
     # The exception class is handled differently in `error_handler.py`
     pass
+
+
+# we define this literal here to prevent circular imports
+ABOUT_PATH = "about/"
