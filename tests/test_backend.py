@@ -97,7 +97,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.8"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.9"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landing_page"))
@@ -148,6 +148,8 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(response.status_code, 302)
         new_url = response["Location"]
         self.assertEqual(new_url, reverse("show_debate",  kwargs={"debate_key": "d2-test_slug1"}))
+        response = self.client.get(new_url)
+        self.assertEqual(response.status_code, 200)
 
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))

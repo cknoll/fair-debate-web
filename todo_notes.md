@@ -16,7 +16,10 @@
     - [x] create uncommitted contribution object (for contribution a)
         - [x] backend test
     - [x] redirect to show debate
-        - [] backend test
+        - [x] backend test
+        - [] user b should not see anything before commit
+        - [] fix broken frontend
+        - [] test frontend
     - [] create repo if committed
     - [] delete debate object if main contribution is deleted (before commit)
 - [x] add rudimentary user profile page

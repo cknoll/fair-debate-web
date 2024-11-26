@@ -198,8 +198,15 @@ class ShowDebateView(View):
 
         assert debate_key is not None
 
-        ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=fdmd.TEST_DEBATE_KEY)
-        ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list)
+        ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=debate_key)
+
+        if len(ctb_list) == 1 and ctb_list[0].ctb_key == "a":
+            # create the first contribution of a new debate
+            new_debate = True
+        else:
+            new_debate = False
+
+        ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list, new_debate=new_debate)
         return self.render_result_from_html(request, ddl)
 
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
