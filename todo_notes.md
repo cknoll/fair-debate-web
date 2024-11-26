@@ -11,11 +11,14 @@
 
 - [] overhaul process of new debate creation
     - [x] require login
-    - [] improve test
-    - [] create an (uncommitted) debate object
-    - [] add buttons: edit, delete, commit
-    - [] display original markdown in textarea
-
+    - [x] improve test
+    - [x] create an debate object
+    - [x] create uncommitted contribution object (for contribution a)
+        - [x] backend test
+    - [x] redirect to show debate
+        - [] backend test
+    - [] create repo if committed
+    - [] delete debate object if main contribution is deleted (before commit)
 - [x] add rudimentary user profile page
 
 - [x] (#i3) place answers to h1,h2,h3-tags etc outside of those tags

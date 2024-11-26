@@ -66,14 +66,31 @@ class MainView(View):
 
 @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"), name="dispatch")
 class NewDebateView(View):
-    def get(self, request, test=False):
-        return self.render_result_from_md(request, body_content_md="")
+    def get(self, request):
+
+        context = {
+            "data": {
+                "utd_page_type": "utd_new_debate",
+            }
+        }
+        template = "base/main_new_debate.html"
+
+        # TODO: maybe redirect here
+        return render(request, template, context)
 
     def post(self, request, **kwargs):
-        body_content = request.POST.get("body_content", "")
-        return self.render_result_from_md(request, body_content)
+        debate_obj = Debate(user_a=request.user)
+        debate_obj.save()
+        debate_obj.debate_key = f"d{debate_obj.pk}-{request.POST['debate_slug']}"
+        debate_obj.save()
+
+        return ShowDebateView().post(request, debate_key=debate_obj.debate_key, contribution_key="a")
+
+        # body_content = request.POST.get("body", "")
+        # return self.render_result_from_md(request, body_content)
 
     def render_result_from_md(self, request, body_content_md):
+        raise DeprecationWarning
 
         mdp = fdmd.MDProcessor(plain_md=body_content_md, convert_now=True)
 
@@ -187,11 +204,20 @@ class ShowDebateView(View):
 
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
     def post(self, request, **kwargs):
+        """
+        Note: this method might be called explicitly with suitable keyword args from NewDebate.post(...).
+        """
 
-        debate_key = request.POST["debate_key"]
+        if debate_key := kwargs.get("debate_key"):
+            pass
+        else:
+            debate_key = request.POST["debate_key"]
         debate_obj = Debate.objects.get(debate_key=debate_key)
 
-        contribution_key = fdmd.get_answer_contribution_key(request.POST["reference_segment"])
+        if contribution_key := kwargs.get("contribution_key"):
+            pass
+        else:
+            contribution_key = fdmd.get_answer_contribution_key(request.POST["reference_segment"])
         answer_mode = contribution_key[-1]
         assert answer_mode in ("a", "b")
 
@@ -229,7 +255,6 @@ class ShowDebateView(View):
 
         contribution_obj.save()
         return contribution_obj
-
 
     def _ensure_suitable_user_role(self, request, user_role, answer_mode):
 
@@ -430,7 +455,6 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect("landing_page")
-
 
 
 def user_profile(request):

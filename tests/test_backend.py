@@ -24,6 +24,7 @@ from .utils import (
     get_parsed_element_by_id,
     get_form_base_data_from_html_template_host,
     N_CTB_IN_FIXTURES,
+    N_DEBATES_IN_FIXTURES,
     N_COMMITS_TEST_REPO
 )
 
@@ -119,9 +120,13 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_030__new_debate(self):
+        # settings.CATCH_EXCEPTIONS = False
+
         self.perform_login("testuser_1")
         response = self.client.get(reverse("new_debate"))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES)
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
 
         utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
         self.assertEqual(utd, "utd_new_debate")
@@ -132,8 +137,17 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             content = fp.read()
 
         # now the preview is available
-        response = self.post_to_view(viewname="new_debate", spec_values={"body_content": content})
-        self.assertIn(b"utc_segmented_html", response.content)
+        response = self.post_to_view(
+            viewname="new_debate", spec_values={"body_content": content, "debate_slug": "test_slug1"}
+        )
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+
+        # not yet implemented
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+
+        self.assertEqual(response.status_code, 302)
+        new_url = response["Location"]
+        self.assertEqual(new_url, reverse("show_debate",  kwargs={"debate_key": "d2-test_slug1"}))
 
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
@@ -182,7 +196,6 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         # currently failing (not yet implemented)
         self.assertNotEqual(answer_div.parent.name, "h3")
-
 
     def _06x__common(self) -> Container:
 
@@ -298,7 +311,6 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         res = "".join(map(str, segment_span.contents)).strip()
         self.assertEqual(res, expected_res)
 
-
     def test_062__add_answer__level2(self):
         c = self._06x__common()
 
@@ -352,7 +364,6 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         }
 
         res.fpaths_a15b = [os.path.join(res.repo_dir, "b", f'{res.post_data_a15b["contribution_key"]}.md')]
-
 
         res.post_data_a2b1a1b = res.post_data_a15b.copy()
         res.post_data_a2b1a1b.update({"contribution_key": "a2b1a1b"})

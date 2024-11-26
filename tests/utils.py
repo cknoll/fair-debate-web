@@ -31,6 +31,7 @@ class Container:
     pass
 
 N_CTB_IN_FIXTURES = 2
+N_DEBATES_IN_FIXTURES = 1
 N_COMMITS_TEST_REPO = 4
 
 
