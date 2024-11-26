@@ -119,6 +119,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_030__new_debate(self):
+        self.perform_login("testuser_1")
         response = self.client.get(reverse("new_debate"))
         self.assertEqual(response.status_code, 200)
 

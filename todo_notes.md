@@ -1,5 +1,4 @@
 - [] first test-deployment on the web
-- [] reevaluate process of new debate creation
 - [] add metadata for repo (debate title)
 - [.] improve landing page
     - [] for logged in user
@@ -9,6 +8,13 @@
             - [] add change_date to models.Debate + fixtures
     - [] for anonymous user
         - [] list of debates with most recent activity
+
+- [] overhaul process of new debate creation
+    - [x] require login
+    - [] improve test
+    - [] create an (uncommitted) debate object
+    - [] add buttons: edit, delete, commit
+    - [] display original markdown in textarea
 
 - [x] add rudimentary user profile page
 

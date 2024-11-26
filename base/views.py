@@ -64,7 +64,7 @@ class MainView(View):
 
         raise NotImplementedError
 
-
+@method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"), name="dispatch")
 class NewDebateView(View):
     def get(self, request, test=False):
         return self.render_result_from_md(request, body_content_md="")
@@ -75,18 +75,13 @@ class NewDebateView(View):
 
     def render_result_from_md(self, request, body_content_md):
 
-        md_with_keys, segmented_html = fdmd.convert_plain_md_to_segmented_html(body_content_md)
-        if body_content_md:
-            submit_label = "Submit"
-        else:
-            submit_label = "Preview"
+        mdp = fdmd.MDProcessor(plain_md=body_content_md, convert_now=True)
 
         context = {
             "data": {
                 "utd_page_type": "utd_new_debate",
-                "md_with_keys": md_with_keys,
-                "segmented_html": segmented_html,
-                "submit_label": submit_label,
+                "plain_md": mdp.plain_md_src,
+                "segmented_html": mdp.segmented_html,
             }
         }
         template = "base/main_new_debate.html"
