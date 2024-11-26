@@ -1,9 +1,11 @@
 - [] first test-deployment on the web
 - [] reevaluate process of new debate creation
+- [] add metadata for repo (debate title)
 - [.] improve landing page
     - [] for logged in user
         - [] make debates of user available on landing page
         - [] list those three with most recent changes
+            - [] store number of answers + change date (most recent contribution) in db
     - [] for anonymous user
         - [] list of debates with most recent activity
 - [x] (#i3) place answers to h1,h2,h3-tags etc outside of those tags

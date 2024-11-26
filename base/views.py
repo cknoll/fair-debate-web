@@ -48,6 +48,12 @@ class MainView(View):
             }
         }
 
+        if request.user.is_authenticated:
+            user: DebateUser = request.user
+            debate_list = list(user.debate_as_user_a.all()) + list(user.debate_as_user_b.all())
+            #TODO: sort by date
+            context["data"]["recent_user_debates"] = debate_list
+
         context["data"]["sp"] = get_sp("landing")
         # template = "base/main_simplepage.html"
         template = "base/main_landing_page.html"

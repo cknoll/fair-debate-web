@@ -32,6 +32,11 @@ class Debate(models.Model):
         else:
             return None
 
+    # TODO: take this from metadata
+    @property
+    def title(self):
+        return self.debate_key
+
 
 class Contribution(models.Model):
     author = models.ForeignKey(DebateUser, on_delete=models.CASCADE)
