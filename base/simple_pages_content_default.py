@@ -17,8 +17,6 @@ def reverse(*args, **kwargs):
     return orig_reverse(*args, **kwargs)
 
 
-
-
 dupurls = {
     "contact-page": "/contact",
     "about_page": utils.ABOUT_PATH,
@@ -41,6 +39,18 @@ def new_sp(**kwargs):
 # ----------------------------------------------------------------------------
 
 new_sp(type="settings", title="Settings", content="In the future you can configure some settings here.")
+
+
+# ----------------------------------------------------------------------------
+
+new_sp(
+    type="user_profile", title="User Profile",
+    content="""
+# User Profile
+
+In the future you can edit your user profile here.
+"""
+)
 
 
 # ----------------------------------------------------------------------------

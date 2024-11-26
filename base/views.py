@@ -437,4 +437,17 @@ def user_logout(request):
     return redirect("landing_page")
 
 
-# End of medium source
+
+def user_profile(request):
+
+    context = {
+        # nested dict for easier debugging in the template
+        "data": {
+            "sp": get_sp("user_profile"),
+            "utd_page_type": f"utd_user_profile",
+        }
+    }
+
+    template = "base/main_simplepage.html"
+
+    return render(request, template, context)

@@ -23,6 +23,8 @@ class Debate(models.Model):
     user_a = models.ForeignKey(DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_a")
     user_b = models.ForeignKey(DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_b")
 
+    update_date = models.DateTimeField(null=True)
+
     def get_user_role(self, user: DebateUser):
 
         if user == self.user_a:

@@ -6,8 +6,12 @@
         - [] make debates of user available on landing page
         - [] list those three with most recent changes
             - [] store number of answers + change date (most recent contribution) in db
+            - [] add change_date to models.Debate + fixtures
     - [] for anonymous user
         - [] list of debates with most recent activity
+
+- [x] add rudimentary user profile page
+
 - [x] (#i3) place answers to h1,h2,h3-tags etc outside of those tags
     - [x] failing backend test
     - [x] implement necessary changes in fdmd
