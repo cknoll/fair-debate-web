@@ -9,7 +9,7 @@
     - [] for anonymous user
         - [] list of debates with most recent activity
 
-- [] css glitch: on narrow screens the left margin is too (decoration is hidden by scroll bar)
+- [x] #i4 css glitch: on narrow screens the left margin is too (decoration is hidden by scroll bar)
 
 - [] overhaul process of new debate creation
     - [x] require login
