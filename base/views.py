@@ -206,7 +206,11 @@ class ShowDebateView(View):
         else:
             new_debate = False
 
-        ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list, new_debate=new_debate)
+        try:
+            ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list, new_debate=new_debate)
+        except FileNotFoundError:
+            msg = f"No debate with key `{debate_key}` could be found."
+            return error_page(request, title="Not Found", msg=msg, status=404)
         return self.render_result_from_html(request, ddl)
 
     @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))

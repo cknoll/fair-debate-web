@@ -691,6 +691,28 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         trigger_click_event(b1, "btn_show_all_ctbs")
         self.assertTrue(get_js_visibility_for_id(b1, "answer_a15b"))
 
+    def test_g120__new_debate(self):
+        self.headless = False
+        b1 = self.new_browser()
+        b2 = self.new_browser()
+
+        # testuser_1 -> role a
+        self.perform_login(browser=b1, username="testuser_1")
+        b1.visit(f"{self.live_server_url}{reverse('new_debate')}")
+
+        with open(fdmd.fixtures.txt1_md_fpath) as fp:
+            content = fp.read()
+
+        body_ta = b1.find_by_id("new-debate-body-ta")[0]
+        body_ta.type(content)
+        trigger_click_event(b1, id="new-debate-submit-btn")
+
+        new_url = b1.url
+        self.perform_login(browser=b2, username="testuser_2")
+        b2.visit(new_url)
+
+        IPS()
+
 
 # #################################################################################################
 

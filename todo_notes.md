@@ -9,6 +9,8 @@
     - [] for anonymous user
         - [] list of debates with most recent activity
 
+- [] css glitch: on narrow screens the left margin is too (decoration is hidden by scroll bar)
+
 - [] overhaul process of new debate creation
     - [x] require login
     - [x] improve test
@@ -18,8 +20,10 @@
     - [x] redirect to show debate
         - [x] backend test
         - [] user b should not see anything before commit
+            - [x] test for 404 error (currently 500)
+        - [.] implement frontend test
         - [] fix broken frontend
-        - [] test frontend
+            - [] user a should see widgets for uncommitted changes
     - [] create repo if committed
     - [] delete debate object if main contribution is deleted (before commit)
 - [x] add rudimentary user profile page

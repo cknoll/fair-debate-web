@@ -151,6 +151,14 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         response = self.client.get(new_url)
         self.assertEqual(response.status_code, 200)
 
+        # TODO: test we are in uncommitted mode
+
+        self.perform_login("testuser_2")
+
+        settings.CATCH_EXCEPTIONS = False
+        response = self.client.get(new_url)
+        self.assertEqual(response.status_code, 404)
+
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
         self.assertEqual(response.status_code, 200)
