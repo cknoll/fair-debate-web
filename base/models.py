@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 from django.contrib.auth.models import AbstractUser
 
 
@@ -40,6 +41,12 @@ class Debate(models.Model):
         return self.debate_key
 
 
+class DebateAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(Debate, DebateAdmin)
+
+
 class Contribution(models.Model):
     author = models.ForeignKey(DebateUser, on_delete=models.CASCADE)
     debate = models.ForeignKey(Debate, on_delete=models.CASCADE)
@@ -47,3 +54,8 @@ class Contribution(models.Model):
     # key like "a" or "a3b24a7b"
     contribution_key = models.CharField(max_length=255)
     body = models.TextField()  # store plain markdown source
+
+
+class ContributionAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(Contribution, ContributionAdmin)
