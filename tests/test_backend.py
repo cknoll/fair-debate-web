@@ -97,7 +97,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.9"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.10"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landing_page"))
@@ -142,20 +142,21 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         )
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
 
-        # not yet implemented
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         self.assertEqual(response.status_code, 302)
         new_url = response["Location"]
         self.assertEqual(new_url, reverse("show_debate",  kwargs={"debate_key": "d2-test_slug1"}))
+
+        # settings.CATCH_EXCEPTIONS = False
         response = self.client.get(new_url)
         self.assertEqual(response.status_code, 200)
 
-        # TODO: test we are in uncommitted mode
+        num_db_ctbs = get_parsed_element_by_id("data-num_db_ctbs", res=response)
+        self.assertEqual(num_db_ctbs, 1)
 
         self.perform_login("testuser_2")
 
-        settings.CATCH_EXCEPTIONS = False
         response = self.client.get(new_url)
         self.assertEqual(response.status_code, 404)
 

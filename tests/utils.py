@@ -90,6 +90,7 @@ def get_parsed_element_by_id(id: str, res: HttpResponse = None, browser: Browser
         # for usage with http response
         soup = BeautifulSoup(res.content, "html.parser")
         element = soup.find(id=id)
+        assert element is not None, f'no element with id="{id}" could be found in response.'
         content_str = "".join(element.contents)
     elif res is None:
         assert isinstance(browser, BaseWebDriver)

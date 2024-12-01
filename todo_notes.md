@@ -9,7 +9,7 @@
     - [] for anonymous user
         - [] list of debates with most recent activity
 
-- [x] #i4 css glitch: on narrow screens the left margin is too (decoration is hidden by scroll bar)
+- [] own segment_elements should be hover-able but not clickable ("you cannot answer to your own segment")
 
 - [] overhaul process of new debate creation
     - [x] require login
@@ -24,8 +24,13 @@
         - [.] implement frontend test
         - [] fix broken frontend
             - [] user a should see widgets for uncommitted changes
+                - [] works but wrong in test-production
+                - [] works not at all in test_frontend
     - [] create repo if committed
     - [] delete debate object if main contribution is deleted (before commit)
+
+- [x] #i4 css glitch: on narrow screens the left margin is too (decoration is hidden by scroll bar)
+
 - [x] add rudimentary user profile page
 
 - [x] (#i3) place answers to h1,h2,h3-tags etc outside of those tags
