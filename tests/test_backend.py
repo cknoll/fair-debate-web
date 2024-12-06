@@ -97,7 +97,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.10"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.12"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landing_page"))

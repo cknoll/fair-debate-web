@@ -24,8 +24,19 @@
         - [.] implement frontend test
         - [] fix broken frontend
             - [] user a should see widgets for uncommitted changes
-                - [] works but wrong in test-production
-                - [] works not at all in test_frontend
+                - [] buttons and modal dialog should work
+                - [x] "is not yet published" field is not displayed
+                    - currently created by JS-function `getSeparatorDiv`
+                    - problems:
+                        - segment_span (does not exist for level0)
+                            - used for call insertAnswerForm(segment_span, answerKey, true);
+                            - [x] add div element with id="root_segment"
+                        - answer_div: unclear which div this should be: debate_wrapper? -> should work for now.
+                        - [x] adapt js such that `getSeparatorDiv(segment_span, answerDiv)` is applied
+                        - [x] rename to "debate_container"
+                        - [x] add db_ctb-class + md_src
+                - [x] works but wrong in test-production
+                - [x] works not at all in test_frontend
     - [] create repo if committed
     - [] delete debate object if main contribution is deleted (before commit)
 

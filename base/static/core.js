@@ -279,11 +279,29 @@ function removeSegmentAnswerFormContainer(){
     }
 }
 
+/**
+ * Handle the case when the debate to be shown only consists of an uncommitted
+ * a-contribution
+ */
+function handleRootContribution(){
+    debateContainer = document.getElementById("debate_container");
+
+    // if debateContainer is no database-contribution (i.e. if it is committed)
+    if (!debateContainer.classList.contains("db_ctb")){
+        return
+    }
+    rootSegment = document.getElementById("root_segment");
+    const separatorDiv = getSeparatorDiv(rootSegment, debateContainer);
+    debateContainer.appendChild(separatorDiv);
+
+}
 function onLoadForShowDebatePage(){
     answerObjects = Array.from(document.getElementsByClassName("answer"));
     answerObjects.forEach(ansDiv => {
         answerMap[ansDiv.id] = ansDiv;
     });
+
+    handleRootContribution();
 
     segmentObjects = Array.from(document.getElementsByClassName("segment"));
 
@@ -412,6 +430,9 @@ function unfoldAllUncommittedContributions() {
 /**
  * create a div-element as separator below an uncommitted contribution
  * (above the edit field which might be inserted)
+ *
+ * segment_span: the element which the answer refers to
+ * answerDiv: the uncommitted answer
  */
 function getSeparatorDiv(segment_span, answerDiv){
 
@@ -435,7 +456,6 @@ function getSeparatorDiv(segment_span, answerDiv){
 
     editButton.addEventListener('click', function() {
         function okFunc() {
-            console.log("edit", segment_span.id)
 
             // append update form (specify optional second argument)
             const formElement = insertAnswerForm(segment_span, answerKey, true);
@@ -487,7 +507,8 @@ function getSeparatorDiv(segment_span, answerDiv){
     });
 
     return separatorDiv
-}
+} // end of getSeparatorDiv
+
 
 function generateRequestObjectForCtb(debateKey, answerKeyShort=null) {
 
