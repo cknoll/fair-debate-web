@@ -705,13 +705,34 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         body_ta = b1.find_by_id("new-debate-body-ta")[0]
         body_ta.type(content)
+
+        # no new contribution yet
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         trigger_click_event(b1, id="new-debate-submit-btn")
+        # one new contribution now
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         new_url = b1.url
+        self.assertIn(reverse("show_debate",  kwargs={"debate_key": "d2-"}), new_url)
+
+        # other users cannot yet see the new debate
         self.perform_login(browser=b2, username="testuser_2")
         b2.visit(new_url)
 
-        IPS()
+        status = get_parsed_element_by_id(id="data-server_status_code", browser=b2)
+        self.assertEqual(status, 404)
+
+        # test edit and submit
+        trigger_click_event(b1, id="edit_btn_debate_container")
+
+        new_content = f"# Updated content \n\n some new words \n\n{content}"
+        body_ta = b1.find_by_id("ta_debate_container")[0]
+        body_ta.clear()
+        body_ta.type(new_content)
+        trigger_click_event(b1, id="submit_btn_debate_container")
+        expected_content = '<h1>\n  <span class="segment" id="a1">\n   Updated content\n  </span>\n </h1>'
+        self.assertIn(expected_content, b1.html)
+        # IPS()
 
 
 # #################################################################################################

@@ -25,11 +25,12 @@
         - [] fix broken frontend
             - [] user a should see widgets for uncommitted changes
                 - [] buttons and modal dialog should work
-                    - [] edit button
-                        - [] frontend test
+                    - [x] edit button
+                        - [x] frontend test
                     - [x] submit
                         - [x] backend test
-                        - [] frontend test
+                        - [x] frontend test
+                    - [] modal dialog
                 - [x] "is not yet published" field is not displayed
                     - currently created by JS-function `getSeparatorDiv`
                     - problems:

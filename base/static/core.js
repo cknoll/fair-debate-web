@@ -461,11 +461,14 @@ function getSeparatorDiv(segment_span, answerDiv){
             const formElement = insertAnswerForm(segment_span, answerKey, true);
             answerDiv.appendChild(formElement);
 
+            const taElement = answerDiv.getElementsByClassName("custom-textarea")[0];
+            taElement.id = `ta_${answerKey}`
+
             // read original md source from data-attribute and insert it to textarea
             const originalMdSrc = answerDiv.getAttribute("data-plain_md_src");
             if (originalMdSrc != null) {
 
-                initActiveTextArea(answerDiv.getElementsByClassName("custom-textarea")[0]);
+                initActiveTextArea(taElement);
                 activeTextArea.innerHTML = JSON.parse(originalMdSrc);
             }
         }
