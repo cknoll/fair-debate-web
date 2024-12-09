@@ -1,6 +1,7 @@
 import os
 import json
 import time
+from textwrap import dedent as twdd
 
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -136,7 +137,6 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         with open(fdmd.fixtures.txt1_md_fpath) as fp:
             content = fp.read()
 
-        # now the preview is available
         response = self.post_to_view(
             viewname="new_debate", spec_values={"body_content": content, "debate_slug": "test_slug1"}
         )
@@ -144,17 +144,36 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
+        # now the client should be redirected show_debate for preview
         self.assertEqual(response.status_code, 302)
         new_url = response["Location"]
-        self.assertEqual(new_url, reverse("show_debate",  kwargs={"debate_key": "d2-test_slug1"}))
+        debate_key = "d2-test_slug1"
+        self.assertEqual(new_url, reverse("show_debate",  kwargs={"debate_key": debate_key}))
 
-        # settings.CATCH_EXCEPTIONS = False
         response = self.client.get(new_url)
         self.assertEqual(response.status_code, 200)
 
         num_db_ctbs = get_parsed_element_by_id("data-num_db_ctbs", res=response)
         self.assertEqual(num_db_ctbs, 1)
 
+        settings.CATCH_EXCEPTIONS = False
+
+        _, csrf_token = get_form_base_data_from_html_template_host(response.content)
+
+        self.assertNotIn(b"Updated content", response.content)
+        post_data = {
+            "csrfmiddlewaretoken": csrf_token,
+            "reference_segment": "root_segment",
+            "debate_key": debate_key,
+            "body": f"# Updated content \n\n some new words \n\n {content}"
+        }
+
+        response = response = self.post_and_follow_redirect(new_url, post_data)
+        self.assertEqual(response.status_code, 200)
+        expected_content = b'<h1>\n  <span class="segment" id="a1">\n   Updated content\n  </span>\n </h1>'
+        self.assertIn(expected_content, response.content)
+
+        # other user should not see anything before committing
         self.perform_login("testuser_2")
 
         response = self.client.get(new_url)

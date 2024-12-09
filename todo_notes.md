@@ -19,12 +19,17 @@
         - [x] backend test
     - [x] redirect to show debate
         - [x] backend test
-        - [] user b should not see anything before commit
+        - [] user b should not see anything before the new debate is committed
             - [x] test for 404 error (currently 500)
         - [.] implement frontend test
         - [] fix broken frontend
             - [] user a should see widgets for uncommitted changes
                 - [] buttons and modal dialog should work
+                    - [] edit button
+                        - [] frontend test
+                    - [x] submit
+                        - [x] backend test
+                        - [] frontend test
                 - [x] "is not yet published" field is not displayed
                     - currently created by JS-function `getSeparatorDiv`
                     - problems:

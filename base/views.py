@@ -226,9 +226,15 @@ class ShowDebateView(View):
         debate_obj = Debate.objects.get(debate_key=debate_key)
 
         if contribution_key := kwargs.get("contribution_key"):
+            # This never happens but the negated condition would be harder to read
             pass
         else:
-            contribution_key = fdmd.get_answer_contribution_key(request.POST["reference_segment"])
+            if request.POST["reference_segment"] == "root_segment":
+                contribution_key = "a"
+            else:
+                # the post-request contains an answer e.g. to a2b1a4
+                # get contribution key as a2b1a4b
+                contribution_key = fdmd.get_answer_contribution_key(request.POST["reference_segment"])
         answer_mode = contribution_key[-1]
         assert answer_mode in ("a", "b")
 
