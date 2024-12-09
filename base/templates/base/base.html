@@ -110,6 +110,11 @@ add content
     {{ data.utd_page_type|json_script:"data-utd_page_type" }}
 {% endif %}
 
+{# this variable is set by the error handler and also serves for unit testing #}
+{% if data.server_status_code %}
+    {{ data.server_status_code|json_script:"data-server_status_code" }}
+{% endif %}
+
 {{ request.user.username | json_script:"data-user_name" }}
 {{ request.user.is_authenticated | json_script:"data-user_is_authenticated" }}
 

@@ -393,6 +393,7 @@ def error_page(request, title, msg, status=500, extra_data: dict = None):
             "sp": sp,
             "main_class": "error_container",
             "utd_page_type": f"utd_{sp_type}",
+            "server_status_code": status,
         }
     }
 
