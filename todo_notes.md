@@ -19,13 +19,16 @@
         - [x] backend test
     - [x] redirect to show debate
         - [x] backend test
-        - [] user b should not see anything before the new debate is committed
+        - [x] user b should not see anything before the new debate is committed
             - [x] test for 404 error (currently 500)
-        - [.] implement frontend test
         - [] create repo if committed
-        - [] delete debate object if main contribution is deleted (before commit)
-        - [] fix broken frontend
-            - [] user a should see widgets for uncommitted changes
+            - [] backend test
+            - [] frontend test
+        - [.] delete debate object if main contribution is deleted (before commit)
+            - [x] backend test
+            - [] frontend test
+        - [x] fix broken frontend
+            - [x] user a should see widgets for uncommitted changes
                 - [x] buttons and modal dialog should work
                     - [x] edit button
                         - [x] frontend test

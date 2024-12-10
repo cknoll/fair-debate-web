@@ -140,7 +140,11 @@ class ProcessContribution(View):
         elif action == "commit_all":
             self.commit_all_uc_contribution(request)
         elif action == "delete":
-            self.delete_contribution(request)
+            debate_deleted = self.delete_contribution(request)
+
+            # TODO: introduce a info page (deletion was successful etc)
+            if debate_deleted:
+                return redirect("landing_page")
         else:
             msg = f"Unexpected action: ('{action}') for view ProcessContribution"
             error_page(request, title="Error during ProcessContribution", msg=msg)
@@ -166,6 +170,7 @@ class ProcessContribution(View):
         res = Container()
         res.ctb_objs = ctb_objs
         res.debate_key = debate_key
+        res.debate_obj = debate_obj
 
         return res
 
@@ -188,9 +193,16 @@ class ProcessContribution(View):
         fdmd.commit_ctb_list(settings.REPO_HOST_DIR, c.debate_key, ctb_list)
         c.ctb_objs.delete()
 
-    def delete_contribution(self, request):
+    def delete_contribution(self, request) -> bool:
         c = self._get_contribution_set_from_request(request)
-        c.ctb_objs.delete()
+        if len(c.ctb_objs) >= 1 and c.ctb_objs[0].contribution_key == "a":
+            # we want to delete the root contribution -> also delete the whole debate
+            c.debate_obj.delete()
+            debate_deleted = True
+        else:
+            c.ctb_objs.delete()
+            debate_deleted = False
+        return debate_deleted
 
 
 class ShowDebateView(View):

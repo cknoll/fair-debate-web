@@ -179,6 +179,32 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         response = self.client.get(new_url)
         self.assertEqual(response.status_code, 404)
 
+        # now test deletion
+        self.perform_login("testuser_1")
+
+        response = self.client.get(new_url)
+        api_data_str = get_parsed_element_by_id(id="data-api_data", res=response)
+        api_data = json.loads(api_data_str)  # api_data_str is a json str inside a json str
+        _, csrf_token = get_form_base_data_from_html_template_host(response.content)
+
+        post_data = {
+            "csrfmiddlewaretoken": csrf_token,
+            "debate_key": api_data["debate_key"],
+            "contribution_key": "a"
+        }
+
+        # test deletion of contribution and the whole debate
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+        response = self.post_and_follow_redirect(action_url=api_data["delete_url"], post_data=post_data)
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES)
+
+        # after debate-deletion we redirect to landing page
+        self.assertEqual(response.status_code, 200)
+        utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
+        self.assertEqual(utd, "utd_landing_page")
+
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
         self.assertEqual(response.status_code, 200)
