@@ -22,15 +22,18 @@
         - [] user b should not see anything before the new debate is committed
             - [x] test for 404 error (currently 500)
         - [.] implement frontend test
+        - [] create repo if committed
+        - [] delete debate object if main contribution is deleted (before commit)
         - [] fix broken frontend
             - [] user a should see widgets for uncommitted changes
-                - [] buttons and modal dialog should work
+                - [x] buttons and modal dialog should work
                     - [x] edit button
                         - [x] frontend test
                     - [x] submit
                         - [x] backend test
                         - [x] frontend test
-                    - [] modal dialog
+                    - [x] modal dialog
+                        - [x] frontend test
                 - [x] "is not yet published" field is not displayed
                     - currently created by JS-function `getSeparatorDiv`
                     - problems:
@@ -43,8 +46,6 @@
                         - [x] add db_ctb-class + md_src
                 - [x] works but wrong in test-production
                 - [x] works not at all in test_frontend
-    - [] create repo if committed
-    - [] delete debate object if main contribution is deleted (before commit)
 
 - [x] #i4 css glitch: on narrow screens the left margin is too (decoration is hidden by scroll bar)
 

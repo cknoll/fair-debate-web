@@ -408,6 +408,13 @@ function unfoldAllUncommittedContributions() {
 
     dbCtbDivList = Array.from(document.getElementsByClassName("db_ctb"));
     dbCtbDivList.forEach(ansDiv => {
+
+        // handle case of root_segment
+        if (ansDiv.id === "debate_container") {
+            // nothing do uncover because on level 0 nothing is covered
+            return
+        }
+
         // convert "answer_a3b4a12b" to "a3b4a12"
         const key = ansDiv.id.replace("answer_", "").slice(0, -1);
         let parts = key.match(/[ab]\d+/g);

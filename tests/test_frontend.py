@@ -732,7 +732,35 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         trigger_click_event(b1, id="submit_btn_debate_container")
         expected_content = '<h1>\n  <span class="segment" id="a1">\n   Updated content\n  </span>\n </h1>'
         self.assertIn(expected_content, b1.html)
-        # IPS()
+
+        # now type again and test modal dialog
+
+        trigger_click_event(b1, id="edit_btn_debate_container")
+        body_ta = b1.find_by_id("ta_debate_container")[0]
+
+        appended_text1 = "\n\nsome words at the end"
+        body_ta.type(appended_text1)
+
+        modal_div_id = "modal-dialog"
+        self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
+        trigger_click_event(b1, id="edit_btn_debate_container")
+        self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
+        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
+        self.assertTrue(body_ta.value.endswith(appended_text1))
+
+        appended_text2 = "\n\nmore stuff for finishing"
+        body_ta.type(appended_text2)
+        self.assertTrue(body_ta.value.endswith(appended_text2))
+        trigger_click_event(b1, id="edit_btn_debate_container")
+        self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
+        trigger_click_event(b1, id="modal-dialog-ok-button")
+
+        # appended_text2 has vanished because we clicked on edit again
+        body_ta = b1.find_by_id("ta_debate_container")[0]
+        original_end_text = "Ipsum modi modi quaerat."
+        self.assertTrue(body_ta.value.endswith(original_end_text))
+
 
 
 # #################################################################################################
