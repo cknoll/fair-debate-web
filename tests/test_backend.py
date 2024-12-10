@@ -49,7 +49,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
     def tearDown(self):
         self.tear_down()
 
-    def post_to_view(self, viewname, **kwargs):
+    def post_to_view(self, viewname, follow_redirect=None, **kwargs):
 
         response = self.client.get(reverse(viewname, kwargs=kwargs.get("view_kwargs", {})))
         self.assertEqual(response.status_code, 200)
@@ -59,6 +59,12 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         post_data, action_url = generate_post_data_for_form(response, spec_values=spec_values)
 
         response = self.client.post(action_url, post_data)
+
+        if follow_redirect:
+            self.assertEqual(response.status_code, 302)
+            new_url = response["Location"]
+            response = self.client.get(new_url)
+
         return response
 
     def perform_login(self, username=None, previous_response=None, next_url=None, logout_first=True):
@@ -120,7 +126,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertIn(b"utc_404_error", response.content)
         self.assertEqual(response.status_code, 404)
 
-    def test_030__new_debate(self):
+    def test_030__new_debate_change_and_delete(self):
         # settings.CATCH_EXCEPTIONS = False
 
         self.perform_login("testuser_1")
@@ -155,8 +161,6 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         num_db_ctbs = get_parsed_element_by_id("data-num_db_ctbs", res=response)
         self.assertEqual(num_db_ctbs, 1)
-
-        settings.CATCH_EXCEPTIONS = False
 
         _, csrf_token = get_form_base_data_from_html_template_host(response.content)
 
@@ -204,6 +208,38 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
         self.assertEqual(utd, "utd_landing_page")
+
+    def test_031__new_debate_commit(self):
+        settings.CATCH_EXCEPTIONS = False
+
+        self.perform_login("testuser_1")
+        # response = self.client.get(reverse("new_debate"))
+        with open(fdmd.fixtures.txt1_md_fpath) as fp:
+            content = fp.read()
+
+        response = self.post_to_view(
+            viewname="new_debate",
+            spec_values={"body_content": content, "debate_slug": "test_slug1"},
+            follow_redirect=True,
+        )
+
+        api_data_str = get_parsed_element_by_id(id="data-api_data", res=response)
+        api_data = json.loads(api_data_str)  # api_data_str is a json str inside a json str
+        _, csrf_token = get_form_base_data_from_html_template_host(response.content)
+
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+        post_data = {
+            "csrfmiddlewaretoken": csrf_token,
+            "debate_key": api_data["debate_key"],
+            "contribution_key": "a"
+        }
+
+        # test deletion of contribution and the whole debate
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+        response = self.post_and_follow_redirect(action_url=api_data["commit_url"], post_data=post_data)
+        IPS()
 
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))

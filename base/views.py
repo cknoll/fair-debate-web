@@ -178,6 +178,11 @@ class ProcessContribution(View):
         c = self._get_contribution_set_from_request(request)
 
         ctb = fdmd.DBContribution(c.ctb_objs[0].contribution_key, c.ctb_objs[0].body)
+
+        if ctb.ctb_key == "a":
+            # This is the first contribution of a new debate
+            # -> a new repo has to be created
+            raise NotImplementedError("t.b.d.")
         fdmd.commit_ctb(settings.REPO_HOST_DIR, c.debate_key, ctb)
         c.ctb_objs[0].delete()
 
