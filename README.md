@@ -35,11 +35,15 @@ We use `black -l 120 ./` to ensure coding style consistency.
 - "utc": unit test comment
 - "utd": unit test data
 
+### Local Testing
+
+- Create test data:
+- `fdmd unpack-repos ./content_repos`
+    - this should be run in both in `<repo-root>` (for manual testing) and in `<repo-root/tests/testdata>` (for unittests)
 
 
 ### Helpful Commands:
 
-- fdmd unpack-repos ./content_repos
 - py3 manage.py shell
 - py3 manage.py createsuperuser
 - mv db.sqlite3 db.sqlite3_old

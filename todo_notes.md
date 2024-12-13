@@ -23,9 +23,10 @@
             - [x] test for 404 error (currently 500)
         - [] create repo if committed
             - [x] create repo with some content
-            - [] create repo with correct content
+            - [x] create repo with correct content
                 - Problem: a.md contains pure md source (without keys)
-                - [] raise error
+                - [x] raise error
+                - [x] fix fdmd
             - [x] backend test
             - [] frontend test
         - [.] delete debate object if main contribution is deleted (before commit)

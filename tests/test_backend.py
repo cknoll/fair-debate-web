@@ -292,6 +292,10 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         response = self.perform_login(username="testuser_2")
 
         response = self.client.get(reverse("test_show_debate"))
+
+        # if this test fails with status_code 404, then probably the test data is missing
+        # see README.md
+        self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, "html.parser")
         segment_span = soup.find(id="a15")
         answer_div = soup.find(id="answer_a15b")
