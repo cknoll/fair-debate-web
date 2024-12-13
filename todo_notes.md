@@ -31,7 +31,7 @@
             - [] frontend test
         - [.] delete debate object if main contribution is deleted (before commit)
             - [x] backend test
-            - [] frontend test
+            - [.] frontend test
         - [x] fix broken frontend
             - [x] user a should see widgets for uncommitted changes
                 - [x] buttons and modal dialog should work
@@ -160,7 +160,7 @@
 - [x] use ?next=... mechanism in the login-link from the head menu
 
 - [x] open debate from url /d/debate_key
-    - [x] drop fmdm.fixtures/debate1 in favor of fdmd.fixtures/repos/d1-lorem_ipsum
+    - [x] drop fdmd.fixtures/debate1 in favor of fdmd.fixtures/repos/d1-lorem_ipsum
     - [x] specify test concept
     - [x] implement test concept
     - [x] load repo from workdir

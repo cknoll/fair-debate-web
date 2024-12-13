@@ -504,11 +504,17 @@ function getSeparatorDiv(segment_span, answerDiv){
 
     deleteButton.addEventListener('click', async function() {
         async function okFunc() {
+            console.log("pressed delete", "answerKeyShort:", answerKeyShort)
+            console.log(apiData.delete_url)
             try {
                 const response = await fetch(apiData.delete_url, generateRequestObjectForCtb(
                     apiData.debate_key, answerKeyShort
                 ));
+                if (response.status != 200){
+                    throw new Error(`Unexpected api status ${response.status} for deletion of contribution ${answerKeyShort} of debate ${apiData.debate_key}`);
+                }
                 location.reload();
+
             } catch(err) {
                 console.error(err);
             }

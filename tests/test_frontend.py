@@ -761,6 +761,12 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         original_end_text = "Ipsum modi modi quaerat."
         self.assertTrue(body_ta.value.endswith(original_end_text))
 
+        trigger_click_event(b1, id="delete_btn_debate_container")
+
+        # it also worked with 0.01 -> 0.02 is with some safety margin
+        time.sleep(0.02)
+        self.assertEqual(len(get_js_error_list(b1)), 0)
+
 
 
 # #################################################################################################
