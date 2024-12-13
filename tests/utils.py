@@ -24,6 +24,8 @@ from ipydex import IPS
 import fair_debate_md as fdmd
 from base import models
 
+pjoin = os.path.join
+
 logger = logging.getLogger("fair-debate")
 logger.debug("fair_debate_web.tests.utils loaded")
 
@@ -34,15 +36,28 @@ N_CTB_IN_FIXTURES = 2
 N_DEBATES_IN_FIXTURES = 1
 N_COMMITS_TEST_REPO = 4
 
+original_REPO_HOST_DIR = settings.REPO_HOST_DIR
+REPO_HOST_DIR_rel = original_REPO_HOST_DIR.replace(settings.BASE_DIR, "").lstrip("/")
+settings.REPO_HOST_DIR = pjoin(settings.BASE_DIR, "tests", "testdata", REPO_HOST_DIR_rel)
+REPO_HOST_DIR = settings.REPO_HOST_DIR
+os.makedirs(settings.REPO_HOST_DIR, exist_ok=True)
+
 
 class RepoResetMixin:
     def set_up(self):
         self.git_reset_id: str = None
         self.git_reset_repo: str = None
+        self.dirs_to_remove = []
 
     def tear_down(self):
         if self.git_reset_id is not None:
             self.reset_git_repo()
+
+        for dirpath in self.dirs_to_remove:
+            dirpath = os.path.abspath(dirpath)
+            # try to prevent the accidental deletion of important dir
+            assert "testdata" in dirpath or "fixtures" in dirpath or "/tmp" in dirpath
+            fdmd.utils.tolerant_rmtree(dirpath)
 
     def mark_repo_for_reset(self, repo_dir: str = None, repo_host_dir: str = None, debate_key: str = None):
         if repo_dir is not None:

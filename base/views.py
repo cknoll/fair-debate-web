@@ -182,7 +182,15 @@ class ProcessContribution(View):
         if ctb.ctb_key == "a":
             # This is the first contribution of a new debate
             # -> a new repo has to be created
-            raise NotImplementedError("t.b.d.")
+            default_repo_files = get_default_repo_files(context={
+                "debate_slug": c.debate_key,
+                "debate_url": "debate_url",
+                "background_url": "background_url"
+
+            })
+            fdmd.repo_handling.create_repo(
+                settings.REPO_HOST_DIR, c.debate_key, initial_files=default_repo_files
+            )
         fdmd.commit_ctb(settings.REPO_HOST_DIR, c.debate_key, ctb)
         c.ctb_objs[0].delete()
 
@@ -208,6 +216,20 @@ class ProcessContribution(View):
             c.ctb_objs.delete()
             debate_deleted = False
         return debate_deleted
+
+
+def get_default_repo_files(context: dict = None) -> dict:
+    from django.template import loader
+    tmpl_path = "repo-default-files/README.md"
+    if context is None:
+        context = {}
+    res = {}
+
+    # TODO: iterate over templates
+    content = loader.render_to_string(tmpl_path, context, request=None)
+
+    res["README.md"] = content
+    return res
 
 
 class ShowDebateView(View):

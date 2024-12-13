@@ -26,9 +26,11 @@ from .utils import (
     get_form_base_data_from_html_template_host,
     N_CTB_IN_FIXTURES,
     N_DEBATES_IN_FIXTURES,
-    N_COMMITS_TEST_REPO
+    N_COMMITS_TEST_REPO,
+    REPO_HOST_DIR,  # note: this is adapted for unittests
 )
 
+pjoin = os.path.join
 
 class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
@@ -104,7 +106,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.3.12"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.4.0"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landing_page"))
@@ -217,29 +219,41 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         with open(fdmd.fixtures.txt1_md_fpath) as fp:
             content = fp.read()
 
+        # create new contribution in database mode
         response = self.post_to_view(
             viewname="new_debate",
             spec_values={"body_content": content, "debate_slug": "test_slug1"},
             follow_redirect=True,
         )
 
+        # gather necessary data to simulate commit-button-press
         api_data_str = get_parsed_element_by_id(id="data-api_data", res=response)
         api_data = json.loads(api_data_str)  # api_data_str is a json str inside a json str
         _, csrf_token = get_form_base_data_from_html_template_host(response.content)
-
-        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
-        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
         post_data = {
             "csrfmiddlewaretoken": csrf_token,
             "debate_key": api_data["debate_key"],
             "contribution_key": "a"
         }
 
-        # test deletion of contribution and the whole debate
-        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+        # check data before commit
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+        # simulate commit button press
+        self.dirs_to_remove.append(pjoin(REPO_HOST_DIR, "d2-test_slug1"))
         response = self.post_and_follow_redirect(action_url=api_data["commit_url"], post_data=post_data)
-        IPS()
+
+        repo_name = get_parsed_element_by_id(id="data-repo_name", res=response)
+        self.assertEqual(repo_name, "d2-test_slug1")
+        assert "testdata" in REPO_HOST_DIR
+        self.dirs_to_remove.append(pjoin(REPO_HOST_DIR, repo_name))
+
+        # check data changed after commit:
+        # debate should still be there
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+        # db-contribution should be gone
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES)
+        # IPS()
 
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
