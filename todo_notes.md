@@ -32,6 +32,24 @@
         - [.] delete debate object if main contribution is deleted (before commit)
             - [x] backend test
             - [.] frontend test
+                - discovered bug: answerShortKey "root_segment" is not recognized
+                - confusion when should I use "root_segment" and when "debate_container"?
+                - current structure:
+                - debate_container
+                    - root_segment
+                    - p_level0
+                        - segment_span a1
+                        - segment_span a2
+                        - answer_div a2b
+                            - segment_span a2b1
+                            - answer_div a2b1a
+                                - ...
+                            - segment_span a2b2
+                - Solution:
+                    - rename *debate_container* to **contribution_a**
+                    - rename *answer_a2b* to **contribution_a2b**
+
+
         - [x] fix broken frontend
             - [x] user a should see widgets for uncommitted changes
                 - [x] buttons and modal dialog should work

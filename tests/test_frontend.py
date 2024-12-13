@@ -694,7 +694,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     def test_g120__new_debate(self):
         self.headless = False
         b1 = self.new_browser()
-        b2 = self.new_browser()
+        # b2 = self.new_browser()
 
         # testuser_1 -> role a
         self.perform_login(browser=b1, username="testuser_1")
@@ -714,6 +714,22 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         new_url = b1.url
         self.assertIn(reverse("show_debate",  kwargs={"debate_key": "d2-"}), new_url)
+
+
+
+        # tmp
+        settings.CATCH_EXCEPTIONS = False
+        trigger_click_event(b1, id="delete_btn_debate_container")
+
+        # it also worked with 0.01 -> 0.02 is with some safety margin
+        time.sleep(0.02)
+        # self.assertEqual(len(get_js_error_list(b1)), 0)
+        # /
+        IPS()
+
+        exit()
+
+
 
         # other users cannot yet see the new debate
         self.perform_login(browser=b2, username="testuser_2")
