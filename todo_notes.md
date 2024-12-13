@@ -22,7 +22,11 @@
         - [x] user b should not see anything before the new debate is committed
             - [x] test for 404 error (currently 500)
         - [] create repo if committed
-            - [] backend test
+            - [x] create repo with some content
+            - [] create repo with correct content
+                - Problem: a.md contains pure md source (without keys)
+                - [] raise error
+            - [x] backend test
             - [] frontend test
         - [.] delete debate object if main contribution is deleted (before commit)
             - [x] backend test

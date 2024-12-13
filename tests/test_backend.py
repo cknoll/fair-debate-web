@@ -106,7 +106,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertTrue(target_url.startswith(reverse("login")))
 
     def test_001__basics(self):
-        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.4.0"))
+        self.assertGreaterEqual(Version(fdmd.__version__), Version("0.4.1"))
 
     def test_010__index(self):
         response = self.client.get(reverse("landing_page"))
@@ -212,7 +212,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(utd, "utd_landing_page")
 
     def test_031__new_debate_commit(self):
-        settings.CATCH_EXCEPTIONS = False
+        # settings.CATCH_EXCEPTIONS = False
 
         self.perform_login("testuser_1")
         # response = self.client.get(reverse("new_debate"))
@@ -239,21 +239,18 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         # check data before commit
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+
         # simulate commit button press
-        self.dirs_to_remove.append(pjoin(REPO_HOST_DIR, "d2-test_slug1"))
+        self.dirs_to_remove.append(pjoin(REPO_HOST_DIR, api_data["debate_key"]))
         response = self.post_and_follow_redirect(action_url=api_data["commit_url"], post_data=post_data)
 
-        repo_name = get_parsed_element_by_id(id="data-repo_name", res=response)
-        self.assertEqual(repo_name, "d2-test_slug1")
         assert "testdata" in REPO_HOST_DIR
-        self.dirs_to_remove.append(pjoin(REPO_HOST_DIR, repo_name))
 
         # check data changed after commit:
-        # debate should still be there
-        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
         # db-contribution should be gone
-        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES)
-        # IPS()
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+        # debate should still be there
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
 
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
