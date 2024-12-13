@@ -32,8 +32,8 @@
         {% endif %}
         {% if data.num_answers %}
         <div id="fold_button_display">
-            <div id="btn_hide_level" class="boxed clickable_span" onclick="hideCurrentAnswerLevel()">&laquo;</div>
-            <div id="btn_show_level" class="boxed clickable_span" onclick="showNextAnswerLevel()">&raquo;</div>
+            <div id="btn_hide_level" class="boxed clickable_span" onclick="hideCurrentContributionLevel()">&laquo;</div>
+            <div id="btn_show_level" class="boxed clickable_span" onclick="showNextContributionLevel()">&raquo;</div>
         </div>
         {% endif %}
     </div>
@@ -78,16 +78,16 @@
 {{ data.deepest_level|json_script:"data-deepest_level" }}
 
 
-<template id="segment_answer_form_template">
-    <div id="__segment_answer_form_container_id" class="segment_answer_form_container ta-container">
+<template id="segment_contribution_form_template">
+    <div id="__segment_contribution_form_container_id" class="segment_contribution_form_container ta-container">
         <div class="not_logged_in_warning"> {#<!-- class 'hidden' will be added by js if user is authenticated -->#}
             Warning: you are not logged and thus will not be able to save your contribution.
         </div>
-        <form id="__segment_answer_form_id" action="{{ request.path }}" method="POST">
+        <form id="__segment_contribution_form_id" action="{{ request.path }}" method="POST">
             {% csrf_token %}
             <input class="_reference_segment" type="hidden" name="reference_segment" value="">
             <input type="hidden" name="debate_key" value="{{data.debate_key}}">
-            <textarea class="custom-textarea" placeholder="Insert your answer here. Use markdown for styling." name="__answer_content_name"></textarea>
+            <textarea class="custom-textarea" placeholder="Insert your contribution here. Use markdown for styling." name="__contribution_content_name"></textarea>
             <div class="button-container">
                 <button class="_cancel_button" type="button">Cancel</button>
                 <button class="_submit_button" type="submit" disabled="true">Submit</button>
@@ -96,9 +96,9 @@
     </div>
 </template>
 
-<template id="segment_answer_hint">
-    <div id="__segment_answer_hint_container_id" class="segment_answer_hint_container">
-        <div class="segment_answer_hint">
+<template id="segment_contribution_hint">
+    <div id="__segment_contribution_hint_container_id" class="segment_contribution_hint_container">
+        <div class="segment_contribution_hint">
             You cannot answer here!
         </div>
         <div class="button-container">
@@ -108,7 +108,7 @@
 </template>
 
 <template id="_UCCtbSeparatorTemplate">
-    <div class="answer_form_separator">
+    <div class="contribution_form_separator">
         <div class="_text">
         </div>
         <div class="button-container">

@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import unittest
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
@@ -159,8 +160,8 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             # assert that no form is displayed:
             # (using JS is faster and more reliable than using splinter directly)
 
-            js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
-            self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+            js_segment_contribution_forms = 'document.getElementsByClassName("segment_contribution_form_container")'
+            self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
             seg_id_text_0 = b1.find_by_id("seg_id_display")[0].text
             self.assertEqual(seg_id_text_0, "")
@@ -183,20 +184,20 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2")
 
             # get_js_visibility_for_id(b1,
-            self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b"))
+            self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b"))
             b1.find_by_id("a2").click()
-            self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))
+            self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b"))
 
-            # investigate child answer
-            self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b1a"))
+            # investigate child contribution
+            self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b1a"))
             b1.find_by_id("a2b1").click()
-            self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a"))
+            self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a"))
 
-            self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b1a3b"))
+            self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b1a3b"))
             b1.find_by_id("a2b1a3").click()
-            self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a3b"))
+            self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a3b"))
 
-            # also test for non-appearance of answer dialog after child segment click
+            # also test for non-appearance of contribution dialog after child segment click
             trigger_mouseover_event(b1, id="a2b1a3b1")
             self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2b1a3b1")
 
@@ -223,50 +224,50 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
         # for existing committed element
-        self.assertIsNone(self.fast_get(b1, "segment_answer_hint_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_contribution_hint_container"))
 
         # side quest: check if `unfoldAllUncommittedContributions` worked
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a"))
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a1b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a1b"))
 
-        # this should currently trigger a warning (this answer is already committed)
+        # this should currently trigger a warning (this contribution is already committed)
         b1.find_by_id("a2b2").click()
-        hint_div = self.fast_get(b1, "segment_answer_hint_container")
+        hint_div = self.fast_get(b1, "segment_contribution_hint_container")
         self.assertIsNotNone(hint_div)
 
         # close hint
         hint_div.find_by_tag("button").click()
-        self.assertIsNone(self.fast_get(b1, "segment_answer_hint_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_contribution_hint_container"))
 
-        # investigate the (non) appearance of the answer form
+        # investigate the (non) appearance of the contribution form
         # (this is not solved via `self.fast_get_by_id` to possibly receive more then 1 result)
-        js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+        js_segment_contribution_forms = 'document.getElementsByClassName("segment_contribution_form_container")'
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
         b1.find_by_id("a3").click()
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         # assert that the form does not appear multiple times
         b1.find_by_id("a3").click()
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         b1.find_by_id("a3").click()
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         # cancel the form
         b1.find_by_css("._cancel_button").click()
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
         b1.find_by_id("a3").click()
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         # fill and submit the form
-        form = b1.find_by_id("segment_answer_form")[0]
+        form = b1.find_by_id("segment_contribution_form")[0]
         ta = form.find_by_tag("textarea")[0]
 
         # ensure that the submit button is disabled
-        submit_button = self.fast_get(browser=b1, id_str="submit_btn_answer_a3b")
+        submit_button = self.fast_get(browser=b1, id_str="submit_btn_contribution_a3b")
         self.assertEqual(submit_button["disabled"], "true")
 
         msg_content0 = "ABC"
@@ -288,18 +289,18 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         # test for new element (should be visible by default)
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a3b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a3b"))
         b1.find_by_id("a3").click()
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a3b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a3b"))
         b1.find_by_id("a3").click()
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a3b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a3b"))
 
         trigger_mouseover_event(b1, id="a3b1")
 
-        self.assertIsNone(self.fast_get(b1, "segment_answer_hint_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_contribution_hint_container"))
         # this should currently trigger a warning in the future an edit-dialog
         b1.find_by_id("a3b1").click()
-        self.assertIsNotNone(self.fast_get(b1, "segment_answer_hint_container"))
+        self.assertIsNotNone(self.fast_get(b1, "segment_contribution_hint_container"))
 
         # test that the new contribution is displayed in response to get request
         b1.visit(f"{self.live_server_url}{reverse('landing_page')}")  # goto unrelated url
@@ -308,33 +309,33 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # test updating of new contribution
 
-        answer_div = b1.find_by_id("answer_a3b")
-        separator_div = answer_div.find_by_css(".answer_form_separator")[0]
+        contribution_div = b1.find_by_id("contribution_a3b")
+        separator_div = contribution_div.find_by_css(".contribution_form_separator")[0]
         # self.assertTrue(separator_div.is_visible())
         self.assertTrue(separator_div.is_visible())
         edit_button = separator_div.find_by_css("._edit_button")[0]
 
         # form does not exist until edit-button is pressed
-        self.assertIsNone(self.fast_get(b1, "segment_answer_form_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_contribution_form_container"))
         edit_button.click()
 
-        form_container_div = answer_div.find_by_css(".segment_answer_form_container")[0]
+        form_container_div = contribution_div.find_by_css(".segment_contribution_form_container")[0]
         self.assertTrue(form_container_div.is_visible())
 
-        form = b1.find_by_id("segment_answer_form")[0]
+        form = b1.find_by_id("segment_contribution_form")[0]
         ta = form.find_by_tag("textarea")[0]
         self.assertEqual(ta.html, msg_content1)
         ta.type("\n\nNow with one **more** line!")
         form.find_by_css("._submit_button").click()
         b1.find_by_id("a3").click()
-        answer_div = b1.find_by_id("answer_a3b")[0]
+        contribution_div = b1.find_by_id("contribution_a3b")[0]
 
-        self.assertEqual(len(answer_div.find_by_css(".p_level1")), 2)
-        paragraph1 = answer_div.find_by_css(".p_level1")[0].html.strip()
+        self.assertEqual(len(contribution_div.find_by_css(".p_level1")), 2)
+        paragraph1 = contribution_div.find_by_css(".p_level1")[0].html.strip()
         paragraph1_exp = '<span class="segment" id="a3b1">\n     This is an answer from a unittest.\n    </span>'
         self.assertEqual(paragraph1, paragraph1_exp)
 
-        paragraph2 = answer_div.find_by_css(".p_level1")[1].html.strip()
+        paragraph2 = contribution_div.find_by_css(".p_level1")[1].html.strip()
         paragraph2_exp = (
             '<span class="segment" id="a3b2">\n     Now with one\n     '
             '<strong>\n      more\n     </strong>\n     line!\n    </span>'
@@ -361,18 +362,18 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # testuser_1 should be able to answer to a2b2
         b1.find_by_id("a2").click()  # open existing answer
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
         b1.find_by_id("a2b2").click()
 
         # does the form appear as expected?
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         # does the warning appear as expected?
-        self.assertIsNone(self.fast_get(b1, "segment_answer_hint_container"))
+        self.assertIsNone(self.fast_get(b1, "segment_contribution_hint_container"))
         b1.find_by_id("a3").click()
-        self.assertIsNotNone(self.fast_get(b1, "segment_answer_hint_container"))
+        self.assertIsNotNone(self.fast_get(b1, "segment_contribution_hint_container"))
 
-    def test_g040__segment_answer_level1(self):
+    def test_g040__segment_contribution_level1(self):
         """
         This test somewhat overlaps with g032 but is useful for development (faster)
         """
@@ -385,15 +386,15 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         b1.find_by_id("a3").click()
 
-        form = b1.find_by_id("segment_answer_form")[0]
+        form = b1.find_by_id("segment_contribution_form")[0]
         ta = form.find_by_tag("textarea")[0]
         ta.type("This is an answer from a unittest.")
         form.find_by_css("._submit_button").click()
 
         # check result
-        answer_div = b1.find_by_id("answer_a3b")
-        self.assertNotEqual(answer_div, [])
-        segment_span = answer_div.find_by_id("a3b1")[0]
+        contribution_div = b1.find_by_id("contribution_a3b")
+        self.assertNotEqual(contribution_div, [])
+        segment_span = contribution_div.find_by_id("a3b1")[0]
         self.assertNotEqual(segment_span, [])
 
         content = segment_span.html.strip()
@@ -404,7 +405,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         user_role = json.loads(user_role_element.html)
         self.assertEqual(user_role, "b")
 
-    def test_g050__segment_answer_form_toggling(self):
+    def test_g050__segment_contribution_form_toggling(self):
 
         # self.headless = False
         b1 = self.new_browser()
@@ -413,37 +414,37 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.perform_login(browser=b1, username="testuser_2")
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
-        js_segment_answer_forms = 'document.getElementsByClassName("segment_answer_form_container")'
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 0)
+        js_segment_contribution_forms = 'document.getElementsByClassName("segment_contribution_form_container")'
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
         b1.find_by_id("a8").click()
-        self.assertEqual(len(b1.evaluate_script(js_segment_answer_forms)), 1)
-        form_container_div = b1.find_by_id("segment_answer_form_container")
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
+        form_container_div = b1.find_by_id("segment_contribution_form_container")
         # check data attribute
         self.assertEqual(form_container_div["data-related_segment"], "a8")
 
         b1.find_by_id("a9").click()
-        form_container_div = b1.find_by_id("segment_answer_form_container")
+        form_container_div = b1.find_by_id("segment_contribution_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a9")
 
         # reactivate the form which we deactivated before
         b1.find_by_id("a8").click()
-        form_container_div = b1.find_by_id("segment_answer_form_container")
+        form_container_div = b1.find_by_id("segment_contribution_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a8")
 
         # now we make use of the db_contribution from the fixtures
         # should be already visible (contains uncommitted contribution)
-        answer_div_id = "answer_a15b"
-        answer_div = b1.find_by_id(answer_div_id)
-        self.assertTrue(get_js_visibility_for_id(b1, answer_div_id))
-        edit_button = answer_div.find_by_css("._edit_button")[0]
+        contribution_div_id = "contribution_a15b"
+        contribution_div = b1.find_by_id(contribution_div_id)
+        self.assertTrue(get_js_visibility_for_id(b1, contribution_div_id))
+        edit_button = contribution_div.find_by_css("._edit_button")[0]
         edit_button.click()
-        form_container_div = b1.find_by_id("segment_answer_form_container")
+        form_container_div = b1.find_by_id("segment_contribution_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a15")
 
         trigger_click_event(b1, id="a8")
         # b1.find_by_id("a8").click()  # does somehow not work in headless mode
-        form_container_div = b1.find_by_id("segment_answer_form_container")
+        form_container_div = b1.find_by_id("segment_contribution_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a8")
 
     def test_g080__commit_contribution1(self):
@@ -460,15 +461,15 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.perform_login(browser=b1, username="testuser_2")
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
-        def _test_procedure(answer_div_id: str, delta0: int):
-            answer_div = b1.find_by_id(answer_div_id)
-            self.assertTrue(get_js_visibility_for_id(b1, answer_div_id))
-            self.assertIn("db_ctb", answer_div["class"])
+        def _test_procedure(contribution_div_id: str, delta0: int):
+            contribution_div = b1.find_by_id(contribution_div_id)
+            self.assertTrue(get_js_visibility_for_id(b1, contribution_div_id))
+            self.assertIn("db_ctb", contribution_div["class"])
 
             self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - delta0)
 
             # workaround for headless problem with .click()
-            trigger_click_event(b1, f'commit_btn_{answer_div["id"]}')
+            trigger_click_event(b1, f'commit_btn_{contribution_div["id"]}')
 
             # this might depend on the test-hardware
             time.sleep(1)
@@ -478,11 +479,11 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=self.repo_dir1)
             self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO + delta0 + 1)
 
-            answer_div_new = b1.find_by_id(answer_div_id)
-            self.assertNotIn("db_ctb", answer_div_new["class"])
+            contribution_div_new = b1.find_by_id(contribution_div_id)
+            self.assertNotIn("db_ctb", contribution_div_new["class"])
 
-        _test_procedure("answer_a15b", delta0=0)
-        _test_procedure("answer_a2b1a1b", delta0=1)
+        _test_procedure("contribution_a15b", delta0=0)
+        _test_procedure("contribution_a2b1a1b", delta0=1)
 
     def test_g081__commit_all_contribution(self):
         # self.headless = False
@@ -518,15 +519,15 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.perform_login(browser=b1, username="testuser_2")
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
-        def _test_procedure(answer_div_id: str, delta0: int):
-            answer_div = b1.find_by_id(answer_div_id)
-            self.assertTrue(get_js_visibility_for_id(b1, answer_div_id))
-            self.assertIn("db_ctb", answer_div["class"])
+        def _test_procedure(contribution_div_id: str, delta0: int):
+            contribution_div = b1.find_by_id(contribution_div_id)
+            self.assertTrue(get_js_visibility_for_id(b1, contribution_div_id))
+            self.assertIn("db_ctb", contribution_div["class"])
 
             self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - delta0)
 
             # workaround for headless problem with .click()
-            trigger_click_event(b1, f'delete_btn_{answer_div["id"]}')
+            trigger_click_event(b1, f'delete_btn_{contribution_div["id"]}')
 
             # this might depend on the test-hardware
             time.sleep(.3)
@@ -536,11 +537,11 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=self.repo_dir1)
             self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
 
-            answer_div_new = self.fast_get(b1, answer_div_id)
-            self.assertIsNone(answer_div_new)
+            contribution_div_new = self.fast_get(b1, contribution_div_id)
+            self.assertIsNone(contribution_div_new)
 
-        _test_procedure("answer_a15b", delta0=0)
-        _test_procedure("answer_a2b1a1b", delta0=1)
+        _test_procedure("contribution_a15b", delta0=0)
+        _test_procedure("contribution_a2b1a1b", delta0=1)
 
     def test_g100__modal_behavior(self):
         # self.headless = False
@@ -553,67 +554,67 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         modal_div_id = "modal-dialog"
         modal_div = b1.find_by_id(modal_div_id)
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
-        answer_key1 = "answer_a15b"
-        answer_key2 = "answer_a2b1a1b"
-        answer_div1 = b1.find_by_id(answer_key1)[0]
-        answer_div2 = b1.find_by_id(answer_key2)[0]
+        contribution_key1 = "contribution_a15b"
+        contribution_key2 = "contribution_a2b1a1b"
+        contribution_div1 = b1.find_by_id(contribution_key1)[0]
+        contribution_div2 = b1.find_by_id(contribution_key2)[0]
 
-        trigger_click_event(b1, f'edit_btn_{answer_key1}')
+        trigger_click_event(b1, f'edit_btn_{contribution_key1}')
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
 
-        trigger_click_event(b1, f'edit_btn_{answer_key2}')
+        trigger_click_event(b1, f'edit_btn_{contribution_key2}')
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
 
         # now type something in the textarea, then press other edit button
-        ta2 = answer_div2.find_by_tag("textarea")[0]
+        ta2 = contribution_div2.find_by_tag("textarea")[0]
         ta2.type("abc")
-        trigger_click_event(b1, f'edit_btn_{answer_key1}')
+        trigger_click_event(b1, f'edit_btn_{contribution_key1}')
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, f'modal-dialog-cancel-button')
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
 
         # the textarea should not have changed
-        res1 = self.fast_get(b1, id_str=answer_key1, class_str="custom-textarea")
-        res2 = self.fast_get(b1, id_str=answer_key2, class_str="custom-textarea")
+        res1 = self.fast_get(b1, id_str=contribution_key1, class_str="custom-textarea")
+        res2 = self.fast_get(b1, id_str=contribution_key2, class_str="custom-textarea")
         self.assertIsNone(res1)
         self.assertIsNotNone(res2)
 
         # now do it again but this time clicking "Proceed" (OK)
-        trigger_click_event(b1, f'edit_btn_{answer_key1}')
+        trigger_click_event(b1, f'edit_btn_{contribution_key1}')
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, f'modal-dialog-ok-button')
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
 
         # textarea should have changed
-        res1 = self.fast_get(b1, id_str=answer_key1, class_str="custom-textarea")
-        res2 = self.fast_get(b1, id_str=answer_key2, class_str="custom-textarea")
+        res1 = self.fast_get(b1, id_str=contribution_key1, class_str="custom-textarea")
+        res2 = self.fast_get(b1, id_str=contribution_key2, class_str="custom-textarea")
         self.assertIsNone(res2)
         self.assertIsNotNone(res1)
 
         # edit textarea 1 then test all the other relevant buttons
-        answer_div1.find_by_tag("textarea")[0].type("abc")
+        contribution_div1.find_by_tag("textarea")[0].type("abc")
 
         # both commit buttons
-        trigger_click_event(b1, f'commit_btn_{answer_key1}')
+        trigger_click_event(b1, f'commit_btn_{contribution_key1}')
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, f'modal-dialog-cancel-button')
 
 
-        trigger_click_event(b1, f'commit_btn_{answer_key2}')
+        trigger_click_event(b1, f'commit_btn_{contribution_key2}')
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, f'modal-dialog-cancel-button')
 
         # both delete buttons
-        trigger_click_event(b1, f'delete_btn_{answer_key1}')
+        trigger_click_event(b1, f'delete_btn_{contribution_key1}')
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, f'modal-dialog-cancel-button')
 
-        trigger_click_event(b1, f'delete_btn_{answer_key2}')
+        trigger_click_event(b1, f'delete_btn_{contribution_key2}')
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, f'modal-dialog-cancel-button')
 
         # cancel button of this textarea
-        trigger_click_event(b1, f'cancel_btn_{answer_key1}')
+        trigger_click_event(b1, f'cancel_btn_{contribution_key1}')
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, f'modal-dialog-cancel-button')
 
@@ -636,47 +637,47 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(num_answers, 6 + N_CTB_IN_FIXTURES - 1)
 
         self.assertEqual(b1.evaluate_script("currentLevel"), 0)
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b"))
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a4b"))
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a6b"))
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a7b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a4b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a6b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a7b"))
 
         # this is faster than finding the elements and calling .click()
         trigger_click_event(b1, "btn_show_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 1)
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a4b"))
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a6b"))
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a7b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a4b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a6b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a7b"))
 
         trigger_click_event(b1, "btn_hide_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 0)
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b"))
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a4b"))
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a6b"))
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a7b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a4b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a6b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a7b"))
 
         trigger_click_event(b1, "btn_show_level")
         trigger_click_event(b1, "btn_show_level")
         trigger_click_event(b1, "btn_show_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 3)
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))  # level 1
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a"))  # level 2
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a3b"))  # level 3
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b"))  # level 1
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a"))  # level 2
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a3b"))  # level 3
 
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a4b"))
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a6b"))
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a7b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a4b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a6b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a7b"))
 
         trigger_click_event(b1, "btn_hide_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 2)
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b"))  # level 1
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a2b1a"))  # level 2
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a2b1a3b"))  # level 3
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b"))  # level 1
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a"))  # level 2
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b1a3b"))  # level 3
 
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a4b"))
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a6b"))
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a7b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a4b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a6b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a7b"))
 
         trigger_click_event(b1, "btn_show_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 3)
@@ -687,10 +688,11 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         trigger_click_event(b1, "btn_hide_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 0)
 
-        self.assertFalse(get_js_visibility_for_id(b1, "answer_a15b"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a15b"))
         trigger_click_event(b1, "btn_show_all_ctbs")
-        self.assertTrue(get_js_visibility_for_id(b1, "answer_a15b"))
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a15b"))
 
+    @unittest.expectedFailure
     def test_g120__new_debate(self):
         self.headless = False
         b1 = self.new_browser()
@@ -718,17 +720,14 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
 
         # tmp
-        settings.CATCH_EXCEPTIONS = False
         trigger_click_event(b1, id="delete_btn_debate_container")
 
         # it also worked with 0.01 -> 0.02 is with some safety margin
         time.sleep(0.02)
-        # self.assertEqual(len(get_js_error_list(b1)), 0)
+        self.assertEqual(len(get_js_error_list(b1)), 0)
         # /
-        IPS()
-
-        exit()
-
+        # IPS()
+        raise NotImplementedError
 
 
         # other users cannot yet see the new debate

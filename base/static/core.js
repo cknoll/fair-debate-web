@@ -79,8 +79,8 @@ function readJsonWithDefault(dataId, defaultValue) {
 }
 
 
-var answerObjects = null;
-var answerMap = {};
+var contributionObjects = null;
+var contributionMap = {};
 var segmentObjects = null;
 const userIsAuthenticated = readJsonWithDefault("data-user_is_authenticated", false);
 const user_role = readJsonWithDefault("data-user_role", null);
@@ -98,7 +98,7 @@ const deepestLevel = readJsonWithDefault("data-deepest_level", null);
 
 
 
-function getAnswerKey(key){
+function getContributionKey(key){
     var parts = key.match(/[ab]\d+/g);
     var first_letter_of_last_element = parts.pop()[0]
     var appendix = null;
@@ -107,7 +107,7 @@ function getAnswerKey(key){
     } else {
         appendix = "a";
     }
-    return `answer_${key}${appendix}`
+    return `contribution_${key}${appendix}`
 }
 
 function toggleDisplayNoneBlock(element) {
@@ -138,35 +138,35 @@ function insertAfter(newNode, referenceNode) {
 }
 
 /**
- * Insert answer-form after after the segment element (when clicked on it)
+ * Insert contribution-form after after the segment element (when clicked on it)
  * If the current user has the wrong role insert a hint-element instead
  * @param {*} segmentElement
- * @param {*} answerKey
+ * @param {*} contributionKey
  */
-function insertAnswerFormOrHint(segmentElement, answerKey) {
+function insertContributionFormOrHint(segmentElement, contributionKey) {
 
     // prevent insertion if current element is already marked as active
     if (segmentElement.getAttribute('data-active') === "true") {
         return
     }
 
-    if (answerKey.endsWith(user_role)) {
-        return insertAnswerForm(segmentElement, answerKey);
+    if (contributionKey.endsWith(user_role)) {
+        return insertContributionForm(segmentElement, contributionKey);
     } else {
-        return insertHintField(segmentElement, answerKey, user_role);
+        return insertHintField(segmentElement, contributionKey, user_role);
     }
 }
 
 
-function insertHintField(segment_element, answerKey, user_role) {
+function insertHintField(segment_element, contributionKey, user_role) {
 
-    const clonedHintTemplate =  document.getElementById("segment_answer_hint").content.cloneNode(true);
-    const hintContainer = clonedHintTemplate.getElementById("__segment_answer_hint_container_id");
-    hintContainer.id = "segment_answer_hint_container";
+    const clonedHintTemplate =  document.getElementById("segment_contribution_hint").content.cloneNode(true);
+    const hintContainer = clonedHintTemplate.getElementById("__segment_contribution_hint_container_id");
+    hintContainer.id = "segment_contribution_hint_container";
 
-    const hintDiv = hintContainer.getElementsByClassName("segment_answer_hint")[0];
+    const hintDiv = hintContainer.getElementsByClassName("segment_contribution_hint")[0];
 
-    hintDiv.innerHTML = getHintMessage(segment_element.id, answerKey, user_role);
+    hintDiv.innerHTML = getHintMessage(segment_element.id, contributionKey, user_role);
 
     // define action of OK button (-> make the hint removable)
     hintContainer.getElementsByClassName("_ok_button")[0].addEventListener('click', function() {
@@ -179,15 +179,15 @@ function insertHintField(segment_element, answerKey, user_role) {
 
 }
 
-function getHintMessage(segmentId, answerKey, userRole){
+function getHintMessage(segmentId, contributionKey, userRole){
     if (!userIsAuthenticated) {
-        // this should not occur because segments without answers should not be clickable for non-logged-in users.
+        // this should not occur because segments without contributions should not be clickable for non-logged-in users.
         // We have this as 'second line of defense' (if something goes wrong)
         return "You cannot answer without logging in."
     }
 
     const username = readJsonWithDefault("data-user_name", null);
-    const requiredRole = answerKey.slice(-1);
+    const requiredRole = contributionKey.slice(-1);
     if (["a", "b"].includes(userRole)) {
         const part1 = `You cannot answer to your own segment (${segmentId}). `;
         const part2 = `You ("${username}") have role <b>${userRole}</b> in this debate. `;
@@ -196,7 +196,7 @@ function getHintMessage(segmentId, answerKey, userRole){
 
     } else {
 
-        // this should not occur because segments without answers should not be clickable for users with no role.
+        // this should not occur because segments without contributions should not be clickable for users with no role.
         // We have this as 'second line of defense' (if something goes wrong)
         const part1 = `You (username: "${username}") cannot answer to any segment `;
         const part2 = `of this debate because your have neither role a nor role b. See documentation for more information.`;
@@ -205,15 +205,15 @@ function getHintMessage(segmentId, answerKey, userRole){
 }
 
 
-function insertAnswerForm(segmentElement, answerKey, returnMode=null) {
+function insertContributionForm(segmentElement, contributionKey, returnMode=null) {
 
-    // in case there already is an opened answer form -> close it
-    removeSegmentAnswerFormContainer();
+    // in case there already is an opened contribution form -> close it
+    removeSegmentContributionFormContainer();
 
-    const clonedFormTemplate =  document.getElementById("segment_answer_form_template").content.cloneNode(true);
+    const clonedFormTemplate =  document.getElementById("segment_contribution_form_template").content.cloneNode(true);
     // change ids from the template for the real elements
-    const form_container = clonedFormTemplate.getElementById("__segment_answer_form_container_id");
-    form_container.id = "segment_answer_form_container";
+    const form_container = clonedFormTemplate.getElementById("__segment_contribution_form_container_id");
+    form_container.id = "segment_contribution_form_container";
     form_container.setAttribute("data-related_segment", segmentElement.id);
 
     // add warning
@@ -221,8 +221,8 @@ function insertAnswerForm(segmentElement, answerKey, returnMode=null) {
         form_container.getElementsByClassName("not_logged_in_warning")[0].classList.add("hidden");
     }
 
-    const form = clonedFormTemplate.getElementById("__segment_answer_form_id");
-    form.id = "segment_answer_form";
+    const form = clonedFormTemplate.getElementById("__segment_contribution_form_id");
+    form.id = "segment_contribution_form";
 
     const ta = form.getElementsByClassName("custom-textarea")[0];
     ta.name = "body";
@@ -231,7 +231,7 @@ function insertAnswerForm(segmentElement, answerKey, returnMode=null) {
     form.getElementsByClassName("_reference_segment")[0].value = segmentElement.id;
 
     const submitButton = form.getElementsByClassName("_submit_button")[0];
-    submitButton.id = `submit_btn_${answerKey}`;
+    submitButton.id = `submit_btn_${contributionKey}`;
 
     // prevent empty textarea from being submitted
 
@@ -241,10 +241,10 @@ function insertAnswerForm(segmentElement, answerKey, returnMode=null) {
     });
 
     const cancelButton = form.getElementsByClassName("_cancel_button")[0];
-    cancelButton.id = `cancel_btn_${answerKey}`
+    cancelButton.id = `cancel_btn_${contributionKey}`
     cancelButton.addEventListener('click', function() {
         async function okFunc() {
-            cancelSegmentAnswerForm(segmentElement.id);
+            cancelSegmentContributionForm(segmentElement.id);
         }
         activateModalWarningIfNecessary(okFunc);
     });
@@ -252,30 +252,30 @@ function insertAnswerForm(segmentElement, answerKey, returnMode=null) {
     if (returnMode === null) {
         insertAfter(clonedFormTemplate, segmentElement);
     } else {
-        // this is used to edit existing answers
-        // (append the form to the answerDiv element)
+        // this is used to edit existing contributions
+        // (append the form to the contributionDiv element)
         return clonedFormTemplate;
     }
 
     segmentElement.setAttribute('data-active', "true");
 }
 
-function cancelSegmentAnswerForm(segment_id) {
+function cancelSegmentContributionForm(segment_id) {
     const segment_element = document.getElementById(segment_id);
     segment_element.setAttribute('data-active', false);
-    removeSegmentAnswerFormContainer();
+    removeSegmentContributionFormContainer();
 }
 
-function removeSegmentAnswerFormContainer(){
-    const segment_answer_form_container = document.getElementById("segment_answer_form_container");
-    if (segment_answer_form_container != null) {
+function removeSegmentContributionFormContainer(){
+    const segment_contribution_form_container = document.getElementById("segment_contribution_form_container");
+    if (segment_contribution_form_container != null) {
 
-        const relatedSegmentId = segment_answer_form_container.getAttribute("data-related_segment");
+        const relatedSegmentId = segment_contribution_form_container.getAttribute("data-related_segment");
         if (relatedSegmentId != null) {
             document.getElementById(relatedSegmentId).setAttribute('data-active', "false");
         }
 
-        segment_answer_form_container.remove();
+        segment_contribution_form_container.remove();
     }
 }
 
@@ -296,9 +296,9 @@ function handleRootContribution(){
 
 }
 function onLoadForShowDebatePage(){
-    answerObjects = Array.from(document.getElementsByClassName("answer"));
-    answerObjects.forEach(ansDiv => {
-        answerMap[ansDiv.id] = ansDiv;
+    contributionObjects = Array.from(document.getElementsByClassName("contribution"));
+    contributionObjects.forEach(ansDiv => {
+        contributionMap[ansDiv.id] = ansDiv;
     });
 
     handleRootContribution();
@@ -318,28 +318,28 @@ function onLoadForShowDebatePage(){
         });
     });
 
-    // add square symbols and click-event-handler to those segments which have an answer
+    // add square symbols and click-event-handler to those segments which have an answer-contribution
     segmentObjects.forEach(segment_span => {
-        const answerKey = getAnswerKey(segment_span.id);
-        if (answerKey in answerMap) {
+        const contributionKey = getContributionKey(segment_span.id);
+        if (contributionKey in contributionMap) {
 
             // for this segment there is already an answer
             // -> add square symbol
             segment_span.classList.add("sqn");
 
-            const answerDiv = answerMap[answerKey];
+            const contributionDiv = contributionMap[contributionKey];
 
             // -> add function to toggle the visibility of the answer
             segment_span.addEventListener('click', function() {
-                toggleDisplayNoneBlock(answerDiv);
+                toggleDisplayNoneBlock(contributionDiv);
             });
 
             // special treatment for db_contributions
-            if (answerDiv.classList.contains("db_ctb")){
+            if (contributionDiv.classList.contains("db_ctb")){
                 segment_span.classList.add("dba");  // distinguish the segment
 
-                const separatorDiv = getSeparatorDiv(segment_span, answerDiv);
-                answerDiv.appendChild(separatorDiv);
+                const separatorDiv = getSeparatorDiv(segment_span, contributionDiv);
+                contributionDiv.appendChild(separatorDiv);
 
             }
         } else {
@@ -355,7 +355,7 @@ function onLoadForShowDebatePage(){
 
             segment_span.addEventListener('click', function() {
 
-                insertAnswerFormOrHint(segment_span, answerKey);
+                insertContributionFormOrHint(segment_span, contributionKey);
             });
         }
     });
@@ -415,8 +415,8 @@ function unfoldAllUncommittedContributions() {
             return
         }
 
-        // convert "answer_a3b4a12b" to "a3b4a12"
-        const key = ansDiv.id.replace("answer_", "").slice(0, -1);
+        // convert "contribution_a3b4a12b" to "a3b4a12"
+        const key = ansDiv.id.replace("contribution_", "").slice(0, -1);
         let parts = key.match(/[ab]\d+/g);
         let cumKey = "";
         // let cumKeys = [];
@@ -426,7 +426,7 @@ function unfoldAllUncommittedContributions() {
             // cumKeys.push(cumKey);
 
             // ensure element is visible
-            document.getElementById(getAnswerKey(cumKey)).style.display = "block";
+            document.getElementById(getContributionKey(cumKey)).style.display = "block";
         });
 
         // console.log("cumKeys", cumKeys);
@@ -438,41 +438,41 @@ function unfoldAllUncommittedContributions() {
  * create a div-element as separator below an uncommitted contribution
  * (above the edit field which might be inserted)
  *
- * segment_span: the element which the answer refers to
- * answerDiv: the uncommitted answer
+ * segment_span: the element which the contribution refers to
+ * contributionDiv: the uncommitted contribution
  */
-function getSeparatorDiv(segment_span, answerDiv){
+function getSeparatorDiv(segment_span, contributionDiv){
 
 
     const clonedSeparatorTemplateFragment =  document.getElementById("_UCCtbSeparatorTemplate").content.cloneNode(true);
     // note: .getElementsByClassName is not available for Fragments, but querySelector is
-    const separatorDiv = clonedSeparatorTemplateFragment.querySelector(".answer_form_separator");
-    const answerKey = answerDiv.id;
+    const separatorDiv = clonedSeparatorTemplateFragment.querySelector(".contribution_form_separator");
+    const contributionKey = contributionDiv.id;
 
-    // convert "answer_a3b" to "a3b"
-    const answerKeyShort = answerKey.replace("answer_", "");
+    // convert "contribution_a3b" to "a3b"
+    const contributionKeyShort = contributionKey.replace("contribution_", "");
     const textDiv = separatorDiv.getElementsByClassName("_text")[0];
-    let info = `Your contribution ${answerKeyShort} is not yet published. `
+    let info = `Your contribution ${contributionKeyShort} is not yet published. `
     info += "You can update it here:"
     textDiv.innerHTML = info;
     //const buttonContainerDiv = separatorDiv.getElementsByClassName("container")[0];
     const editButton = separatorDiv.getElementsByClassName("_edit_button")[0];
 
     // add unique ids to identify the buttons in unittests
-    editButton.id = `edit_btn_${answerKey}`
+    editButton.id = `edit_btn_${contributionKey}`
 
     editButton.addEventListener('click', function() {
         function okFunc() {
 
             // append update form (specify optional second argument)
-            const formElement = insertAnswerForm(segment_span, answerKey, true);
-            answerDiv.appendChild(formElement);
+            const formElement = insertContributionForm(segment_span, contributionKey, true);
+            contributionDiv.appendChild(formElement);
 
-            const taElement = answerDiv.getElementsByClassName("custom-textarea")[0];
-            taElement.id = `ta_${answerKey}`
+            const taElement = contributionDiv.getElementsByClassName("custom-textarea")[0];
+            taElement.id = `ta_${contributionKey}`
 
             // read original md source from data-attribute and insert it to textarea
-            const originalMdSrc = answerDiv.getAttribute("data-plain_md_src");
+            const originalMdSrc = contributionDiv.getAttribute("data-plain_md_src");
             if (originalMdSrc != null) {
 
                 initActiveTextArea(taElement);
@@ -485,14 +485,14 @@ function getSeparatorDiv(segment_span, answerDiv){
     // add unique ids to identify the buttons in unittests
     const commitButton = separatorDiv.getElementsByClassName("_commit_button")[0];
     const deleteButton = separatorDiv.getElementsByClassName("_delete_button")[0];
-    commitButton.id = `commit_btn_${answerKey}`;
-    deleteButton.id = `delete_btn_${answerKey}`;
+    commitButton.id = `commit_btn_${contributionKey}`;
+    deleteButton.id = `delete_btn_${contributionKey}`;
 
     commitButton.addEventListener('click', async function() {
         async function okFunc() {
             try {
                 const response = await fetch(apiData.commit_url, generateRequestObjectForCtb(
-                    apiData.debate_key, answerKeyShort
+                    apiData.debate_key, contributionKeyShort
                 ));
                 location.reload();
             } catch(err) {
@@ -504,14 +504,14 @@ function getSeparatorDiv(segment_span, answerDiv){
 
     deleteButton.addEventListener('click', async function() {
         async function okFunc() {
-            console.log("pressed delete", "answerKeyShort:", answerKeyShort)
+            console.log("pressed delete", "contributionKeyShort:", contributionKeyShort)
             console.log(apiData.delete_url)
             try {
                 const response = await fetch(apiData.delete_url, generateRequestObjectForCtb(
-                    apiData.debate_key, answerKeyShort
+                    apiData.debate_key, contributionKeyShort
                 ));
                 if (response.status != 200){
-                    throw new Error(`Unexpected api status ${response.status} for deletion of contribution ${answerKeyShort} of debate ${apiData.debate_key}`);
+                    throw new Error(`Unexpected api status ${response.status} for deletion of contribution ${contributionKeyShort} of debate ${apiData.debate_key}`);
                 }
                 location.reload();
 
@@ -526,15 +526,15 @@ function getSeparatorDiv(segment_span, answerDiv){
 } // end of getSeparatorDiv
 
 
-function generateRequestObjectForCtb(debateKey, answerKeyShort=null) {
+function generateRequestObjectForCtb(debateKey, contributionKeyShort=null) {
 
     const body_obj = {
         debate_key: debateKey,
         csrfmiddlewaretoken: csrfToken,
     }
 
-    if (answerKeyShort !== null) {
-        body_obj.contribution_key = answerKeyShort
+    if (contributionKeyShort !== null) {
+        body_obj.contribution_key = contributionKeyShort
     }
 
     const requestObj = {
@@ -613,8 +613,8 @@ async function copyFullURL(){
     // TODO: add some visual feedback here (like stack overflow does)
 }
 
-function showNextAnswerLevel(){
-    console.log("showNextAnswerLevel", currentLevel);
+function showNextContributionLevel(){
+    console.log("showNextContributionLevel", currentLevel);
     if (currentLevel == deepestLevel) {
         return
     }
@@ -627,8 +627,8 @@ function showNextAnswerLevel(){
     processLevel(currentLevel, workerFunc);
 }
 
-function hideCurrentAnswerLevel(){
-    console.log("hideCurrentAnswerLevel", currentLevel);
+function hideCurrentContributionLevel(){
+    console.log("hideCurrentContributionLevel", currentLevel);
     if (currentLevel == 0) {
         return
     }
@@ -663,9 +663,9 @@ function connectKeyboardKeys() {
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'ArrowLeft') {
-            hideCurrentAnswerLevel();
+            hideCurrentContributionLevel();
         } else if (event.key === 'ArrowRight') {
-            showNextAnswerLevel();
+            showNextContributionLevel();
             //   } else if (event.key === 'ArrowUp') {
             //     event.preventDefault();
             //     doSomething();

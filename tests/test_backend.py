@@ -298,11 +298,11 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, "html.parser")
         segment_span = soup.find(id="a15")
-        answer_div = soup.find(id="answer_a15b")
+        contribution_div = soup.find(id="contribution_a15b")
         self.assertEqual(segment_span.parent.name, "h3")
 
         # currently failing (not yet implemented)
-        self.assertNotEqual(answer_div.parent.name, "h3")
+        self.assertNotEqual(contribution_div.parent.name, "h3")
 
     def _06x__common(self) -> Container:
 
@@ -345,7 +345,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         return res
 
-    def test_060__add_answer_level1_without_login(self):
+    def test_060__add_contribution_level1_without_login(self):
         c = self._06x__common()
 
         deepest_level = get_parsed_element_by_id("data-deepest_level", res=c.response)
@@ -357,7 +357,8 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertTrue(new_url.startswith("/login"))
         response = self.client.get(new_url)
 
-    def test_061__add_answer_level1(self):
+    def test_061__add_contribution_level1(self):
+        # settings.CATCH_EXCEPTIONS = False
         c = self._06x__common()
 
         # first wrong user (testuser_1, role: a)
@@ -393,10 +394,10 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(c.debate_obj1.contribution_set.all()), N_CTB_IN_FIXTURES + 1)
         soup = BeautifulSoup(response.content, "html.parser")
-        answer_div = soup.find(id="answer_a3b")
-        self.assertIsNotNone(answer_div)
-        self.assertIn("db_ctb", answer_div.attrs["class"])
-        segment_span = answer_div.find(id="a3b1")
+        contribution_div = soup.find(id="contribution_a3b")
+        self.assertIsNotNone(contribution_div)
+        self.assertIn("db_ctb", contribution_div.attrs["class"])
+        segment_span = contribution_div.find(id="a3b1")
         self.assertIsNotNone(segment_span)
 
         expected_res = "This is a level 1\n     <strong>\n      answer\n     </strong>\n     from a unittest."
@@ -418,7 +419,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         res = "".join(map(str, segment_span.contents)).strip()
         self.assertEqual(res, expected_res)
 
-    def test_062__add_answer__level2(self):
+    def test_062__add_contribution__level2(self):
         c = self._06x__common()
 
         # first wrong user (testuser_2 which has role b)

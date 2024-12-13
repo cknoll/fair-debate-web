@@ -1,5 +1,5 @@
 :root {
-  --color-answer-green: hsla(130, 50%, 50%, 100%);
+  --color-contribution-green: hsla(130, 50%, 50%, 100%);
   --color-dba: hsla(130, 50%, 50%, 100%);
   --color-nice-blue: hsla(200, 100%, 45%, 100%);
   --color-rendered-content: #ce9a5e;
@@ -86,7 +86,7 @@ h3:has(+ .rendered_content) {
 .answered_heading .heading {
   margin-bottom: 0.1em;
 }
-.answered_heading .answer {
+.answered_heading .contribution {
   margin-bottom: 1em;
 }
 
@@ -114,7 +114,7 @@ h3:has(+ .rendered_content) {
 }
 
 
-/* debate body (segment and answers) */
+/* debate body (segment and contributions) */
 
 
 .segment {
@@ -161,47 +161,47 @@ h3:has(+ .rendered_content) {
   background-color: var(--color-dba);
 }
 
-.answer {
+.contribution {
   display: none;
   margin-left: 0.5em;
   padding: 0.1em;
 }
-.answer p {
+.contribution p {
   margin-top: 0.1em;
   margin-bottom: 0.1em;
 }
 
-.answer.level1,
-.answer.level3,
-.answer.level5,
-.answer.level7,
-.answer.level9
+.contribution.level1,
+.contribution.level3,
+.contribution.level5,
+.contribution.level7,
+.contribution.level9
 {
   background-color:hsla(220, 100%, 90%, 100%);
 }
 
- .answer.level2,
- .answer.level4,
- .answer.level6,
- .answer.level8,
- .answer.level10
+ .contribution.level2,
+ .contribution.level4,
+ .contribution.level6,
+ .contribution.level8,
+ .contribution.level10
  {
   background-color:hsla(220, 100%, 97%, 100%);
 }
 
-.answer.db_ctb {
+.contribution.db_ctb {
  border: 1px solid var(--color-dba);
 }
 
 
-/* segment answer form related */
+/* segment contribution form related */
 
-.segment_answer_form_container {
+.segment_contribution_form_container {
   width: 100%;
 }
 
-.segment_answer_form_container .button-container {
-  background-color: var(--color-answer-green);
+.segment_contribution_form_container .button-container {
+  background-color: var(--color-contribution-green);
 }
 
 .not_logged_in_warning{
@@ -210,7 +210,7 @@ h3:has(+ .rendered_content) {
   background-color: hsla(10, 95%, 60%, 100%);
 }
 
-.segment_answer_hint_container {
+.segment_contribution_hint_container {
   margin: 1em 0 1em 0;
   padding: 0.5em;
   background-color: hsla(10, 95%, 60%, 100%);
@@ -219,9 +219,9 @@ h3:has(+ .rendered_content) {
 
 /* class .hidden moved to base.css */
 
-.answer_form_separator {
+.contribution_form_separator {
   padding: 1em 0em 0.3em 0em;
-  background-color: var(--color-answer-green);
+  background-color: var(--color-contribution-green);
 }
 
 
@@ -230,5 +230,5 @@ h3:has(+ .rendered_content) {
 #bottom_toolbar {
   /* top right bottom left */
   padding: 1em;
-  background-color: var(--color-answer-green);
+  background-color: var(--color-contribution-green);
 }

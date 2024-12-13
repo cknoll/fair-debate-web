@@ -273,12 +273,12 @@ class ShowDebateView(View):
             else:
                 # the post-request contains an answer e.g. to a2b1a4
                 # get contribution key as a2b1a4b
-                contribution_key = fdmd.get_answer_contribution_key(request.POST["reference_segment"])
-        answer_mode = contribution_key[-1]
-        assert answer_mode in ("a", "b")
+                contribution_key = fdmd.get_contribution_key(request.POST["reference_segment"])
+        contribution_mode = contribution_key[-1]
+        assert contribution_mode in ("a", "b")
 
         user_role = debate_obj.get_user_role(request.user)
-        if err_page := self._ensure_suitable_user_role(request, user_role, answer_mode):
+        if err_page := self._ensure_suitable_user_role(request, user_role, contribution_mode):
             return err_page
 
         self.create_or_update_contribution(request, debate_obj, contribution_key)
@@ -312,7 +312,7 @@ class ShowDebateView(View):
         contribution_obj.save()
         return contribution_obj
 
-    def _ensure_suitable_user_role(self, request, user_role, answer_mode):
+    def _ensure_suitable_user_role(self, request, user_role, contribution_mode):
 
         if user_role is None:
             msg = (
@@ -321,10 +321,10 @@ class ShowDebateView(View):
             )
             return error_page(request, title="Contribution Error", msg=msg, status=403)
 
-        if answer_mode != user_role:
+        if contribution_mode != user_role:
             msg = (
                 f"You ({request.user}) have role {user_role} in this debate but tried to "
-                f"contribute with role {answer_mode}. This is not allowed."
+                f"contribute with role {contribution_mode}. This is not allowed."
                 "<!-- utc_contribution_with_wrong_mode_not_allowed_for_user -->"
             )
             return error_page(request, title="Contribution Error", msg=msg, status=403)
