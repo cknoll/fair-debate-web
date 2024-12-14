@@ -284,15 +284,15 @@ function removeSegmentContributionFormContainer(){
  * a-contribution
  */
 function handleRootContribution(){
-    debateContainer = document.getElementById("debate_container");
+    const contributionADiv = document.getElementById("contribution_a");
 
     // if debateContainer is no database-contribution (i.e. if it is committed)
-    if (!debateContainer.classList.contains("db_ctb")){
+    if (!contributionADiv.classList.contains("db_ctb")){
         return
     }
     rootSegment = document.getElementById("root_segment");
-    const separatorDiv = getSeparatorDiv(rootSegment, debateContainer);
-    debateContainer.appendChild(separatorDiv);
+    const separatorDiv = getSeparatorDiv(rootSegment, contributionADiv);
+    contributionADiv.appendChild(separatorDiv);
 
 }
 function onLoadForShowDebatePage(){
@@ -409,8 +409,8 @@ function unfoldAllUncommittedContributions() {
     dbCtbDivList = Array.from(document.getElementsByClassName("db_ctb"));
     dbCtbDivList.forEach(ansDiv => {
 
-        // handle case of root_segment
-        if (ansDiv.id === "debate_container") {
+        // handle case of top level contribution
+        if (ansDiv.id === "contribution_a") {
             // nothing do uncover because on level 0 nothing is covered
             return
         }

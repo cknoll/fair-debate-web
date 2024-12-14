@@ -692,11 +692,10 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         trigger_click_event(b1, "btn_show_all_ctbs")
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a15b"))
 
-    @unittest.expectedFailure
     def test_g120__new_debate(self):
         self.headless = False
         b1 = self.new_browser()
-        # b2 = self.new_browser()
+        b2 = self.new_browser()
 
         # testuser_1 -> role a
         self.perform_login(browser=b1, username="testuser_1")
@@ -717,19 +716,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         new_url = b1.url
         self.assertIn(reverse("show_debate",  kwargs={"debate_key": "d2-"}), new_url)
 
-
-
-        # tmp
-        trigger_click_event(b1, id="delete_btn_debate_container")
-
-        # it also worked with 0.01 -> 0.02 is with some safety margin
-        time.sleep(0.02)
-        self.assertEqual(len(get_js_error_list(b1)), 0)
-        # /
-        # IPS()
-        raise NotImplementedError
-
-
         # other users cannot yet see the new debate
         self.perform_login(browser=b2, username="testuser_2")
         b2.visit(new_url)
@@ -738,27 +724,27 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(status, 404)
 
         # test edit and submit
-        trigger_click_event(b1, id="edit_btn_debate_container")
+        trigger_click_event(b1, id="edit_btn_contribution_a")
 
         new_content = f"# Updated content \n\n some new words \n\n{content}"
-        body_ta = b1.find_by_id("ta_debate_container")[0]
+        body_ta = b1.find_by_id("ta_contribution_a")[0]
         body_ta.clear()
         body_ta.type(new_content)
-        trigger_click_event(b1, id="submit_btn_debate_container")
+        trigger_click_event(b1, id="submit_btn_contribution_a")
         expected_content = '<h1>\n  <span class="segment" id="a1">\n   Updated content\n  </span>\n </h1>'
         self.assertIn(expected_content, b1.html)
 
         # now type again and test modal dialog
 
-        trigger_click_event(b1, id="edit_btn_debate_container")
-        body_ta = b1.find_by_id("ta_debate_container")[0]
+        trigger_click_event(b1, id="edit_btn_contribution_a")
+        body_ta = b1.find_by_id("ta_contribution_a")[0]
 
         appended_text1 = "\n\nsome words at the end"
         body_ta.type(appended_text1)
 
         modal_div_id = "modal-dialog"
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, id="edit_btn_debate_container")
+        trigger_click_event(b1, id="edit_btn_contribution_a")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, f'modal-dialog-cancel-button')
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
@@ -767,21 +753,20 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         appended_text2 = "\n\nmore stuff for finishing"
         body_ta.type(appended_text2)
         self.assertTrue(body_ta.value.endswith(appended_text2))
-        trigger_click_event(b1, id="edit_btn_debate_container")
+        trigger_click_event(b1, id="edit_btn_contribution_a")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, id="modal-dialog-ok-button")
 
         # appended_text2 has vanished because we clicked on edit again
-        body_ta = b1.find_by_id("ta_debate_container")[0]
+        body_ta = b1.find_by_id("ta_contribution_a")[0]
         original_end_text = "Ipsum modi modi quaerat."
         self.assertTrue(body_ta.value.endswith(original_end_text))
 
-        trigger_click_event(b1, id="delete_btn_debate_container")
+        trigger_click_event(b1, id="delete_btn_contribution_a")
 
         # it also worked with 0.01 -> 0.02 is with some safety margin
         time.sleep(0.02)
         self.assertEqual(len(get_js_error_list(b1)), 0)
-
 
 
 # #################################################################################################
