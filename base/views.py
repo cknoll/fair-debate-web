@@ -52,7 +52,7 @@ class MainView(View):
         if request.user.is_authenticated:
             user: DebateUser = request.user
             debate_list = list(user.debate_as_user_a.all()) + list(user.debate_as_user_b.all())
-            #TODO: sort by date
+            # TODO: sort by date
             context["data"]["recent_user_debates"] = debate_list
 
         context["data"]["sp"] = get_sp("landing")
@@ -64,6 +64,7 @@ class MainView(View):
     def post(self, request, **kwargs):
 
         raise NotImplementedError
+
 
 @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"), name="dispatch")
 class NewDebateView(View):
@@ -132,9 +133,9 @@ class ProcessContribution(View):
             if not isinstance(body_data, dict):
                 msg = f"Unexpected type of parsed request.body: {type(body_data)}"
                 raise TypeError(msg)
-            request.POST =  QueryDict(urlencode(json.loads(request.body)))
+            request.POST = QueryDict(urlencode(json.loads(request.body)))
 
-    def post(self, request,  action=None):
+    def post(self, request, action=None):
         self._preprocess_post(request)
         debate_key = request.POST["debate_key"]
         if action == "commit":
@@ -166,7 +167,9 @@ class ProcessContribution(View):
         else:
             ctb_key = request.POST["contribution_key"]
             ctb_objs = debate_obj.contribution_set.filter(contribution_key=ctb_key)
-            msg = f"Unexpected number of contribution objects ({len(ctb_objs)}) for {debate_key} ctb {ctb_key}"
+            msg = (
+                f"Unexpected number of contribution objects ({len(ctb_objs)}) for {debate_key} ctb {ctb_key}"
+            )
             assert len(ctb_objs) == 1, msg
 
         res = Container()
@@ -184,12 +187,13 @@ class ProcessContribution(View):
         if ctb.ctb_key == "a":
             # This is the first contribution of a new debate
             # -> a new repo has to be created
-            default_repo_files = get_default_repo_files(context={
-                "debate_slug": c.debate_key,
-                "debate_url": "debate_url",
-                "background_url": "background_url"
-
-            })
+            default_repo_files = get_default_repo_files(
+                context={
+                    "debate_slug": c.debate_key,
+                    "debate_url": "debate_url",
+                    "background_url": "background_url",
+                }
+            )
             fdmd.repo_handling.create_repo(
                 settings.REPO_HOST_DIR, c.debate_key, initial_files=default_repo_files
             )
@@ -222,6 +226,7 @@ class ProcessContribution(View):
 
 def get_default_repo_files(context: dict = None) -> dict:
     from django.template import loader
+
     tmpl_path = "repo-default-files/README.md"
     if context is None:
         context = {}
@@ -287,13 +292,17 @@ class ShowDebateView(View):
 
         return redirect("show_debate", debate_key=debate_key)
 
-    def create_or_update_contribution(self, request, debate_obj: Debate, contribution_key: str) -> Contribution:
+    def create_or_update_contribution(
+        self, request, debate_obj: Debate, contribution_key: str
+    ) -> Contribution:
         """
         return updated existing or new Contribution-object
         """
 
         contribution_obj: Contribution
-        if contribution_obj := utils.get_or_none(debate_obj.contribution_set, contribution_key=contribution_key):
+        if contribution_obj := utils.get_or_none(
+            debate_obj.contribution_set, contribution_key=contribution_key
+        ):
             contribution_obj.body = request.POST["body"]
 
         else:
@@ -306,9 +315,9 @@ class ShowDebateView(View):
 
         if contribution_obj.body == "":
             msg = (
-                    f"Unexpectedly received empty body for contribution {contribution_key}. "
-                    "-> Contribution ignored."
-                )
+                f"Unexpectedly received empty body for contribution {contribution_key}. "
+                "-> Contribution ignored."
+            )
             raise utils.UsageError(msg)
 
         contribution_obj.save()
@@ -372,12 +381,14 @@ class ShowDebateView(View):
                 "deepest_level": len(ddl.level_tree) - 1,  # start level counting at 0
                 "server_status_code": 200,
                 # make some data available for js api
-                "api_data": json.dumps({
-                    "delete_url": reverse("delete_contribution"),
-                    "commit_url": reverse("commit_contribution"),
-                    "commit_all_url": reverse("commit_all_contributions"),
-                    "debate_key": debate_obj.debate_key,
-                }),
+                "api_data": json.dumps(
+                    {
+                        "delete_url": reverse("delete_contribution"),
+                        "commit_url": reverse("commit_contribution"),
+                        "commit_all_url": reverse("commit_all_contributions"),
+                        "debate_key": debate_obj.debate_key,
+                    }
+                ),
             }
         }
         template = "base/main_show_debate.html"
@@ -413,7 +424,10 @@ def js_error_page(request):
         title="deliberate javascript error (for testing purposes)",
         msg="This page contains a deliberate javascript error (for testing purposes).",
         status=200,
-        extra_data={"trigger_js_error": True, "utd_page_type": f"utd_trigger_js_error_page",},
+        extra_data={
+            "trigger_js_error": True,
+            "utd_page_type": f"utd_trigger_js_error_page",
+        },
     )
 
     return res

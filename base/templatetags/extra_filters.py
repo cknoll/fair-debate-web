@@ -48,4 +48,5 @@ def settings_value(name):
 @register.filter
 def debug(arg):
     from ipydex import IPS
+
     IPS()

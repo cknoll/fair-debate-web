@@ -14,6 +14,7 @@ from . import utils
 def reverse(*args, **kwargs):
     # this import is placed here to prevent circular imports
     from django.urls import reverse as orig_reverse
+
     return orig_reverse(*args, **kwargs)
 
 
@@ -24,7 +25,9 @@ dupurls = {
 duplicated_urls = defaultdict(lambda: "__invalid_url__", dupurls)
 
 
-sp_unknown = SimplePage(type="unknown", title="unknown", content="This page is unknown. Please go back to `home`.")
+sp_unknown = SimplePage(
+    type="unknown", title="unknown", content="This page is unknown. Please go back to `home`."
+)
 
 splist = [sp_unknown]
 
@@ -44,12 +47,13 @@ new_sp(type="settings", title="Settings", content="In the future you can configu
 # ----------------------------------------------------------------------------
 
 new_sp(
-    type="user_profile", title="User Profile",
+    type="user_profile",
+    title="User Profile",
     content="""
 # User Profile
 
 In the future you can edit your user profile here.
-"""
+""",
 )
 
 

@@ -29,8 +29,10 @@ pjoin = os.path.join
 logger = logging.getLogger("fair-debate")
 logger.debug("fair_debate_web.tests.utils loaded")
 
+
 class Container:
     pass
+
 
 N_CTB_IN_FIXTURES = 2
 N_DEBATES_IN_FIXTURES = 1
@@ -74,7 +76,6 @@ class RepoResetMixin:
         repo = git.Repo(self.git_reset_repo)
         self.git_reset_id = repo.refs[0].commit.hexsha
 
-
     def reset_git_repo(self):
 
         repo = git.Repo(self.git_reset_repo)
@@ -97,6 +98,7 @@ class FollowRedirectMixin:
 # auxiliary functions:
 
 # #################################################################################################
+
 
 def get_parsed_element_by_id(id: str, res: HttpResponse = None, browser: Browser = None):
 

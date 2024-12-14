@@ -13,29 +13,29 @@ urlpatterns = [
     path("new/test", views.test_new_debate, name="test_new_debate"),
     path("d/<slug:debate_key>", views.ShowDebateView.as_view(), name="show_debate"),
     path(
-        "d/d1-lorem_ipsum", views.ShowDebateView.as_view(), name="test_show_debate", kwargs={"debate_key": "d1-lorem_ipsum"}
+        "d/d1-lorem_ipsum",
+        views.ShowDebateView.as_view(),
+        name="test_show_debate",
+        kwargs={"debate_key": "d1-lorem_ipsum"},
     ),
     path(
         "commit_contribution",
         views.ProcessContribution.as_view(),
         name="commit_contribution",
-        kwargs={"action": "commit"}
+        kwargs={"action": "commit"},
     ),
-
     path(
         "commit_all_contributions",
         views.ProcessContribution.as_view(),
         name="commit_all_contributions",
-        kwargs={"action": "commit_all"}
+        kwargs={"action": "commit_all"},
     ),
-
     path(
         "delete_contribution",
         views.ProcessContribution.as_view(),
         name="delete_contribution",
-        kwargs={"action": "delete"}
+        kwargs={"action": "delete"},
     ),
-
     path("menu/", views.menu_page, name="menu_page"),
     path("debug/", views.debug_page, name="debug_page"),
     path(utils.ABOUT_PATH, views.about_page, name="about_page"),

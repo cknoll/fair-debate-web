@@ -35,6 +35,7 @@ from .utils import (
 
 pjoin = os.path.join
 
+
 class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
     # headless = True
@@ -165,7 +166,9 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             # assert that no form is displayed:
             # (using JS is faster and more reliable than using splinter directly)
 
-            js_segment_contribution_forms = 'document.getElementsByClassName("segment_contribution_form_container")'
+            js_segment_contribution_forms = (
+                'document.getElementsByClassName("segment_contribution_form_container")'
+            )
             self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
             seg_id_text_0 = b1.find_by_id("seg_id_display")[0].text
@@ -247,7 +250,9 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # investigate the (non) appearance of the contribution form
         # (this is not solved via `self.fast_get_by_id` to possibly receive more then 1 result)
-        js_segment_contribution_forms = 'document.getElementsByClassName("segment_contribution_form_container")'
+        js_segment_contribution_forms = (
+            'document.getElementsByClassName("segment_contribution_form_container")'
+        )
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
         b1.find_by_id("a3").click()
@@ -337,13 +342,15 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         self.assertEqual(len(contribution_div.find_by_css(".p_level1")), 2)
         paragraph1 = contribution_div.find_by_css(".p_level1")[0].html.strip()
-        paragraph1_exp = '<span class="segment" id="a3b1">\n     This is an answer from a unittest.\n    </span>'
+        paragraph1_exp = (
+            '<span class="segment" id="a3b1">\n     This is an answer from a unittest.\n    </span>'
+        )
         self.assertEqual(paragraph1, paragraph1_exp)
 
         paragraph2 = contribution_div.find_by_css(".p_level1")[1].html.strip()
         paragraph2_exp = (
             '<span class="segment" id="a3b2">\n     Now with one\n     '
-            '<strong>\n      more\n     </strong>\n     line!\n    </span>'
+            "<strong>\n      more\n     </strong>\n     line!\n    </span>"
         )
         self.assertEqual(paragraph2, paragraph2_exp)
 
@@ -419,7 +426,9 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.perform_login(browser=b1, username="testuser_2")
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
-        js_segment_contribution_forms = 'document.getElementsByClassName("segment_contribution_form_container")'
+        js_segment_contribution_forms = (
+            'document.getElementsByClassName("segment_contribution_form_container")'
+        )
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
         b1.find_by_id("a8").click()
@@ -535,7 +544,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             trigger_click_event(b1, f'delete_btn_{contribution_div["id"]}')
 
             # this might depend on the test-hardware
-            time.sleep(.3)
+            time.sleep(0.3)
 
             self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - delta0 - 1)
 
@@ -564,18 +573,18 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         contribution_div1 = b1.find_by_id(contribution_key1)[0]
         contribution_div2 = b1.find_by_id(contribution_key2)[0]
 
-        trigger_click_event(b1, f'edit_btn_{contribution_key1}')
+        trigger_click_event(b1, f"edit_btn_{contribution_key1}")
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
 
-        trigger_click_event(b1, f'edit_btn_{contribution_key2}')
+        trigger_click_event(b1, f"edit_btn_{contribution_key2}")
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
 
         # now type something in the textarea, then press other edit button
         ta2 = contribution_div2.find_by_tag("textarea")[0]
         ta2.type("abc")
-        trigger_click_event(b1, f'edit_btn_{contribution_key1}')
+        trigger_click_event(b1, f"edit_btn_{contribution_key1}")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        trigger_click_event(b1, f"modal-dialog-cancel-button")
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
 
         # the textarea should not have changed
@@ -585,9 +594,9 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertIsNotNone(res2)
 
         # now do it again but this time clicking "Proceed" (OK)
-        trigger_click_event(b1, f'edit_btn_{contribution_key1}')
+        trigger_click_event(b1, f"edit_btn_{contribution_key1}")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, f'modal-dialog-ok-button')
+        trigger_click_event(b1, f"modal-dialog-ok-button")
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
 
         # textarea should have changed
@@ -600,33 +609,32 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         contribution_div1.find_by_tag("textarea")[0].type("abc")
 
         # both commit buttons
-        trigger_click_event(b1, f'commit_btn_{contribution_key1}')
+        trigger_click_event(b1, f"commit_btn_{contribution_key1}")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        trigger_click_event(b1, f"modal-dialog-cancel-button")
 
-
-        trigger_click_event(b1, f'commit_btn_{contribution_key2}')
+        trigger_click_event(b1, f"commit_btn_{contribution_key2}")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        trigger_click_event(b1, f"modal-dialog-cancel-button")
 
         # both delete buttons
-        trigger_click_event(b1, f'delete_btn_{contribution_key1}')
+        trigger_click_event(b1, f"delete_btn_{contribution_key1}")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        trigger_click_event(b1, f"modal-dialog-cancel-button")
 
-        trigger_click_event(b1, f'delete_btn_{contribution_key2}')
+        trigger_click_event(b1, f"delete_btn_{contribution_key2}")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        trigger_click_event(b1, f"modal-dialog-cancel-button")
 
         # cancel button of this textarea
-        trigger_click_event(b1, f'cancel_btn_{contribution_key1}')
+        trigger_click_event(b1, f"cancel_btn_{contribution_key1}")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        trigger_click_event(b1, f"modal-dialog-cancel-button")
 
         # commit-all-button
-        trigger_click_event(b1, f'btn_commit_all_ctbs')
+        trigger_click_event(b1, f"btn_commit_all_ctbs")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        trigger_click_event(b1, f"modal-dialog-cancel-button")
 
     def test_g110__folding_buttons(self):
         # self.headless = False
@@ -730,7 +738,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         b1, b2 = c.b1, c.b2
 
         new_url = b1.url
-        self.assertIn(reverse("show_debate",  kwargs={"debate_key": "d2-"}), new_url)
+        self.assertIn(reverse("show_debate", kwargs={"debate_key": "d2-"}), new_url)
 
         # other users cannot yet see the new debate
         self.perform_login(browser=b2, username="testuser_2")
@@ -762,7 +770,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
         trigger_click_event(b1, id="edit_btn_contribution_a")
         self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
-        trigger_click_event(b1, f'modal-dialog-cancel-button')
+        trigger_click_event(b1, f"modal-dialog-cancel-button")
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
         self.assertTrue(body_ta.value.endswith(appended_text1))
 
@@ -790,7 +798,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES)
 
-
     def test_g121__new_debate_commit(self):
         c = self._g120__common()  # this creates a new a-contribution in the database
         b1, b2 = c.b1, c.b2
@@ -803,7 +810,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         new_url = b1.url
 
         # note: the debate_key somehow depends on which tests had been run before -> no hardcoding
-        self.assertIn(reverse("show_debate",  kwargs={"debate_key": c.api_data["debate_key"]}), new_url)
+        self.assertIn(reverse("show_debate", kwargs={"debate_key": c.api_data["debate_key"]}), new_url)
 
         # backend takes some time (0.1s has been too low for some runs -> 0.3s should suffice)
         time.sleep(0.3)
@@ -821,7 +828,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
-
 
 
 # #################################################################################################
@@ -853,6 +859,7 @@ def trigger_click_event(splinter_browser: BaseWebDriver, id: str):
     script = f'document.getElementById("{id}").click()'
     splinter_browser.execute_script(script)
 
+
 def trigger_mouseover_event(splinter_browser: BaseWebDriver, id: str):
     """
     Motivation: prevent (strange) mouseover problems in headless mode
@@ -861,7 +868,8 @@ def trigger_mouseover_event(splinter_browser: BaseWebDriver, id: str):
     script = "var event = new MouseEvent('mouseover', {'bubbles': true, 'cancelable': true}); arguments[0].dispatchEvent(event);"
     splinter_browser.execute_script(script, element._element)
 
+
 def get_js_error_list(browser):
-    logs = browser.driver.get_log('browser')
-    js_errors = [log for log in logs if log['level'] == 'SEVERE']
+    logs = browser.driver.get_log("browser")
+    js_errors = [log for log in logs if log["level"] == "SEVERE"]
     return js_errors

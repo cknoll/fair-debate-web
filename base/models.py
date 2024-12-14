@@ -21,8 +21,12 @@ class Debate(models.Model):
     repo_a = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_a")
     repo_b = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_b")
 
-    user_a = models.ForeignKey(DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_a")
-    user_b = models.ForeignKey(DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_b")
+    user_a = models.ForeignKey(
+        DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_a"
+    )
+    user_b = models.ForeignKey(
+        DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_b"
+    )
 
     update_date = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -44,6 +48,7 @@ class Debate(models.Model):
 class DebateAdmin(admin.ModelAdmin):
     pass
 
+
 admin.site.register(Debate, DebateAdmin)
 
 
@@ -58,4 +63,6 @@ class Contribution(models.Model):
 
 class ContributionAdmin(admin.ModelAdmin):
     pass
+
+
 admin.site.register(Contribution, ContributionAdmin)

@@ -32,6 +32,7 @@ from .utils import (
 
 pjoin = os.path.join
 
+
 class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
 
@@ -156,7 +157,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(response.status_code, 302)
         new_url = response["Location"]
         debate_key = "d2-test_slug1"
-        self.assertEqual(new_url, reverse("show_debate",  kwargs={"debate_key": debate_key}))
+        self.assertEqual(new_url, reverse("show_debate", kwargs={"debate_key": debate_key}))
 
         response = self.client.get(new_url)
         self.assertEqual(response.status_code, 200)
@@ -171,7 +172,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             "csrfmiddlewaretoken": csrf_token,
             "reference_segment": "root_segment",
             "debate_key": debate_key,
-            "body": f"# Updated content \n\n some new words \n\n {content}"
+            "body": f"# Updated content \n\n some new words \n\n {content}",
         }
 
         response = response = self.post_and_follow_redirect(new_url, post_data)
@@ -196,7 +197,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         post_data = {
             "csrfmiddlewaretoken": csrf_token,
             "debate_key": api_data["debate_key"],
-            "contribution_key": "a"
+            "contribution_key": "a",
         }
 
         # test deletion of contribution and the whole debate
@@ -233,7 +234,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         post_data = {
             "csrfmiddlewaretoken": csrf_token,
             "debate_key": api_data["debate_key"],
-            "contribution_key": "a"
+            "contribution_key": "a",
         }
 
         # check data before commit
@@ -333,13 +334,19 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         }
 
         res.post_data_a3_updated = res.post_data_a3.copy()
-        res.post_data_a3_updated.update({"body": "This is an updated level 1 **answer** from a unittest.",})
+        res.post_data_a3_updated.update(
+            {
+                "body": "This is an updated level 1 **answer** from a unittest.",
+            }
+        )
 
         res.post_data_a4b4 = res.post_data_a3.copy()
-        res.post_data_a4b4.update({
-            "reference_segment": "a4b4",
-            "body": "This is a level 2 *answer* from a unittest.",
-        })
+        res.post_data_a4b4.update(
+            {
+                "reference_segment": "a4b4",
+                "body": "This is a level 2 *answer* from a unittest.",
+            }
+        )
 
         res.debate_obj1 = models.Debate.objects.get(debate_key=fdmd.TEST_DEBATE_KEY)
 
@@ -451,7 +458,11 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         c = self._06x__common()
         self.perform_login(username="testuser_2")
 
-        c.post_data_a3.update({"body": "",})
+        c.post_data_a3.update(
+            {
+                "body": "",
+            }
+        )
         response = self.client.post(c.action_url, c.post_data_a3)
         self.assertEqual(response.status_code, 500)
         utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
@@ -468,7 +479,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             "csrfmiddlewaretoken": res.csrf_token,
             # hard coded data
             "debate_key": fdmd.TEST_DEBATE_KEY,
-            "contribution_key": "a15b"
+            "contribution_key": "a15b",
         }
 
         res.fpaths_a15b = [os.path.join(res.repo_dir, "b", f'{res.post_data_a15b["contribution_key"]}.md')]
@@ -482,7 +493,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         res.post_data_all.pop("contribution_key")
         res.fpaths_all = [
             os.path.join(res.repo_dir, "b", f'{res.post_data_a15b["contribution_key"]}.md'),
-            os.path.join(res.repo_dir, "b", f'{res.post_data_a2b1a1b["contribution_key"]}.md')
+            os.path.join(res.repo_dir, "b", f'{res.post_data_a2b1a1b["contribution_key"]}.md'),
         ]
 
         return res
@@ -532,14 +543,14 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             self.assertFalse(os.path.exists(fpath))
 
         response = self.client.get(reverse("test_show_debate"))
-        ctb_divs = BeautifulSoup(response.content, "html.parser").find_all("div", attrs={"class":"db_ctb"})
+        ctb_divs = BeautifulSoup(response.content, "html.parser").find_all("div", attrs={"class": "db_ctb"})
         self.assertEqual(len(ctb_divs), 2)
 
         response = self.post_and_follow_redirect(c.action_url_all, c.post_data_all)
         self.assertEqual(response.request["PATH_INFO"], reverse("test_show_debate"))
 
         # now no divs with this class should be in the response
-        ctb_divs = BeautifulSoup(response.content, "html.parser").find_all("div", attrs={"class":"db_ctb"})
+        ctb_divs = BeautifulSoup(response.content, "html.parser").find_all("div", attrs={"class": "db_ctb"})
         self.assertEqual(len(ctb_divs), 0)
 
         nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=c.repo_dir)
