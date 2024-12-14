@@ -9,7 +9,7 @@
     - [] for anonymous user
         - [] list of debates with most recent activity
 
-- [] own segment_elements should be hover-able but not clickable ("you cannot answer to your own segment")
+- [x] own segment_elements should be hover-able but not clickable ("you cannot answer to your own segment")
 
 - [] overhaul process of new debate creation
     - [x] require login

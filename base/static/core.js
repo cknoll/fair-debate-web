@@ -139,11 +139,11 @@ function insertAfter(newNode, referenceNode) {
 
 /**
  * Insert contribution-form after after the segment element (when clicked on it)
- * If the current user has the wrong role insert a hint-element instead
+ * If the current user has the wrong role just change the class
  * @param {*} segmentElement
- * @param {*} contributionKey
+ * @param {*} contributionKey  the key of the contribution which is to be created
  */
-function insertContributionFormOrHint(segmentElement, contributionKey) {
+function insertContributionFormOrNot(segmentElement, contributionKey) {
 
     // prevent insertion if current element is already marked as active
     if (segmentElement.getAttribute('data-active') === "true") {
@@ -151,13 +151,22 @@ function insertContributionFormOrHint(segmentElement, contributionKey) {
     }
 
     if (contributionKey.endsWith(user_role)) {
+        // we are allowed to add a contribution
         return insertContributionForm(segmentElement, contributionKey);
     } else {
-        return insertHintField(segmentElement, contributionKey, user_role);
+        // we should not answer to our own contribution
+        return
+        // return insertHintField(segmentElement, contributionKey, user_role);
     }
 }
 
-
+/**
+ * TODO: Deprecated Function
+ *
+ * @param {*} segment_element
+ * @param {*} contributionKey
+ * @param {*} user_role
+ */
 function insertHintField(segment_element, contributionKey, user_role) {
 
     const clonedHintTemplate =  document.getElementById("segment_contribution_hint").content.cloneNode(true);
@@ -355,7 +364,7 @@ function onLoadForShowDebatePage(){
 
             segment_span.addEventListener('click', function() {
 
-                insertContributionFormOrHint(segment_span, contributionKey);
+                insertContributionFormOrNot(segment_span, contributionKey);
             });
         }
     });
