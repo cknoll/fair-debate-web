@@ -24,11 +24,16 @@ from base import models
 
 from .utils import (
     logger,
+    Container,
     RepoResetMixin,
+    REPO_HOST_DIR,
     N_CTB_IN_FIXTURES,
+    N_DEBATES_IN_FIXTURES,
     N_COMMITS_TEST_REPO,
     get_parsed_element_by_id,
 )
+
+pjoin = os.path.join
 
 class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     fixtures = ["tests/testdata/fixtures01.json"]
@@ -692,26 +697,37 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         trigger_click_event(b1, "btn_show_all_ctbs")
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a15b"))
 
-    def test_g120__new_debate(self):
-        self.headless = False
-        b1 = self.new_browser()
-        b2 = self.new_browser()
+    def _g120__common(self):
+        # self.headless = False
+        res = Container()
+        res.b1 = self.new_browser()
+        res.b2 = self.new_browser()
 
         # testuser_1 -> role a
-        self.perform_login(browser=b1, username="testuser_1")
-        b1.visit(f"{self.live_server_url}{reverse('new_debate')}")
+        self.perform_login(browser=res.b1, username="testuser_1")
+        res.b1.visit(f"{self.live_server_url}{reverse('new_debate')}")
 
         with open(fdmd.fixtures.txt1_md_fpath) as fp:
-            content = fp.read()
+            res.content = fp.read()
 
-        body_ta = b1.find_by_id("new-debate-body-ta")[0]
-        body_ta.type(content)
+        body_ta = res.b1.find_by_id("new-debate-body-ta")[0]
+        body_ta.type(res.content)
 
         # no new contribution yet
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
-        trigger_click_event(b1, id="new-debate-submit-btn")
+        trigger_click_event(res.b1, id="new-debate-submit-btn")
         # one new contribution now
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+
+        api_data_str = get_parsed_element_by_id(id="data-api_data", browser=res.b1)
+        res.api_data = json.loads(api_data_str)  # api_data_str is a json str inside a json str
+
+        return res
+
+    def test_g120__new_debate_edit_and_delete(self):
+        c = self._g120__common()  # this creates a new a-contribution in the database
+
+        b1, b2 = c.b1, c.b2
 
         new_url = b1.url
         self.assertIn(reverse("show_debate",  kwargs={"debate_key": "d2-"}), new_url)
@@ -726,7 +742,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # test edit and submit
         trigger_click_event(b1, id="edit_btn_contribution_a")
 
-        new_content = f"# Updated content \n\n some new words \n\n{content}"
+        new_content = f"# Updated content \n\n some new words \n\n{c.content}"
         body_ta = b1.find_by_id("ta_contribution_a")[0]
         body_ta.clear()
         body_ta.type(new_content)
@@ -762,11 +778,50 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         original_end_text = "Ipsum modi modi quaerat."
         self.assertTrue(body_ta.value.endswith(original_end_text))
 
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+
         trigger_click_event(b1, id="delete_btn_contribution_a")
 
         # it also worked with 0.01 -> 0.02 is with some safety margin
         time.sleep(0.02)
         self.assertEqual(len(get_js_error_list(b1)), 0)
+
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES)
+
+
+    def test_g121__new_debate_commit(self):
+        c = self._g120__common()  # this creates a new a-contribution in the database
+        b1, b2 = c.b1, c.b2
+
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+
+        self.dirs_to_remove.append(pjoin(REPO_HOST_DIR, c.api_data["debate_key"]))
+        trigger_click_event(b1, id="commit_btn_contribution_a")
+        new_url = b1.url
+
+        # note: the debate_key somehow depends on which tests had been run before -> no hardcoding
+        self.assertIn(reverse("show_debate",  kwargs={"debate_key": c.api_data["debate_key"]}), new_url)
+
+        # backend takes some time (0.1s has been too low for some runs -> 0.3s should suffice)
+        time.sleep(0.3)
+        self.assertEqual(len(get_js_error_list(b1)), 0)
+        status_b1 = get_parsed_element_by_id(id="data-server_status_code", browser=b1)
+        self.assertEqual(status_b1, 200)
+
+        # other users cannot yet see the new debate
+        self.perform_login(browser=b2, username="testuser_2")
+        b2.visit(new_url)
+        status_b2 = get_parsed_element_by_id(id="data-server_status_code", browser=b2)
+
+        # now the page should be visible also for other users
+        self.assertEqual(status_b2, 200)
+
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
+        self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+
 
 
 # #################################################################################################

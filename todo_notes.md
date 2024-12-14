@@ -21,17 +21,18 @@
         - [x] backend test
         - [x] user b should not see anything before the new debate is committed
             - [x] test for 404 error (currently 500)
-        - [] create repo if committed
+        - [x] create repo if committed
             - [x] create repo with some content
             - [x] create repo with correct content
                 - Problem: a.md contains pure md source (without keys)
                 - [x] raise error
                 - [x] fix fdmd
             - [x] backend test
-            - [] frontend test
-        - [.] delete debate object if main contribution is deleted (before commit)
+            - [x] frontend test
+                - [x] db_contribution is somehow not deleted
+        - [x] delete debate object if main contribution is deleted (before commit)
             - [x] backend test
-            - [.] frontend test
+            - [x] frontend test (test_g120)
                 - discovered bug: answerShortKey "root_segment" is not recognized
                 - confusion when should I use "root_segment" and when "debate_container"?
                 - current structure:
@@ -45,7 +46,7 @@
                             - answer_div a2b1a
                                 - ...
                             - segment_span a2b2
-                - Solution:
+                - [x] Solution:
                     - rename *debate_container* to **contribution_a**
                     - rename *answer_a2b* to **contribution_a2b**
 

@@ -45,6 +45,7 @@ class MainView(View):
             "data": {
                 "sp": None,
                 "utd_page_type": "utd_landing_page",
+                "server_status_code": 200,
             }
         }
 
@@ -71,6 +72,7 @@ class NewDebateView(View):
         context = {
             "data": {
                 "utd_page_type": "utd_new_debate",
+                "server_status_code": 200,
             }
         }
         template = "base/main_new_debate.html"
@@ -368,6 +370,7 @@ class ShowDebateView(View):
                 "num_db_ctbs": len_ctb_obj_set,
                 "num_answers": ddl.num_answers,
                 "deepest_level": len(ddl.level_tree) - 1,  # start level counting at 0
+                "server_status_code": 200,
                 # make some data available for js api
                 "api_data": json.dumps({
                     "delete_url": reverse("delete_contribution"),
@@ -452,6 +455,7 @@ def about_page(request):
             "sp": get_sp("about"),
             # "main_class": "error_container",
             "utd_page_type": f"utd_about_page",
+            "server_status_code": 200,
         }
     }
 
@@ -461,7 +465,11 @@ def about_page(request):
 
 
 def menu_page(request):
-    context = {}
+    context = {
+        "data": {
+            "server_status_code": 200,
+        }
+    }
     template = "base/main_menu_page.html"
 
     return render(request, template, context)
@@ -521,6 +529,7 @@ def user_profile(request):
         "data": {
             "sp": get_sp("user_profile"),
             "utd_page_type": f"utd_user_profile",
+            "server_status_code": 200,
         }
     }
 

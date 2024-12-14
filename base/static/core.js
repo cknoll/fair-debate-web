@@ -494,6 +494,11 @@ function getSeparatorDiv(segment_span, contributionDiv){
                 const response = await fetch(apiData.commit_url, generateRequestObjectForCtb(
                     apiData.debate_key, contributionKeyShort
                 ));
+                if (response.status != 200){
+                    console.log(response);
+                    console.log(response.body);
+                    throw new Error(`Unexpected api status ${response.status} for commit of contribution ${contributionKeyShort} of debate ${apiData.debate_key}`);
+                }
                 location.reload();
             } catch(err) {
                 console.error(err);
