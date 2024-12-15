@@ -46,7 +46,8 @@
 </div>
 {% endif %}
 
-{% if data.num_db_ctbs %}
+{% if data.num_db_ctbs and data.deepest_level > 0 %}
+{# the deepest_level-condition prevents this tool bar to show up if only the a-contribution is shown #}
 <div id="bottom_toolbar">
     <div class="_text">
         {% if data.num_db_ctbs == 1 %}

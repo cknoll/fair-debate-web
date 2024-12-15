@@ -154,11 +154,14 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             follow_redirect=True,
         )
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
-
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         # now the client should be redirected show_debate for preview
         self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        bottom_toolbar = soup.find(id="bottom_toolbar")
+        self.assertIsNone(bottom_toolbar)
 
         # this was set by post_to_view
         new_url = response.url
