@@ -151,8 +151,10 @@ function insertContributionFormOrNot(segmentElement, contributionKey) {
         return
     }
 
-    if ((contributionKey.endsWith(user_role)) || (user_b === "__undefined__")) {
+    if ((contributionKey.endsWith(user_role)) || ((user_role === null) && (user_b === "__undefined__"))) {
         // we are allowed to add a contribution
+        // either because user user role matches with the required role for the planned contribution
+        // or because we have no role yet AND user_b is __undefined__
         return insertContributionForm(segmentElement, contributionKey);
     } else {
         // we should not answer to our own contribution

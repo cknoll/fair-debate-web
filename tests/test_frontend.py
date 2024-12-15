@@ -827,12 +827,19 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
 
+        # testuser_1 (in browser b1) should not be able to open answer forms
         trigger_click_event(b1, id="a3")
-        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 0)
 
         trigger_click_event(b1, id="a4")
-        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 0)
 
+        # testuser_2 (in browser b2) should be able to open answer forms
+        trigger_click_event(b2, id="a3")
+        self.assertEqual(len(b2.evaluate_script(self.js_segment_contribution_forms)), 1)
+
+        trigger_click_event(b2, id="a4")
+        self.assertEqual(len(b2.evaluate_script(self.js_segment_contribution_forms)), 1)
 
 
 # #################################################################################################
