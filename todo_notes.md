@@ -13,7 +13,7 @@
     - [] for anonymous user
         - [x] list of debates with most recent activity
         - [] omit those debates which have no committed a-contribution yet
-    - [] `Debate.update_date` should be set on every commit
+    - [] #i8 `Debate.update_date` and `Debate.n_committed_contributions` should be set on every commit
 
 - [.] create a concept for a scenario where multiple parties want to participate:
     - challenges:

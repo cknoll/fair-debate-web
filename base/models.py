@@ -30,6 +30,9 @@ class Debate(models.Model):
 
     update_date = models.DateTimeField(auto_now_add=True, null=True)
 
+    # this will be 1, if an a-contribution is committed etc.
+    n_committed_contributions = models.IntegerField(default=0)
+
     def get_user_role(self, user: DebateUser):
 
         if user == self.user_a:

@@ -2,6 +2,7 @@ import os
 import json
 import time
 from textwrap import dedent as twdd
+from datetime import datetime, timedelta, timezone
 
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -585,12 +586,25 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.mark_repo_for_reset(repo_dir)
         self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
 
-        # now send the post request
+        debate_obj = models.Debate.objects.get(debate_key="d1-lorem_ipsum")
+        n1 = debate_obj.n_committed_contributions
+
+        # now send the post request (commit contribution)
         response = self.client.post(c.action_url_single, c.post_data_a15b)
+
+        n2 = debate_obj.n_committed_contributions
+        time_diff = datetime.now(tz=timezone.utc) - debate_obj.update_date
+
+        # ensure number of committed contribution has increased
+        self.assertEqual(n2, n1 + 1)
+
+        # ensure that the debate was updated
+        self.assertLess(time_diff, timedelta(seconds=0.1))
 
         self.assertEqual(response.status_code, 302)
         target_url = response["Location"]
         self.assertEqual(target_url, reverse("test_show_debate"))
+
 
         for fpath in c.fpaths_a15b:
             self.assertTrue(os.path.exists(fpath))
