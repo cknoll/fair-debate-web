@@ -253,6 +253,22 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         # debate should still be there
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
 
+        # now add reply by testuser_2
+        debate_key = api_data["debate_key"]
+        self.perform_login("testuser_2")
+        new_debate_url = reverse("show_debate", kwargs={"debate_key": debate_key})
+        response = self.client.get(new_debate_url)
+        action_url, csrf_token = get_form_base_data_from_html_template_host(response.content)
+
+        post_data_a3 = {
+            "csrfmiddlewaretoken": csrf_token,
+            # hard coded data
+            "reference_segment": "a3",
+            "debate_key": debate_key,
+            "body": "This is a level 1 **answer** from a unittest.",
+        }
+        response = self.post_and_follow_redirect(action_url, post_data_a3)
+
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
         self.assertEqual(response.status_code, 200)

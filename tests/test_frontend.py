@@ -841,6 +841,13 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         trigger_click_event(b2, id="a4")
         self.assertEqual(len(b2.evaluate_script(self.js_segment_contribution_forms)), 1)
 
+        # compose an answer:
+        ta = b2.find_by_tag("textarea")[0]
+        ta.type("This is an answer by testuser_2.")
+        trigger_click_event(b2, f'submit_btn_contribution_a4b')
+        status_b2 = get_parsed_element_by_id(id="data-server_status_code", browser=b2)
+        self.assertEqual(status_b2, 200)
+
 
 # #################################################################################################
 
