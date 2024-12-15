@@ -3,15 +3,44 @@
 - [.] improve landing page
     - [] for logged in user
         - [] make debates of user available on landing page
+            - [] add 3 more debates to fixtures
         - [] list those three with most recent changes
             - [] store number of answers + change date (most recent contribution) in db
             - [] add change_date to models.Debate + fixtures
     - [] for anonymous user
         - [] list of debates with most recent activity
 
+- [.] create a concept for a scenario where multiple parties want to participate:
+    - challenges:
+        - we want to prevent a situation where many people effectively make the same statement
+        - we want to enable parties C and D to add meaningful content, either as role a or role b
+            - → should be done via inclusion requests (= ui-supported merge requests)
+                - simple-version: shallow authorship-tracking in git repo
+                - full-featured-version: authorship-tracking in git repo
+        - we want to enable parties E and F to react to the original contribution independently of B
+            - There should be some hurdle (approval from either a, b, moderator or community)
+            - The main hurdle might also be: reduced visibility
+        - who decides which party has the privilege of role b (for now: instance moderator via admin interface)
+            - The platform probably cannot solve this; also: has not to solve this.
+            - The platform provides a medium, which allows to gather arguments in a traceable and comprehensible way.
+    - LLM challenges:
+        - prevent that users dump llm generated content without approving it.
+            - as anonymous contributions are discarded, users have an incentive to only publish good statements (from their perspective)
+            - -> point that out in the user guide
+
+    - idea: use invite-codes and save invitation chain (who invited whom), who contributed meaningful content.
+    - idea: use a git-based "distributed database" (consisting of many crawled repos) for reputation tracking
+        - community action would be beneficial for peer reviewing
+        - (automatically) organizing peer review on controversial topics is difficult
+        - higher order peer reviews are necessary (reviews of reviews etc.)
+        - some reward system has to be established
+        - challenge:
+            - reviews should be anonymous but reward status should be transparent
+
+
 - [x] own segment_elements should be hover-able but not clickable ("you cannot answer to your own segment")
 
-- [] overhaul process of new debate creation
+- [x] overhaul process of new debate creation
     - [x] require login
     - [x] improve test
     - [x] create an debate object
