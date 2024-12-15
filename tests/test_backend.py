@@ -592,19 +592,19 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         # now send the post request (commit contribution)
         response = self.client.post(c.action_url_single, c.post_data_a15b)
 
-        n2 = debate_obj.n_committed_contributions
-        time_diff = datetime.now(tz=timezone.utc) - debate_obj.update_date
-
-        # ensure number of committed contribution has increased
-        self.assertEqual(n2, n1 + 1)
+        debate_obj = models.Debate.objects.get(debate_key="d1-lorem_ipsum")
 
         # ensure that the debate was updated
-        self.assertLess(time_diff, timedelta(seconds=0.1))
+        time_diff = datetime.now(tz=timezone.utc) - debate_obj.update_date
+        self.assertLess(time_diff, timedelta(seconds=0.3))
+
+        # ensure number of committed contribution has increased
+        n2 = debate_obj.n_committed_contributions
+        self.assertEqual(n2, n1 + 1)
 
         self.assertEqual(response.status_code, 302)
         target_url = response["Location"]
         self.assertEqual(target_url, reverse("test_show_debate"))
-
 
         for fpath in c.fpaths_a15b:
             self.assertTrue(os.path.exists(fpath))
@@ -623,6 +623,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         nbr_of_commits = fdmd.utils.get_number_of_commits(repo_dir=c.repo_dir)
         self.mark_repo_for_reset(c.repo_dir)
         self.assertEqual(nbr_of_commits, N_COMMITS_TEST_REPO)
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
 
         for fpath in c.fpaths_all:
             self.assertFalse(os.path.exists(fpath))
@@ -630,9 +631,25 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         response = self.client.get(reverse("test_show_debate"))
         ctb_divs = BeautifulSoup(response.content, "html.parser").find_all("div", attrs={"class": "db_ctb"})
         self.assertEqual(len(ctb_divs), 2)
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
 
+        debate_obj = models.Debate.objects.get(debate_key="d1-lorem_ipsum")
+        n1 = debate_obj.n_committed_contributions
+
+        # trigger the commit of all contributions
         response = self.post_and_follow_redirect(c.action_url_all, c.post_data_all)
         self.assertEqual(response.request["PATH_INFO"], reverse("test_show_debate"))
+
+        # ensure that the debate was updated
+        debate_obj = models.Debate.objects.get(debate_key="d1-lorem_ipsum")
+        time_diff = datetime.now(tz=timezone.utc) - debate_obj.update_date
+        self.assertLess(time_diff, timedelta(seconds=0.3))
+
+        # ensure number of committed contribution has increased
+        n2 = debate_obj.n_committed_contributions
+        self.assertEqual(n2, n1 + 2)
+        # ensure number of non-committed contribution in db has decreased
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - 2)
 
         # now no divs with this class should be in the response
         ctb_divs = BeautifulSoup(response.content, "html.parser").find_all("div", attrs={"class": "db_ctb"})

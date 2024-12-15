@@ -28,7 +28,7 @@ class Debate(models.Model):
         DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_b"
     )
 
-    update_date = models.DateTimeField(auto_now_add=True, null=True)
+    update_date = models.DateTimeField(auto_now_add=True, auto_now=True)
 
     # this will be 1, if an a-contribution is committed etc.
     n_committed_contributions = models.IntegerField(default=0)

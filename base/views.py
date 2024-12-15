@@ -2,6 +2,7 @@ import os
 import json
 from urllib.parse import urlencode
 import logging
+from datetime import datetime
 
 from django.conf import settings
 from django.views import View
@@ -199,6 +200,10 @@ class ProcessContribution(View):
         fdmd.commit_ctb(settings.REPO_HOST_DIR, c.debate_key, ctb)
         c.ctb_objs[0].delete()
 
+        c.debate_obj.n_committed_contributions += 1
+        # c.debate_obj.update_date = datetime.utcnow()
+        c.debate_obj.save()
+
     def commit_all_uc_contribution(self, request):
 
         c = self._get_contribution_set_from_request(request, all=True)
@@ -211,6 +216,10 @@ class ProcessContribution(View):
         fdmd.commit_ctb_list(settings.REPO_HOST_DIR, c.debate_key, ctb_list)
         c.ctb_objs.delete()
 
+        c.debate_obj.n_committed_contributions += (len(ctb_list))
+        # c.debate_obj.update_date = datetime.utcnow()
+        c.debate_obj.save()
+
     def delete_contribution(self, request) -> bool:
         c = self._get_contribution_set_from_request(request)
         if len(c.ctb_objs) >= 1 and c.ctb_objs[0].contribution_key == "a":
@@ -220,6 +229,8 @@ class ProcessContribution(View):
         else:
             c.ctb_objs.delete()
             debate_deleted = False
+            # trigger update_date (auto_now)
+            c.debate_obj.save()
         return debate_deleted
 
 
