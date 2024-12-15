@@ -731,7 +731,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         b1, b2 = c.b1, c.b2
 
         new_url = b1.url
-        self.assertIn(reverse("show_debate", kwargs={"debate_key": "d2-"}), new_url)
+        self.assertIn(reverse("show_debate", kwargs={"debate_key": c.api_data["debate_key"]}), new_url)
 
         # other users cannot yet see the new debate
         self.perform_login(browser=b2, username="testuser_2")

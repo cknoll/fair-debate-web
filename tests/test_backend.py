@@ -67,6 +67,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             self.assertEqual(response.status_code, 302)
             new_url = response["Location"]
             response = self.client.get(new_url)
+            response.url = new_url
 
         return response
 
@@ -147,17 +148,22 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             content = fp.read()
 
         response = self.post_to_view(
-            viewname="new_debate", spec_values={"body_content": content, "debate_slug": "test_slug1"}
+            viewname="new_debate",
+            spec_values={"body_content": content, "debate_slug": "test_slug1"},
+            follow_redirect=True,
         )
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
 
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         # now the client should be redirected show_debate for preview
-        self.assertEqual(response.status_code, 302)
-        new_url = response["Location"]
-        debate_key = "d2-test_slug1"
-        self.assertEqual(new_url, reverse("show_debate", kwargs={"debate_key": debate_key}))
+        self.assertEqual(response.status_code, 200)
+
+        # this was set by post_to_view
+        new_url = response.url
+
+        api_data = json.loads(get_parsed_element_by_id(id="data-api_data", res=response))
+        self.assertEqual(new_url, reverse("show_debate", kwargs={"debate_key": api_data["debate_key"]}))
 
         response = self.client.get(new_url)
         self.assertEqual(response.status_code, 200)
@@ -171,7 +177,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         post_data = {
             "csrfmiddlewaretoken": csrf_token,
             "reference_segment": "root_segment",
-            "debate_key": debate_key,
+            "debate_key": api_data["debate_key"],
             "body": f"# Updated content \n\n some new words \n\n {content}",
         }
 

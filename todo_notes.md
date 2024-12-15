@@ -3,7 +3,7 @@
 - [.] improve landing page
     - [] for logged in user
         - [] make debates of user available on landing page
-            - [] add 3 more debates to fixtures
+            - [] (#i6): add 3 more debates to fixtures
         - [] list those three with most recent changes
             - [] store number of answers + change date (most recent contribution) in db
             - [] add change_date to models.Debate + fixtures
