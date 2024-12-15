@@ -47,6 +47,7 @@
             - more sophisticated approach could be taken later (invite code, moderator approval, ...)
             - [x] user_a should still not be able to open answer form
         - [x] create failing test
+    - [] preview-page: bottom toolbar should not be shown
     - [x] require login
     - [x] improve test
     - [x] create an debate object

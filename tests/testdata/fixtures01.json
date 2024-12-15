@@ -28,6 +28,28 @@
   },
   {
     "fields" : {
+        "debate_key" : "d02-test_debate",
+        "repo_a" : 1,
+        "repo_b" : 2,
+        "user_a" : 2,
+        "user_b" : 3
+      },
+    "model" : "base.debate",
+    "pk" : 2
+  },
+  {
+    "fields" : {
+        "debate_key" : "d03-test_debate",
+        "repo_a" : 1,
+        "repo_b" : 2,
+        "user_a" : 2,
+        "user_b" : 3
+      },
+    "model" : "base.debate",
+    "pk" : 3
+  },
+  {
+    "fields" : {
         "date_joined" : "2024-05-22T22:41:00.946Z",
         "email" : "",
         "first_name" : "",
