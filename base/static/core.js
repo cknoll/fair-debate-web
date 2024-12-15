@@ -84,6 +84,7 @@ var contributionMap = {};
 var segmentObjects = null;
 const userIsAuthenticated = readJsonWithDefault("data-user_is_authenticated", false);
 const user_role = readJsonWithDefault("data-user_role", null);
+const user_b = readJsonWithDefault("data-user_b", null);
 const segIdDisplay = document.getElementById('seg_id_display');
 const utdPageType = readJsonWithDefault("data-utd_page_type", null);
 const apiData = JSON.parse(readJsonWithDefault("data-api_data", "null"));
@@ -139,7 +140,7 @@ function insertAfter(newNode, referenceNode) {
 
 /**
  * Insert contribution-form after after the segment element (when clicked on it)
- * If the current user has the wrong role just change the class
+ * If the current user has the wrong role for particular contribution: do nothing
  * @param {*} segmentElement
  * @param {*} contributionKey  the key of the contribution which is to be created
  */
@@ -150,7 +151,7 @@ function insertContributionFormOrNot(segmentElement, contributionKey) {
         return
     }
 
-    if (contributionKey.endsWith(user_role)) {
+    if ((contributionKey.endsWith(user_role)) || (user_b === "__undefined__")) {
         // we are allowed to add a contribution
         return insertContributionForm(segmentElement, contributionKey);
     } else {
@@ -161,7 +162,7 @@ function insertContributionFormOrNot(segmentElement, contributionKey) {
 }
 
 /**
- * TODO: Deprecated Function
+ * TODO: Deprecated Function (also todo: remove the associated <TEMPLATE> code from main_show_debate.html )
  *
  * @param {*} segment_element
  * @param {*} contributionKey
@@ -357,9 +358,13 @@ function onLoadForShowDebatePage(){
                 // non-logged-in user: no click-action
                 return
             }
-            if (!["a", "b"].includes(user_role)){
-                // logged-in user with no role: no click-action
-                return
+
+            if (user_b !== "__undefined__") {
+                // user b has been assigned
+                if (!["a", "b"].includes(user_role)){
+                    // logged-in user with no role: no click-action
+                    return
+                }
             }
 
             segment_span.addEventListener('click', function() {

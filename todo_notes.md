@@ -42,6 +42,9 @@
 
 - [x] overhaul process of new debate creation
     - [] (#i5) testuser_2 cannot answer to newly created contribution (js problem?)
+        - reason: role b has not been assigned to any user yet
+        - [] implement pragmatic approach any user (but original author) can assume role b
+            - more sophisticated approach could be taken later (invite code, moderator approval, ...)
         - [x] create failing test
     - [x] require login
     - [x] improve test

@@ -369,6 +369,14 @@ class ShowDebateView(View):
         else:
             len_ctb_obj_set = 0
 
+        if debate_obj.user_b is None:
+            # we do not use `None` here to distinguish the "explicitly undefined"-case from
+            # the "json-data could not be retrieved"-case
+            user_b = "__undefined__"
+        else:
+            # use the id
+            user_b = debate_obj.user_b.pk
+
         context = {
             "data": {
                 "utd_page_type": f"utd_new_debate",
@@ -378,6 +386,7 @@ class ShowDebateView(View):
                 "user_role": debate_obj.get_user_role(request.user),
                 "num_db_ctbs": len_ctb_obj_set,
                 "num_answers": ddl.num_answers,
+                "user_b": user_b,
                 "deepest_level": len(ddl.level_tree) - 1,  # start level counting at 0
                 "server_status_code": 200,
                 # make some data available for js api

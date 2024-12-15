@@ -821,13 +821,18 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # now the page should be visible also for other users
         self.assertEqual(status_b2, 200)
 
+        user_b = get_parsed_element_by_id(id="data-user_b", browser=b2)
+        self.assertEqual(user_b, "__undefined__")
+
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
 
         trigger_click_event(b1, id="a3")
         self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 1)
 
-        IPS()
+        trigger_click_event(b1, id="a4")
+        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 1)
+
 
 
 # #################################################################################################
