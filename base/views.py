@@ -51,9 +51,8 @@ class MainView(View):
 
         if request.user.is_authenticated:
             user: DebateUser = request.user
-            debate_list = list(user.debate_as_user_a.all()) + list(user.debate_as_user_b.all())
-            # TODO: sort by date
-            context["data"]["recent_user_debates"] = debate_list
+            context["data"]["recent_user_debate_list"] = Debate.get_for_user(user, limit=3)
+        context["data"]["recent_debate_list"] = Debate.get_all(limit=3)
 
         context["data"]["sp"] = get_sp("landing")
         # template = "base/main_simplepage.html"

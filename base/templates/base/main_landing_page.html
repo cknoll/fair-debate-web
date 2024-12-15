@@ -17,9 +17,9 @@
     {% if request.user.is_authenticated %}
     You participated in the following debates:
     <ul>
-      <li>foo (8 answers)</li>
-      <li>bar (8 answers)</li>
-      <li>baz (8 answers)</li>
+      {% for debate in data.recent_user_debate_list %}
+        {% include "base/partials/debate_list_entry.html" with debate=debate %}
+      {% endfor %}
     </ul>
     {% else %}
     To actively participate in debates you need to <a href="{% url 'login' %}">login</a>
@@ -28,10 +28,11 @@
 
     <hr>
     Debates with most recent activity:
+    {# now the list for all recent debates (independently of user) #}
     <ul>
-      <li>lorm (8 answers) {{ data.recent_user_debates }}</li>
-      <li>ipsum (8 answers)</li>
-      <li>etincidunt (8 answers)</li>
+      {% for debate in data.recent_debate_list %}
+        {% include "base/partials/debate_list_entry.html" with debate=debate %}
+      {% endfor %}
     </ul>
 
 </div>

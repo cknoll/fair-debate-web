@@ -1,16 +1,19 @@
 - [] first test-deployment on the web
 - [] add metadata for repo (debate title)
 - [.] improve landing page
-    - [] for logged in user
-        - [] make debates of user available on landing page
+    - [.] for logged in user
+        - [x] make debates of user available on landing page
             - [x] (#i6): add 3 more debates to fixtures
             - [x] include dates
             - [x] make them easily available
-        - [] list those three with most recent changes
-            - [] store number of answers + change date (most recent contribution) in db
-            - [] add change_date to models.Debate + fixtures
+        - [x] list those three with most recent changes
+            - [s] store number of answers + change date (most recent contribution) in db
+            - [x] add change_date to models.Debate + fixtures
+        - [] improve display ("3 days ago")
     - [] for anonymous user
         - [] list of debates with most recent activity
+        - [] omit those debates which have no committed a-contribution yet
+    - [] `Debate.update_date` should be set on every commit
 
 - [.] create a concept for a scenario where multiple parties want to participate:
     - challenges:
