@@ -41,11 +41,11 @@
 - [x] own segment_elements should be hover-able but not clickable ("you cannot answer to your own segment")
 
 - [x] overhaul process of new debate creation
-    - [] (#i5) testuser_2 cannot answer to newly created contribution (js problem?)
+    - [x] (#i5) testuser_2 cannot answer to newly created contribution (js problem?)
         - reason: role b has not been assigned to any user yet
-        - [.] implement pragmatic approach any user (but original author) can assume role b
+        - [x] implement pragmatic approach any user (but original author) can assume role b
             - more sophisticated approach could be taken later (invite code, moderator approval, ...)
-            - [] user_a should still not be able to open answer form
+            - [x] user_a should still not be able to open answer form
         - [x] create failing test
     - [x] require login
     - [x] improve test

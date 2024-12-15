@@ -370,7 +370,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
         trigger_click_event(b1, id="a2b2")
 
-
         # does the form appear as expected?
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
         trigger_click_event(b1, id="cancel_btn_contribution_a2b2a")
@@ -793,7 +792,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES)
 
     def test_g121__new_debate_commit(self):
-        self.headless = False
+        # self.headless = False
         c = self._g120__common()  # this creates a new a-contribution in the database
         b1, b2 = c.b1, c.b2
 
@@ -844,9 +843,24 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # compose an answer:
         ta = b2.find_by_tag("textarea")[0]
         ta.type("This is an answer by testuser_2.")
-        trigger_click_event(b2, f'submit_btn_contribution_a4b')
-        status_b2 = get_parsed_element_by_id(id="data-server_status_code", browser=b2)
-        self.assertEqual(status_b2, 200)
+
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
+
+        trigger_click_event(b2, f"submit_btn_contribution_a4b")
+        time.sleep(0.3)
+        self.assertEqual(get_parsed_element_by_id(id="data-server_status_code", browser=b2), 200)
+
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
+        self.assertEqual(get_parsed_element_by_id("data-num_db_ctbs", browser=b2), 1)
+        self.assertEqual(get_parsed_element_by_id("data-num_answers", browser=b2), 1)
+
+        trigger_click_event(b2, f"commit_btn_contribution_a4b")
+        time.sleep(0.3)
+        self.assertEqual(get_parsed_element_by_id(id="data-server_status_code", browser=b2), 200)
+
+        self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
+        self.assertEqual(get_parsed_element_by_id("data-num_db_ctbs", browser=b2), 0)
+        self.assertEqual(get_parsed_element_by_id("data-num_answers", browser=b2), 1)
 
 
 # #################################################################################################

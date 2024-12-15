@@ -285,7 +285,7 @@ class ShowDebateView(View):
         assert contribution_mode in ("a", "b")
 
         user_role = debate_obj.get_user_role(request.user)
-        if err_page := self._ensure_suitable_user_role(request, user_role, contribution_mode):
+        if err_page := self._ensure_suitable_user_role(request, user_role, contribution_mode, debate_obj):
             return err_page
 
         self.create_or_update_contribution(request, debate_obj, contribution_key)
@@ -323,7 +323,11 @@ class ShowDebateView(View):
         contribution_obj.save()
         return contribution_obj
 
-    def _ensure_suitable_user_role(self, request, user_role, contribution_mode):
+    def _ensure_suitable_user_role(self, request, user_role, contribution_mode, debate_obj: Debate):
+
+        if contribution_mode == "b" and debate_obj.user_b is None and user_role is None:
+            # the current user will claim role b for this debate
+            return
 
         if user_role is None:
             msg = (

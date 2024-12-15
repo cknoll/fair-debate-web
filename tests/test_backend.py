@@ -253,11 +253,15 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         # debate should still be there
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
 
-        # now add reply by testuser_2
+        # now add reply (db_ctb) by testuser_2
         debate_key = api_data["debate_key"]
         self.perform_login("testuser_2")
         new_debate_url = reverse("show_debate", kwargs={"debate_key": debate_key})
         response = self.client.get(new_debate_url)
+
+        self.assertEqual(get_parsed_element_by_id("data-num_db_ctbs", res=response), 0)
+        self.assertEqual(get_parsed_element_by_id("data-num_answers", res=response), 0)
+
         action_url, csrf_token = get_form_base_data_from_html_template_host(response.content)
 
         post_data_a3 = {
@@ -268,6 +272,26 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             "body": "This is a level 1 **answer** from a unittest.",
         }
         response = self.post_and_follow_redirect(action_url, post_data_a3)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(get_parsed_element_by_id("data-num_db_ctbs", res=response), 1)
+        self.assertEqual(get_parsed_element_by_id("data-num_answers", res=response), 1)
+
+        # now also commit the new answer
+        action_url_commit = reverse("commit_contribution")
+
+        post_data_commit = {
+            "csrfmiddlewaretoken": csrf_token,
+            # hard coded data
+            "debate_key": debate_key,
+            "contribution_key": "a3b",
+        }
+
+        response = self.post_and_follow_redirect(action_url_commit, post_data_commit)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(get_parsed_element_by_id("data-num_db_ctbs", res=response), 0)
+        self.assertEqual(get_parsed_element_by_id("data-num_answers", res=response), 1)
 
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
