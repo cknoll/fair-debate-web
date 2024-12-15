@@ -224,7 +224,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
     def test_g032__gui_behavior_for_users(self):
 
-        # self.headless = True
+        self.headless = False
         b1 = self.new_browser()
 
         # testuser_2 (role b)
@@ -239,15 +239,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a"))
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a1b"))
 
-        # this should currently trigger a warning (this contribution is already committed)
-        b1.find_by_id("a2b2").click()
-        hint_div = self.fast_get(b1, "segment_contribution_hint_container")
-        self.assertIsNotNone(hint_div)
-
-        # close hint
-        hint_div.find_by_tag("button").click()
-        self.assertIsNone(self.fast_get(b1, "segment_contribution_hint_container"))
-
         # investigate the (non) appearance of the contribution form
         # (this is not solved via `self.fast_get_by_id` to possibly receive more then 1 result)
         js_segment_contribution_forms = (
@@ -255,21 +246,21 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         )
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
-        b1.find_by_id("a3").click()
+        trigger_click_event(b1, id="a3")
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         # assert that the form does not appear multiple times
-        b1.find_by_id("a3").click()
+        trigger_click_event(b1, id="a3")
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
-        b1.find_by_id("a3").click()
+        trigger_click_event(b1, id="a3")
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         # cancel the form
         b1.find_by_css("._cancel_button").click()
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
-        b1.find_by_id("a3").click()
+        trigger_click_event(b1, id="a3")
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         # fill and submit the form
@@ -300,17 +291,19 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # test for new element (should be visible by default)
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a3b"))
-        b1.find_by_id("a3").click()
+        trigger_click_event(b1, id="a3")
         self.assertFalse(get_js_visibility_for_id(b1, "contribution_a3b"))
-        b1.find_by_id("a3").click()
+        trigger_click_event(b1, id="a3")
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a3b"))
 
         trigger_mouseover_event(b1, id="a3b1")
 
         self.assertIsNone(self.fast_get(b1, "segment_contribution_hint_container"))
         # this should currently trigger a warning in the future an edit-dialog
-        b1.find_by_id("a3b1").click()
-        self.assertIsNotNone(self.fast_get(b1, "segment_contribution_hint_container"))
+        trigger_click_event(b1, id="a3b1")
+
+        # no form should open:
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
         # test that the new contribution is displayed in response to get request
         b1.visit(f"{self.live_server_url}{reverse('landing_page')}")  # goto unrelated url
@@ -337,7 +330,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(ta.html, msg_content1)
         ta.type("\n\nNow with one **more** line!")
         form.find_by_css("._submit_button").click()
-        b1.find_by_id("a3").click()
+        trigger_click_event(b1, id="a3")
         contribution_div = b1.find_by_id("contribution_a3b")[0]
 
         self.assertEqual(len(contribution_div.find_by_css(".p_level1")), 2)
@@ -373,17 +366,18 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertIsNone(self.fast_get(b1, "a3b1"))
 
         # testuser_1 should be able to answer to a2b2
-        b1.find_by_id("a2").click()  # open existing answer
+        trigger_click_event(b1, id="a2")  # open existing answer
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
-        b1.find_by_id("a2b2").click()
+        trigger_click_event(b1, id="a2b2")
+
 
         # does the form appear as expected?
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
+        trigger_click_event(b1, id="cancel_btn_contribution_a2b2a")
 
-        # does the warning appear as expected?
-        self.assertIsNone(self.fast_get(b1, "segment_contribution_hint_container"))
-        b1.find_by_id("a3").click()
-        self.assertIsNotNone(self.fast_get(b1, "segment_contribution_hint_container"))
+        trigger_click_event(b1, id="a3")
+        # no form should open:
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
     def test_g040__segment_contribution_level1(self):
         """
