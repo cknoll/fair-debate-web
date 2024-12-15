@@ -21,7 +21,8 @@
         "repo_a" : 1,
         "repo_b" : 2,
         "user_a" : 2,
-        "user_b" : 3
+        "user_b" : 3,
+        "update_date" : "2024-11-01T05:00:00.0Z"
       },
     "model" : "base.debate",
     "pk" : 1
@@ -32,7 +33,8 @@
         "repo_a" : 1,
         "repo_b" : 2,
         "user_a" : 2,
-        "user_b" : 3
+        "user_b" : 3,
+        "update_date" : "2024-12-15T16:02:00.0Z"
       },
     "model" : "base.debate",
     "pk" : 2
@@ -43,7 +45,8 @@
         "repo_a" : 1,
         "repo_b" : 2,
         "user_a" : 2,
-        "user_b" : 3
+        "user_b" : 3,
+        "update_date" : "2024-12-15T16:03:00.0Z"
       },
     "model" : "base.debate",
     "pk" : 3
@@ -54,7 +57,8 @@
         "repo_a" : 1,
         "repo_b" : 2,
         "user_a" : 2,
-        "user_b" : 3
+        "user_b" : 4,
+        "update_date" : "2024-12-10T16:04:00.0Z"
       },
     "model" : "base.debate",
     "pk" : 4
@@ -112,6 +116,24 @@
       },
     "model" : "base.debateuser",
     "pk" : 3
+  },
+  {
+    "fields" : {
+        "date_joined" : "2024-05-22T22:41:00.946Z",
+        "email" : "",
+        "first_name" : "",
+        "groups" : [  ],
+        "is_active" : true,
+        "is_staff" : false,
+        "is_superuser" : false,
+        "last_login" : "2024-05-22T22:41:31.020Z",
+        "last_name" : "",
+        "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
+        "username" : "testuser_3",
+        "user_permissions" : [  ]
+      },
+    "model" : "base.debateuser",
+    "pk" : 4
   },
   {
     "fields" : {

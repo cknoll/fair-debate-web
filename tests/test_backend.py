@@ -351,6 +351,31 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         # currently failing (not yet implemented)
         self.assertNotEqual(contribution_div.parent.name, "h3")
 
+    def test_052__debate_listing_for_landing_page(self):
+
+        user1 = models.DebateUser.objects.get(username="testuser_1")
+        user2 = models.DebateUser.objects.get(username="testuser_2")
+        user3 = models.DebateUser.objects.get(username="testuser_3")
+
+        debates_u1 = models.Debate.get_for_user(user1)
+        debates_u2 = models.Debate.get_for_user(user2)
+        debates_u3 = models.Debate.get_for_user(user3)
+
+        self.assertEqual(len(debates_u1), 4)
+        self.assertEqual(len(debates_u2), 3)
+        self.assertEqual(len(debates_u3), 1)
+
+        # ensure sorting
+
+        debates_all_3 = models.Debate.get_all(limit=3)
+        debates_all_4 = models.Debate.get_all(limit=4)
+
+        oldest_debate: models.Debate = debates_all_4[3]
+
+        deb: models.Debate
+        for deb in debates_all_3:
+            self.assertLess(oldest_debate.update_date, deb.update_date)
+
     def _06x__common(self) -> Container:
 
         # ensure file system based test data exists:

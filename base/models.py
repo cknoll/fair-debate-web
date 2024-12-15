@@ -44,6 +44,32 @@ class Debate(models.Model):
     def title(self):
         return self.debate_key
 
+    @staticmethod
+    def get_for_user(user: DebateUser, role="all") -> models.QuerySet:
+        """
+        result is sorted for "newest first"
+        """
+        assert role in ("all", "a", "b")
+
+        if role in ("a", "all"):
+            res = set_a = Debate.objects.filter(user_a=user)
+        if role in ("b", "all"):
+            res = set_b = Debate.objects.filter(user_b=user)
+        if role == "all":
+            res = (set_a | set_b)
+
+        return res.order_by("-update_date")
+
+    @staticmethod
+    def get_all(limit: int = None) -> models.QuerySet:
+        """
+        result is sorted for "newest first"
+        """
+
+        return Debate.objects.all().order_by("-update_date")[:limit]
+
+
+
 
 class DebateAdmin(admin.ModelAdmin):
     pass
