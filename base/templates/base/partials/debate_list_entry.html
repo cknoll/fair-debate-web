@@ -1,3 +1,9 @@
+{% load humanize %}
 {# This template is included in the landing page to list debates with most recent activity #}
 
-<li><a href="{% url 'show_debate' debate_key=debate.debate_key %}">{{ debate.title }}</a></li>
+<li>
+    <a href="{% url 'show_debate' debate_key=debate.debate_key %}">
+        {{ debate.title }}
+    </a>
+    <span class="dim" title="{{debate.update_date}}">(updated {{debate.update_date|naturaltime}})</span>
+</li>

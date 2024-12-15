@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
     "django_bleach",
     "base",
 ]
@@ -85,8 +86,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # TODO: make this more professional
-    # this line should be commented out for debugging
     "base.error_handler.ErrorHandlerMiddleware",
 ]
 

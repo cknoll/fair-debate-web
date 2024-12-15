@@ -129,6 +129,11 @@ body a:hover{
     padding: var(--padding-header);
 }
 
+.dim {
+  font-size: 70%;
+  color: var(--color-dim-text);
+}
+
 .h3c {
   /* style headings which are semantically not h3 as h3 */
   font-size: 120%;
