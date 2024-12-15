@@ -41,6 +41,10 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     # headless = True
     headless = "new"  # recommended by ai
 
+    js_segment_contribution_forms = (
+        'document.getElementsByClassName("segment_contribution_form_container")'
+    )
+
     @classmethod
     def setUpClass(cls):
         # this is necessary to handle the fixtures
@@ -165,11 +169,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
             # assert that no form is displayed:
             # (using JS is faster and more reliable than using splinter directly)
-
-            js_segment_contribution_forms = (
-                'document.getElementsByClassName("segment_contribution_form_container")'
-            )
-            self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
+            self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 0)
 
             seg_id_text_0 = b1.find_by_id("seg_id_display")[0].text
             self.assertEqual(seg_id_text_0, "")
@@ -224,7 +224,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
     def test_g032__gui_behavior_for_users(self):
 
-        self.headless = False
+        # self.headless = False
         b1 = self.new_browser()
 
         # testuser_2 (role b)
@@ -793,6 +793,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES)
 
     def test_g121__new_debate_commit(self):
+        self.headless = False
         c = self._g120__common()  # this creates a new a-contribution in the database
         b1, b2 = c.b1, c.b2
 
@@ -822,6 +823,11 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
+
+        trigger_click_event(b1, id="a3")
+        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 1)
+
+        IPS()
 
 
 # #################################################################################################

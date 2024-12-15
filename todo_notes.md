@@ -41,6 +41,8 @@
 - [x] own segment_elements should be hover-able but not clickable ("you cannot answer to your own segment")
 
 - [x] overhaul process of new debate creation
+    - [] (#i5) testuser_2 cannot answer to newly created contribution (js problem?)
+        - [x] create failing test
     - [x] require login
     - [x] improve test
     - [x] create an debate object
