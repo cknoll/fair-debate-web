@@ -237,10 +237,17 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             follow_redirect=True,
         )
 
+        # new a-contribution was submitted to database but not yet committed
+        # (indirectly) check that it is not shown on landing page for for anonymous user
+        n1 = len(models.Debate.get_all())
+        n2 = len(models.Debate.get_all(exclude_uncommitted=False))
+        self.assertEqual(n2, n1 + 1)
+
         # gather necessary data to simulate commit-button-press
         api_data_str = get_parsed_element_by_id(id="data-api_data", res=response)
         api_data = json.loads(api_data_str)  # api_data_str is a json str inside a json str
         _, csrf_token = get_form_base_data_from_html_template_host(response.content)
+
         post_data = {
             "csrfmiddlewaretoken": csrf_token,
             "debate_key": api_data["debate_key"],

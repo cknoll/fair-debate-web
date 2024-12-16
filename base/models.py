@@ -28,7 +28,7 @@ class Debate(models.Model):
         DebateUser, null=True, on_delete=models.SET_NULL, related_name="debate_as_user_b"
     )
 
-    update_date = models.DateTimeField(auto_now_add=True, auto_now=True)
+    update_date = models.DateTimeField(auto_now=True)
 
     # this will be 1, if an a-contribution is committed etc.
     n_committed_contributions = models.IntegerField(default=0)
@@ -64,12 +64,14 @@ class Debate(models.Model):
         return res.order_by("-update_date")[:limit]
 
     @staticmethod
-    def get_all(limit: int = None) -> models.QuerySet:
+    def get_all(limit: int = None, exclude_uncommitted=True) -> models.QuerySet:
         """
         result is sorted for "newest first"
         """
-
-        return Debate.objects.all().order_by("-update_date")[:limit]
+        if exclude_uncommitted:
+            return Debate.objects.filter(n_committed_contributions__gt=0).order_by("-update_date")[:limit]
+        else:
+            return Debate.objects.all().order_by("-update_date")[:limit]
 
 
 

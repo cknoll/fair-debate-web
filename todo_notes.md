@@ -1,7 +1,7 @@
-- [] first test-deployment on the web
 - [] add metadata for repo (debate title)
-- [.] #i7 list recent debates on landing page
-    - [.] for logged in user
+- [] first test-deployment on the web
+- [x] #i7 list recent debates on landing page
+    - [x] for logged in user
         - [x] make debates of user available on landing page
             - [x] (#i6): add 3 more debates to fixtures
             - [x] include dates
@@ -10,9 +10,9 @@
             - [s] store number of answers + change date (most recent contribution) in db
             - [x] add change_date to models.Debate + fixtures
         - [x] improve display ("3 days ago")
-    - [] for anonymous user
+    - [x] for anonymous user
         - [x] list of debates with most recent activity
-        - [] omit those debates which have no committed a-contribution yet
+        - [x] #i10 omit those debates which have no committed a-contribution yet
     - [x] #i8 `Debate.update_date` and `Debate.n_committed_contributions` should be set on every commit
         - [x] implement solution
         - [x] test backend for all commits
