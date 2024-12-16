@@ -338,6 +338,7 @@ function onLoadForShowDebatePage(){
             // for this segment there is already an answer
             // -> add square symbol
             segment_span.classList.add("sqn");
+            segment_span.classList.add("has_answer");
 
             const contributionDiv = contributionMap[contributionKey];
 
