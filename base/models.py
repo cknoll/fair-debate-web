@@ -59,7 +59,7 @@ class Debate(models.Model):
         if role in ("b", "all"):
             res = set_b = Debate.objects.filter(user_b=user)
         if role == "all":
-            res = (set_a | set_b)
+            res = set_a | set_b
 
         return res.order_by("-update_date")[:limit]
 
@@ -72,8 +72,6 @@ class Debate(models.Model):
             return Debate.objects.filter(n_committed_contributions__gt=0).order_by("-update_date")[:limit]
         else:
             return Debate.objects.all().order_by("-update_date")[:limit]
-
-
 
 
 class DebateAdmin(admin.ModelAdmin):

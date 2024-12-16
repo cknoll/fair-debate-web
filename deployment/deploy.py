@@ -97,7 +97,9 @@ pipc = config("pip_command")
 python_version = config("python_version")
 
 
-du.argparser.add_argument("-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true")
+du.argparser.add_argument(
+    "-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true"
+)
 du.argparser.add_argument(
     "-d", "--omit-database", help="omit database-related-stuff (and requirements)", action="store_true"
 )
@@ -111,8 +113,12 @@ du.argparser.add_argument(
     action="store_true",
     help="do not install requirements (allows to speed up deployment)",
 )
-du.argparser.add_argument("-p", "--purge", help="purge target directory before deploying", action="store_true")
-du.argparser.add_argument("--debug", help="start debug interactive mode (IPS), then exit", action="store_true")
+du.argparser.add_argument(
+    "-p", "--purge", help="purge target directory before deploying", action="store_true"
+)
+du.argparser.add_argument(
+    "--debug", help="start debug interactive mode (IPS), then exit", action="store_true"
+)
 
 args = du.parse_args()
 
@@ -230,7 +236,8 @@ def set_web_backend(c):
     c.activate_venv(f"~/{venv}/bin/activate")
 
     c.run(
-        f"uberspace web backend set {django_base_domain}{django_url_prefix} --http --port {port}", target_spec="remote"
+        f"uberspace web backend set {django_base_domain}{django_url_prefix} --http --port {port}",
+        target_spec="remote",
     )
 
     # note 1: the static files which are used by django are served under '{static_url_prefix}'/

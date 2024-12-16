@@ -216,7 +216,7 @@ class ProcessContribution(View):
         fdmd.commit_ctb_list(settings.REPO_HOST_DIR, c.debate_key, ctb_list)
         c.ctb_objs.delete()
 
-        c.debate_obj.n_committed_contributions += (len(ctb_list))
+        c.debate_obj.n_committed_contributions += len(ctb_list)
         # c.debate_obj.update_date = datetime.utcnow()
         c.debate_obj.save()
 

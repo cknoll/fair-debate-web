@@ -23,6 +23,7 @@ class UsageError(ValueError):
 # we define this literal here to prevent circular imports
 ABOUT_PATH = "about/"
 
+
 def get_contribution_numbers():
     """
     Helper function to manually update the fixtures
@@ -36,9 +37,11 @@ def get_contribution_numbers():
     for debate_obj in models.Debate.objects.all():
 
         ctb_list = []
-        for ctb_obj in  debate_obj.contribution_set.all():
+        for ctb_obj in debate_obj.contribution_set.all():
             ctb_list.append(fdmd.DBContribution(ctb_key=ctb_obj.contribution_key, body=ctb_obj.body))
-        ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_obj.debate_key, ctb_list=ctb_list, new_debate=False)
+        ddl = fdmd.load_repo(
+            settings.REPO_HOST_DIR, debate_obj.debate_key, ctb_list=ctb_list, new_debate=False
+        )
         n = [v.db_ctb for v in ddl.tree.values()].count(False)
         res.append((debate_obj.debate_key, n))
     return res

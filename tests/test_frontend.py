@@ -41,9 +41,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     # headless = True
     headless = "new"  # recommended by ai
 
-    js_segment_contribution_forms = (
-        'document.getElementsByClassName("segment_contribution_form_container")'
-    )
+    js_segment_contribution_forms = 'document.getElementsByClassName("segment_contribution_form_container")'
 
     @classmethod
     def setUpClass(cls):
