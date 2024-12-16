@@ -1,14 +1,12 @@
 import time
 import os
-import secrets
-import re
+import sys
 import os
 from os.path import join as pjoin
 
 # these packages are not in requirements.txt but in deployment_requirements.txt
 # noinspection PyUnresolvedReferences
 from packaging import version
-
 # noinspection PyUnresolvedReferences
 from ipydex import IPS, activate_ips_on_exception
 
@@ -30,7 +28,8 @@ except ImportError as err:
 
 """
 This script serves to deploy and maintain the django app `fair_debate_web` on an uberspace account.
-It is largely based on this tutorial: <https://lab.uberspace.de/guide_django.html>.
+It is largely based on this tutorial: <https://lab.uberspace.de/guide_django.html> (but evolved away
+from it over time)
 """
 
 # call this before running the script:
@@ -39,9 +38,9 @@ It is largely based on this tutorial: <https://lab.uberspace.de/guide_django.htm
 
 workdir = os.path.abspath(os.getcwd())
 msg = (
-    "This deployment script is expected to be run from the BASEDIR of the django project, i.e. "
-    "from the same directory where manage.py is located. This seems not to be the case.\n"
-    f"Your current workdir is {workdir}"
+       "This deployment script is expected to be run from the BASEDIR of the django project, i.e. "
+       "from the same directory where manage.py is located. This seems not to be the case.\n"
+       f"Your current workdir is {workdir}"
 )
 
 if not os.path.isfile(pjoin(workdir, "manage.py")):
@@ -71,6 +70,7 @@ app_name = config("app_name")
 project_name = config("PROJECT_NAME")
 
 
+
 # this is needed to distinguish different django instances on the same uberspace account
 port = config("port")
 
@@ -97,30 +97,27 @@ pipc = config("pip_command")
 python_version = config("python_version")
 
 
-du.argparser.add_argument(
-    "-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true"
-)
-du.argparser.add_argument(
-    "-d", "--omit-database", help="omit database-related-stuff (and requirements)", action="store_true"
-)
+
+du.argparser.add_argument("-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true")
+du.argparser.add_argument("-d", "--omit-database",
+                          help="omit database-related-stuff (and requirements)", action="store_true")
 du.argparser.add_argument("-s", "--omit-static", help="omit static file handling", action="store_true")
-du.argparser.add_argument(
-    "-x", "--omit-backup", help="omit db-backup (avoid problems with changed models)", action="store_true"
-)
+du.argparser.add_argument("-x", "--omit-backup",
+                          help="omit db-backup (avoid problems with changed models)", action="store_true")
 du.argparser.add_argument(
     "-q",
     "--omit-requirements",
     action="store_true",
     help="do not install requirements (allows to speed up deployment)",
 )
-du.argparser.add_argument(
-    "-p", "--purge", help="purge target directory before deploying", action="store_true"
-)
-du.argparser.add_argument(
-    "--debug", help="start debug interactive mode (IPS), then exit", action="store_true"
-)
+du.argparser.add_argument("-p", "--purge", help="purge target directory before deploying", action="store_true")
+du.argparser.add_argument("--debug", help="start debug interactive mode (IPS), then exit", action="store_true")
 
-args = du.parse_args()
+# always pass remote as argument (reason: legacy)
+
+# assumes call starts with with `python deployment/deploy.py`
+args = du.parse_args(sys.argv[1:] + ["remote"])
+
 
 final_msg = f"Deployment script {du.bgreen('done')}."
 
@@ -141,6 +138,9 @@ init_fixture_path = os.path.join(target_deployment_path, "tests/testdata/fixture
 
 
 # print a warning for data destruction
+
+print(du.bred("Currently no backup will be done during deployment (not yet implemented)."))
+time.sleep(1)
 du.warn_user(
     app_name,
     args.target,
@@ -162,6 +162,7 @@ c.env_variables["PATH"] = f"/home/{user}/.local/bin:{PATH_ENV}"
 
 def create_and_setup_venv(c: du.StateConnection):
 
+
     # TODO: check if venv exists
 
     c.run(f"{pipc} install --user virtualenv")
@@ -177,42 +178,42 @@ def create_and_setup_venv(c: du.StateConnection):
     c.run(f"pip install --upgrade pip")
     c.run(f"pip install --upgrade setuptools")
 
-    print("\n", "install uwsgi", "\n")
-    c.run(f"pip install uwsgi")
+    print("\n", "install gunicorn", "\n")
+    c.run(f"pip install gunicorn")
 
     # ensure that the same version of deploymentutils like on the controller-pc is also in the server
     c.deploy_this_package()
 
 
 def render_and_upload_config_files(c):
+    """
+    Use some variables from project config file (toml), put them in the template,
+    create service specific config files (ini) and upload them.
+
+    Currently only one config file is created.
+    """
 
     c.activate_venv(f"~/{venv}/bin/activate")
 
-    # generate the general uwsgi ini-file
+    # generate the general service ini-file
     tmpl_dir = os.path.join("uberspace", "etc", "services.d")
-    tmpl_name = "template_PROJECT_NAME_uwsgi.ini"
-    target_name = "PROJECT_NAME_uwsgi.ini".replace("PROJECT_NAME", project_name)
-    du.render_template(
-        tmpl_path=pjoin(asset_dir, tmpl_dir, tmpl_name),
-        target_path=pjoin(temp_workdir, tmpl_dir, target_name),
-        context=dict(venv_abs_bin_path=f"{venv_path}/bin/", project_name=project_name),
-    )
+    tmpl_name = "template_PROJECT_NAME_gunicorn.ini"
+    target_name = "PROJECT_NAME_gunicorn.ini".replace("PROJECT_NAME", project_name)
 
-    # generate config file for django uwsgi-app
-    tmpl_dir = pjoin("uberspace", "uwsgi", "apps-enabled")
-    tmpl_name = "template_PROJECT_NAME.ini"
-    target_name = "PROJECT_NAME.ini".replace("PROJECT_NAME", project_name)
+    time_stamp = time.strftime(r"%Y-%m-%d %H-%M-%S")
     du.render_template(
         tmpl_path=pjoin(asset_dir, tmpl_dir, tmpl_name),
         target_path=pjoin(temp_workdir, tmpl_dir, target_name),
-        context=dict(venv_dir=f"{venv_path}", deployment_path=target_deployment_path, port=port, user=user),
+        context=dict(
+            venv_abs_bin_path=f"{venv_path}/bin", project_name=project_name, port=port, time_stamp=time_stamp
+        ),
     )
 
     #
     # ## upload config files to remote $HOME ##
     #
     srcpath1 = os.path.join(temp_workdir, "uberspace")
-    filters = "--exclude='**/README.md' --exclude='**/template_*'"  # not necessary but harmless
+    filters = "--exclude='**/README.md' --exclude='**/template_*'"  # these files would be harmless but might be confusing
     c.rsync_upload(srcpath1 + "/", "~", filters=filters, target_spec="remote")
 
 
@@ -222,13 +223,10 @@ def update_supervisorctl(c):
 
     c.run("supervisorctl reread", target_spec="remote")
     c.run("supervisorctl update", target_spec="remote")
-    print("waiting 10s for uwsgi to start")
-    time.sleep(10)
+    print("waiting 16s for service to start")
+    time.sleep(16)
 
-    res1 = c.run("supervisorctl status", target_spec="remote")
-
-    # TODO: This is insufficient when multiple uwsgi-processes are running
-    assert "uwsgi" in res1.stdout
+    res1 = c.run(f"supervisorctl status gunicorn-{project_name}", target_spec="remote")
     assert "RUNNING" in res1.stdout
 
 
@@ -236,8 +234,7 @@ def set_web_backend(c):
     c.activate_venv(f"~/{venv}/bin/activate")
 
     c.run(
-        f"uberspace web backend set {django_base_domain}{django_url_prefix} --http --port {port}",
-        target_spec="remote",
+        f"uberspace web backend set {django_base_domain}{django_url_prefix} --http --port {port}", target_spec="remote"
     )
 
     # note 1: the static files which are used by django are served under '{static_url_prefix}'/
@@ -245,6 +242,16 @@ def set_web_backend(c):
     # they are served by apache from ~/html{static_url_prefix}, e.g. ~/html/markpad1-static
 
     c.run(f"uberspace web backend set {django_base_domain}{static_url_prefix} --apache", target_spec="remote")
+
+    # this is usefull for making the service accessible from other domains:
+    if 0:
+        url2 = "fair-debate.kddk.eu"
+        cmd1 = f"uberspace web backend set {url2} --http --port {port}"
+        cmd2 = f"uberspace web backend set {url2}{static_url_prefix} --apache"
+        # c.run(cmd1)
+        # c.run(cmd2)
+
+
 
 
 def upload_files(c):
@@ -265,7 +272,9 @@ def upload_files(c):
     db_file_name = config("DB_FILE_NAME")
     filters = f"--exclude='.git/' --exclude='.idea/' --exclude='{db_file_name}' "
 
-    c.rsync_upload(project_src_path + "/", target_deployment_path, filters=filters, target_spec="both")
+    c.rsync_upload(
+        project_src_path + "/", target_deployment_path, filters=filters, target_spec="both"
+    )
 
     c.run(f"touch requirements.txt", target_spec="remote")
 
@@ -301,6 +310,7 @@ def initialize_db(c):
     # print("\n", "backup old database", "\n")
     _ = c.run("python manage.py savefixtures --backup", warn=False)
 
+
     c.run("python manage.py makemigrations", target_spec="both")
 
     # delete old db
@@ -321,6 +331,7 @@ def initialize_db(c):
     c.run(f"python manage.py loaddata {init_fixture_path}", target_spec="both")
 
 
+
 def generate_static_files(c):
 
     c.chdir(target_deployment_path)
@@ -330,27 +341,65 @@ def generate_static_files(c):
     c.run("python manage.py collectstatic --no-input", target_spec="remote")
 
     print("\n", "copy static files to the right place", "\n")
-
     targetdir = f"/var/www/virtual/{user}/{django_base_domain}"
     c.run(f"mkdir -p {targetdir}")
     c.chdir(targetdir)
-
     c.run(f"rm -rf ./{static_url_prefix}")
     c.run(f"cp -r {static_root_dir} ./{static_url_prefix}")
+
+    # static files for second domain etc.
+    for further_domain in config("ALLOWED_HOSTS")[1:]:
+        targetdir = f"/var/www/virtual/{user}/{further_domain}"
+        c.run(f"mkdir -p {targetdir}")
+        c.chdir(targetdir)
+        c.run(f"rm -rf ./{static_url_prefix}")
+        c.run(f"cp -r {static_root_dir} ./{static_url_prefix}")
 
     c.chdir(target_deployment_path)
 
 
+# TODO: make more generic and move this into deployment utils
+def deploy_local_dependency(c: du.StateConnection):
+    import inspect
+    import fair_debate_md
+    from pathlib import Path
+    module_path = inspect.getfile(fair_debate_md)
+    assert module_path.endswith("fair-debate-md/src/fair_debate_md/__init__.py")
+
+    # path of dir which contains pyproject.toml as direct child
+    project_path = Path(module_path).parents[2].as_posix()
+    c.deploy_local_package(local_path=project_path, package_name="fair_debate_md")
+
+
+def finalize(c):
+    c.run(f"touch ~/_this_is_uberspace.txt", target_spec="remote")
+    print("\n", "restart webservice", "\n")
+    c.run(f"supervisorctl restart gunicorn-{project_name}", target_spec="remote")
+
+    print(final_msg)
+
+
 if args.debug:
 
-    # this function is typically used for customized ad hoc function calls
+    c.activate_venv(f"~/{venv}/bin/activate")
+    # c.deploy_this_package()
+    # render_and_upload_config_files(c)
+    # deploy_local_dependency(c)
+    # upload_files(c)
+    # update_supervisorctl(c)
+
+    set_web_backend(c)
+    # initialize_db(c)
+    # generate_static_files(c)
+    # finalize(c)
+
+    exit()
+
     # create_and_setup_venv(c)
     c.activate_venv(f"{venv_path}/bin/activate")
 
-    # generate_static_files(c)
+    c.deploy_this_package()
 
-    # c.deploy_this_package()
-    # c.deploy_local_package("/home/ck/projekte/rst_python/ipydex/repo")
     # set_web_backend(c)
 
     IPS()
@@ -380,6 +429,7 @@ if args.purge:
 upload_files(c)
 
 if not args.omit_requirements:
+    deploy_local_dependency(c)
     install_app(c)
 
 if not args.omit_database:
@@ -389,8 +439,4 @@ if not args.omit_static:
     generate_static_files(c)
 
 
-print("\n", "restart uwsgi service", "\n")
-c.run("supervisorctl restart all", target_spec="remote")
-
-
-print(final_msg)
+finalize(c)

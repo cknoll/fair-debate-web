@@ -1,5 +1,7 @@
 - [] add metadata for repo (debate title)
-- [] first test-deployment on the web
+- [.] first test-deployment on the web
+    - [x] adapt `deploy.py`
+    - [] create test-repos
 - [x] #i11 answered segments should be highlighted noticeably.
 - [x] #i7 list recent debates on landing page
     - [x] for logged in user
