@@ -41,6 +41,10 @@ BASE_URL = cfg("BASE_URL")
 # can be deactivated for debugging
 CATCH_EXCEPTIONS = True
 
+# tmp change for debugging deployment
+# CATCH_EXCEPTIONS = False
+# DEBUG = True
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
