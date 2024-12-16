@@ -45,8 +45,8 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 ## Grundsätzlicher Ablauf:
 
 - an einer Debatte nehmen zwei Seiten ("Parteien") teil. Wie diese Parteien sich intern organisieren, z.B. welche natürlichen Personen Schreibrechte haben, können sie selber entscheiden.
-- Partei A eröffnet die Debatte
-- Partei B hat die Gelegenheit auf der gleichen Plattform mit der gleichen Sichtbarkeit zu antworten
+- Partei A eröffnet die Debatte mit einem schriftlichen Beitrag.
+- Partei B hat die Gelegenheit, auf der gleichen Plattform mit der gleichen Sichtbarkeit zu antworten
 - Die einzelnen Beiträge sollen bestimmte Qualitätsstandards erfüllen:
     - Sachlicher Ton, keine Beleidigungen etc.
     - Aussagen, bei denen kein Konsens angenommen werden kann, sind zu belegen
@@ -80,6 +80,140 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 - Vorschau bestätigen
 - Pullrequest wird vom Backend erzeugt (ggf. branch auswählen).
 - Pullrequest (auf github etc.) manuell mergen
+
+
+### Frontend (Antwort Schreiben Versuch 2)
+- Einloggen als Partei B (sicherstellen, dass B nur von einem Gerät aus eingeloggt sein kann)
+- Aussage anwählen
+    -> Formular erscheint an passender stelle (per js eingefügt)
+- Antwort schreiben -> wird in Datenbank gespeichert
+- Vorschau wird (als "normale" Antwort aber mit anderem Hintergrund und mit edit-Button) angezeigt,
+- Weitere Aussage anwählen, weitere Antwort schreiben, editieren etc. alles noch in db gespeichert.
+- grüner Button "Repo exportieren" inklusive Erklärungs-(i) erscheint oben, sobald eine unexportierte Antwort in der Datenbank liegt.
+    - Button bewirkt, dass Antworten als Datei ins Debatten-Verzeichnis geschrieben werden. Neuer Kommit wird erstellt.
+    - PR-erzeugung etc. kommt später
+
+
+## Abgrenzung Datenbank vs. Dateisystem
+
+### Datenbank:
+
+- User
+- Jede Debatte als Objekt
+- Repo (als Objekt)
+- Zusammenhang zwischen User und Repo:
+    - User kann beim Anmelden eine repo-url angeben
+    - ggf. später noch weitere Hinzufügen, ändern, etc. aktuell aktives repo auswählen
+    - Jeder user hat zu jeder Zeit genau ein aktives Repo
+
+### Dateisystem:
+
+- Verzeichnis für jede Debatte.
+- Verzeichnis ist ein repo mit zwei remotes:
+    - official_a
+    - official_b
+- Beide remotes müssen konsistenten main-branch haben, d.h. Repo X darf nur um "fast-forward-merge" von repo Y abweichen
+- Prozedur:
+    - Nutzer meldet sich an.
+    - Erzeugt einen neuen Beitrag (a/a.md). Um ihn zur Diskussion zu stellen muss folgendes passieren:
+        - Plattform erzeugt ein Repo (z.B. auf github) mit
+            - generischer README und Link https://faire-debatte.de/d/d1-lorem_ipsum + Link zur Doku
+            - Verzeichnisstruktur
+        - Plattform kommittiert a/a.md (2. Kommit)
+        - Plattform fordert user auf, das Repo zu forken
+        - User a forkt es und teilt repo-url der Plattform mit (damit bestätigt er die Authentizität des Inhalts von a.md)
+        - Plattform veröffentlicht Beitrag
+    - Anderer Nutzer möchte auf Beitrag eingehen und meldet sich dazu an. Er erstellt Antworten auf einzelne Aussagen (in der Datenbank)
+    - Um diese Antworten zu publizieren muss folgendes passieren:
+        - Plattform erzeugt im Repo einen Kommit als user b
+        - Plattform fordert user b auf, das repo zu forken
+        - User b forkt es und teilt Plattform die URL mit. (damit bestätigt er die Authentizität des Inhalts von b/a\d+b.md)
+        - Plattform macht Antworten von b öffentlich sichtbar
+
+
+- Kritik: Prozedur ist für den Anfang zu umständlich. Versuch einer Vereinfachung:
+
+- Prozedur:
+    - Nutzer meldet sich an.
+    - Erzeugt einen neuen Beitrag (a/a.md). Um ihn zur Diskussion zu stellen muss folgendes passieren:
+    - Plattform erzeugt ein Repo (z.B. auf github) mit
+            - generischer README und Link https://faire-debatte.de/d/d1-lorem_ipsum + Link zur Doku
+            - Verzeichnisstruktur
+        - Plattform kommittiert a/a.md (2. Kommit)
+        - Plattform gibt user die Möglichkeit, das Repo zu forken und die eigene URL zu hinterlegen.
+            - **Einfacher Weg:** User klickt auf OK dann ist das Plattform-kontrollierte-repo maßgeblich
+            - Sicherer Weg: User a forkt es und teilt repo-url der Plattform mit (damit bestätigt er die Authentizität des Inhalts von a.md)
+        - Plattform veröffentlicht Beitrag
+    - Anderer Nutzer möchte auf Beitrag eingehen und meldet sich dazu an. Er erstellt Antworten auf einzelne Aussagen (in der Datenbank)
+    - Um diese Antworten zu publizieren muss folgendes passieren:
+        - Plattform erzeugt im Repo einen Kommit als user b
+        - Plattform ermöglicht User b das repo zu forken
+            - **Einfacher Weg: User klickt auf OK** dann ist das Plattform-kontrollierte-repo maßgeblich
+            - sicherer Weg: User b forkt es und teilt Plattform die URL mit. (damit bestätigt er die Authentizität des Inhalts von b/a\d+b.md)
+        - Plattform macht Antworten von b öffentlich sichtbar
+
+1. Implementierungsstufe:
+
+Repo nur lokal im Arbeitsverzeichnis
+
+
+---
+
+Test-Konzept:
+
+Üblich:
+- Testdaten liegen in fixture-Dateien
+- für jeden Test wird eine leere Datenbank erzeugt und spezifische fixtures werden geladen
+
+Problem:
+- repo-basiertes Vorgehen nutzt Datenbank + Dateisystem
+- → ich muss mich um das Herstellen eines definierten Zustandes selber kümmern
+- setUp, tearDown
+
+---
+
+Können mehrere Repos auf einen Ausgangspost reagieren? -> sollte grundsätzlich möglich sein. allerdings sollte das Ziel der Plattform Qualität vor Quantität sein.
+d.h. Kritiker sollten sich zusammenschließen und gemeinsam an einer möglichst guten Kritik arbeiten, statt an mehreren mittelmäßigen oder schlechten.
+
+Wenn das nicht geht, ist es das sinnvollste, eine eigene Debatte (mit dem selben a.md-Beitrag) aufzumachen, die "in geeigneter Weise" auf die Ausgangsdebatte verweist.
+
+Es sollte aber immer klar sein, das das nicht die offizielle Debatte ist und a-Autor "nicht verpflichtet" ist (entsprechend der Wettbewerbsregeln) auf die Kritik einzugehen.
+
+
+Herausforderung: wie kann ich ein repo (inklusive jedem einzelnen Kommit für jeden Branch in einer Sammlung von patch-Dateien darstellen?) -> gelöst
+
+
+
+repo erzeugen:
+
+```
+git init
+git add a/a.md
+git commit --author="user_a <user_a@example.org>" -m "my contribution"
+git add b/a2b.md b/a4b.md b/a6b.md b/a7b.md
+git commit --author="user_b <user_b@example.org>" -m "my contribution"
+git add a/a2b1a.md
+git commit --author="user_a <user_a@example.org>" -m "my contribution"
+git add b/a2b1a3b.md
+git commit --author="user_b <user_b@example.org>" -m "my contribution"
+```
+
+patches erzeugen:
+
+```
+git format-patch --root -o patches
+```
+
+patches anwenden:
+```
+git init
+git am patches/*patch
+```
+
+Wo soll der git-bezogene code leben?
+-> eher im package als im web-repo
+
+
 
 
 ## Repräsentation von Aussagen im Repo

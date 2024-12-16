@@ -8,3 +8,5 @@ fair_debate_md
 pytest
 pytest-django
 packaging
+splinter
+selenium

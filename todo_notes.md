@@ -1,8 +1,237 @@
+- [] add metadata for repo (debate title)
+- [] first test-deployment on the web
+- [x] #i11 answered segments should be highlighted noticeably.
+- [x] #i7 list recent debates on landing page
+    - [x] for logged in user
+        - [x] make debates of user available on landing page
+            - [x] (#i6): add 3 more debates to fixtures
+            - [x] include dates
+            - [x] make them easily available
+        - [x] list those three with most recent changes
+            - [s] store number of answers + change date (most recent contribution) in db
+            - [x] add change_date to models.Debate + fixtures
+        - [x] improve display ("3 days ago")
+    - [x] for anonymous user
+        - [x] list of debates with most recent activity
+        - [x] #i10 omit those debates which have no committed a-contribution yet
+    - [x] #i8 `Debate.update_date` and `Debate.n_committed_contributions` should be set on every commit
+        - [x] implement solution
+        - [x] test backend for all commits
+        - [x] test backend for single commit
 
-- [] add answer via gui
-    - [] specify repo and db-concept
-    - [] consider preview view
-    - [] implementation
+- [.] create a concept for a scenario where multiple parties want to participate:
+    - challenges:
+        - we want to prevent a situation where many people effectively make the same statement
+        - we want to enable parties C and D to add meaningful content, either as role a or role b
+            - → should be done via inclusion requests (= ui-supported merge requests)
+                - simple-version: shallow authorship-tracking in git repo
+                - full-featured-version: authorship-tracking in git repo
+        - we want to enable parties E and F to react to the original contribution independently of B
+            - There should be some hurdle (approval from either a, b, moderator or community)
+            - The main hurdle might also be: reduced visibility
+        - who decides which party has the privilege of role b (for now: instance moderator via admin interface)
+            - The platform probably cannot solve this; also: has not to solve this.
+            - The platform provides a medium, which allows to gather arguments in a traceable and comprehensible way.
+    - LLM challenges:
+        - prevent that users dump llm generated content without approving it.
+            - as anonymous contributions are discarded, users have an incentive to only publish good statements (from their perspective)
+            - -> point that out in the user guide
+
+    - idea: use invite-codes and save invitation chain (who invited whom), who contributed meaningful content.
+    - idea: use a git-based "distributed database" (consisting of many crawled repos) for reputation tracking
+        - community action would be beneficial for peer reviewing
+        - (automatically) organizing peer review on controversial topics is difficult
+        - higher order peer reviews are necessary (reviews of reviews etc.)
+        - some reward system has to be established
+        - challenge:
+            - reviews should be anonymous but reward status should be transparent
+
+
+- [x] own segment_elements should be hover-able but not clickable ("you cannot answer to your own segment")
+
+- [x] overhaul process of new debate creation
+    - [x] (#i5) testuser_2 cannot answer to newly created contribution (js problem?)
+        - reason: role b has not been assigned to any user yet
+        - [x] implement pragmatic approach any user (but original author) can assume role b
+            - more sophisticated approach could be taken later (invite code, moderator approval, ...)
+            - [x] user_a should still not be able to open answer form
+        - [x] create failing test
+    - [x] #i9 preview-page: bottom toolbar should not be shown
+    - [x] require login
+    - [x] improve test
+    - [x] create an debate object
+    - [x] create uncommitted contribution object (for contribution a)
+        - [x] backend test
+    - [x] redirect to show debate
+        - [x] backend test
+        - [x] user b should not see anything before the new debate is committed
+            - [x] test for 404 error (currently 500)
+        - [x] create repo if committed
+            - [x] create repo with some content
+            - [x] create repo with correct content
+                - Problem: a.md contains pure md source (without keys)
+                - [x] raise error
+                - [x] fix fdmd
+            - [x] backend test
+            - [x] frontend test
+                - [x] db_contribution is somehow not deleted
+        - [x] delete debate object if main contribution is deleted (before commit)
+            - [x] backend test
+            - [x] frontend test (test_g120)
+                - discovered bug: answerShortKey "root_segment" is not recognized
+                - confusion when should I use "root_segment" and when "debate_container"?
+                - current structure:
+                - debate_container
+                    - root_segment
+                    - p_level0
+                        - segment_span a1
+                        - segment_span a2
+                        - answer_div a2b
+                            - segment_span a2b1
+                            - answer_div a2b1a
+                                - ...
+                            - segment_span a2b2
+                - [x] Solution:
+                    - rename *debate_container* to **contribution_a**
+                    - rename *answer_a2b* to **contribution_a2b**
+
+
+        - [x] fix broken frontend
+            - [x] user a should see widgets for uncommitted changes
+                - [x] buttons and modal dialog should work
+                    - [x] edit button
+                        - [x] frontend test
+                    - [x] submit
+                        - [x] backend test
+                        - [x] frontend test
+                    - [x] modal dialog
+                        - [x] frontend test
+                - [x] "is not yet published" field is not displayed
+                    - currently created by JS-function `getSeparatorDiv`
+                    - problems:
+                        - segment_span (does not exist for level0)
+                            - used for call insertAnswerForm(segment_span, answerKey, true);
+                            - [x] add div element with id="root_segment"
+                        - answer_div: unclear which div this should be: debate_wrapper? -> should work for now.
+                        - [x] adapt js such that `getSeparatorDiv(segment_span, answerDiv)` is applied
+                        - [x] rename to "debate_container"
+                        - [x] add db_ctb-class + md_src
+                - [x] works but wrong in test-production
+                - [x] works not at all in test_frontend
+
+- [x] #i4 css glitch: on narrow screens the left margin is too (decoration is hidden by scroll bar)
+
+- [x] add rudimentary user profile page
+
+- [x] (#i3) place answers to h1,h2,h3-tags etc outside of those tags
+    - [x] failing backend test
+    - [x] implement necessary changes in fdmd
+
+- [x] js based buttons: level visibility ← →
+    - [x] add buttons in frontend
+    - [x] implement -> direction (js)
+        - improve logic:
+            - [x] take parents and children into account (they could be already shown for different reasons)
+                - desired behavior: level 3 child manually shown or automatically due to dtb_status
+                  => stays visible for "→" button, but
+                  disappears if `currentLevel` decreases below 3 (also if it decreases from 2->1 or 1->0)
+                  => already implemented
+            - [x] (#i2) implement "btn_show_all_uc_ctb"
+                - [x] test frontend
+            - [x] (#i1) stop counter from increasing over deepest level
+                - [x] failing test
+                - [x] make deepest level available as json-script
+        - [x] frontend test
+    - [x] implement <- direction (js)
+        - [x] frontend test
+
+- [x] show number of answers in toolbar
+- [x] improve debate heading
+    - [x] display debate_key (slug) in title
+    - [x] copy link to this debate
+
+- [x] fix bug for empty contribution
+    - [x] ignore them if they occur anyway,
+        - [x] emit a logging-warning
+    - [x] backend: refuse to accept them
+        - [x] implement failing test
+        - [x] fix test
+    - [x] frontend: dot let them be posted,
+
+- [x] js: can I open multiple answer dialogs at the same time? (segment_element.setAttribute('data-active', "true");)
+    - → is not intentionally not allowed
+    - [x] implement modal warning dialog
+        - see: https://www.w3schools.com/howto/howto_css_modals.asp
+        - [x] should appear only if one textarea is shown and has changed
+        - [x] should appear if any of the buttons are pressed
+            - [x] splinter test
+
+- [x] add answer via gui
+    - [x] specify repo and db-concept
+    - [x] implement mechanism to publish all answers in one commit
+        - [x] backend
+            - [x] test that new contributions are rendered correctly (without class "db_ctb")
+        - [x] frontend
+    - [x] implement mechanism to publish answer from db to repo
+        - [x] backend
+            - [x] add basic view and test
+            - [x] write contribution to file in repo
+            - [x] create commit in repo (as correct user)
+            - [x] adapt tearDown to restore repo state
+            - [x] test that new contributions are rendered correctly (without class "db_ctb")
+        - [x] frontend
+    - all uncommitted answers
+        - for the author:
+            - [x] should be displayed by default (and thus their parents)
+            - [x] and have their own css class (moderately highlighted) -> db_ctb
+            - [x] add delete button
+                - [x] backend
+                - [x] frontend
+        - [x] for all but the author: should not be displayed
+    - [x] consider preview view with possibility to update -> edit already created answer:
+        - [x] implement update mechanism
+            - [x] backend
+            - [x] frontend
+                - [x] insert form
+                - [x] insert body source into form
+                - [x] gui test
+                - [x] ui friendly styling
+                - [x] fix gui behavior when opening different forms
+                - [x] insert only separator with edit-button
+                - [x] edit button shows actual form
+        - [x] create roles for users in repos
+            - [x] implement tests
+                - [x] testuser_1 has role a in d1-lorem_ipsum. Thus they cannot create a b-contribution, but an a-contribution
+                    - [x] backend
+                    - [x] frontend
+                - [x] testuser_2 has role b in d1-lorem_ipsum. Thus they can create a b-contribution but not an a-contribution
+                    - [x] backend
+                    - [x] frontend
+                - [x] testuser_3 has no role in d1-lorem_ipsum. Thus they can create neither a nor b-contributions
+                    - [x] backend
+                    - [x] frontend
+                - [x] not-logged-in-user can create neither a nor b-contributions
+                    - [x] frontend (backend already implemented)
+    - [x] basic implementation
+        - [x] insert form on click on segment
+            - [x] implement splinter-based tests
+            - [x] display warning if not logged in
+        - [x] store answer data in db
+            - [x] implement splinter-based tests
+
+- [x] css: make second sticky bar actually sticky
+- [x] in splinter-based-tests: ensure that no js error occurred
+- [x] use ?next=... mechanism in the login-link from the head menu
+
+- [x] open debate from url /d/debate_key
+    - [x] drop fdmd.fixtures/debate1 in favor of fdmd.fixtures/repos/d1-lorem_ipsum
+    - [x] specify test concept
+    - [x] implement test concept
+    - [x] load repo from workdir
+    - [x] robust repo creation for testing
+- [x] implement suitable template tag for version-insertion (see footer in base.html)
+- [x] respect ?next= in login processing
+    - [x] fix bug with no given parameter
 - [x] display square if answer is available
 - [x] open answer by click on segment
 - [x] prevent breaking of p tag by answer -> solved by using div instead of p

@@ -13,14 +13,16 @@
     <h1>Main Menu</h1>
     {% endif %}
     <ul>
-        <li style="margin-bottom: 0.75em;"><a href="{% url 'landingpage' %}">Home</a></li>
+        <li style="margin-bottom: 0.75em;"><a href="{% url 'landing_page' %}">Home</a></li>
     {% if request.user.is_authenticated %}
         <li style="line-height: 1.5em;">Logged in as <em>{{ request.user.username }}</em></li>
+        <li><a href="{% url 'user_profile' %}">Your profile</a></li>
+        <li><a href="{% url 'new_debate' %}">New debate</a></li>
         <li><a href="{% url 'logout' %}">Log out</a></li>
     {% else %}
-        <li><a href="{% url 'login' %}">Log in</a></li>
+        <li><a href="{% url 'login' %}?next={{ request.path }}">Log in</a></li>
         <li><a href="{% url 'signup' %}">Sign up</a></li>
     {% endif %}
-        <li><a href="{% url 'aboutpage' %}">About</a></li>
+        <li><a href="{% url 'about_page' %}">About</a></li>
     </ul>
 </div>

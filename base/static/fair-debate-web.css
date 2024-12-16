@@ -1,15 +1,32 @@
+:root {
+  --color-contribution-green: hsla(130, 50%, 50%, 100%);
+  --color-dba: hsla(130, 50%, 50%, 100%);
+  --color-nice-blue: hsla(200, 100%, 45%, 100%);
+  --color-rendered-content: #ce9a5e;
+  --color-segment-default: hsla(28, 100%, 73%, 10%);
+  --color-answered-segment-default: hsla(28, 100%, 73%, 35%);
+}
 
 
+#second_sticky_bar {
+  position: sticky;
+  top: calc(var(--header-height) + 0.1em);
+  background-color: var(--color-global-bg);
+  border-bottom: 1px solid var(--color-rendered-content);
+  /* background-color: red; */
+}
 
-.rendered_content_preview {
-    border: 1px solid #ce9a5e;
+.rendered_content {
+    border-left: 1px solid var(--color-rendered-content);
+    border-bottom: 1px solid var(--color-rendered-content);
+    border-right: 1px solid var(--color-rendered-content);
     padding: 1em;
     margin-bottom: 1em;
 }
 
 /* select the h3 immediately before the preview */
 
-h3:has(+ .rendered_content_preview) {
+h3:has(+ .rendered_content) {
     margin-bottom: 0.1em;
 }
 
@@ -51,29 +68,65 @@ h3:has(+ .rendered_content_preview) {
 }
 
 #second_sticky_bar h2 {
-  flex: 1;
   display: inline-block;
+  margin-top: 0em;
+  margin-bottom: 0em;
 
   /* for debugging the div containers */
   /* background-color: red; */
 }
 
 #debate_title {
-  margin-top: 0em;
-  margin-bottom: 0em;
+  flex: 1;
+  display: inline-block;
 }
+
+.clickable_span {
+  cursor: pointer;
+}
+
+.answered_heading .heading {
+  margin-bottom: 0.1em;
+}
+.answered_heading .contribution {
+  margin-bottom: 1em;
+}
+
+
 
 #seg_id_display {
-  display: block;
+  display: inline;
+}
+
+#user_role_display {
+  display: inline;
+  margin-left: 0.5em;
+  background-color: hsla(0, 0%, 0%, 10%);
+}
+
+#fold_button_display {
+  --box-grey: #BBB;
+  display: inline;
+
+}
+
+#fold_button_display .boxed:hover {
+  --box-grey: #777;
+
 }
 
 
-/* debate body (segment and answers) */
+/* debate body (segment and contributions) */
 
 
 .segment {
-  background-color: hsla(28, 100%, 73%, 10%);
+  background-color: var(--color-segment-default);
   cursor: pointer;
+}
+.segment.has_answer {
+  background-color: var(--color-answered-segment-default);
+  cursor: pointer;
+
 }
 
 .segment + .segment {
@@ -102,38 +155,87 @@ h3:has(+ .rendered_content_preview) {
   height: 3px;
 }
 
+/* currently unused */
 .sqp::after {
-  background-color: hsla(90, 100%, 35%, 100%);
+  background-color: hsla(310, 100%, 55%, 100%);
 }
 
 .sqn::after {
   background-color: red;
 }
 
-.answer {
+.sqn.dba::after {
+  background-color: var(--color-dba);
+}
+
+.contribution {
   display: none;
   margin-left: 0.5em;
   padding: 0.1em;
 }
-.answer p {
+.contribution p {
   margin-top: 0.1em;
   margin-bottom: 0.1em;
 }
 
-.answer.level1,
-.answer.level3,
-.answer.level5,
-.answer.level7,
-.answer.level9
+.contribution.level1,
+.contribution.level3,
+.contribution.level5,
+.contribution.level7,
+.contribution.level9
 {
   background-color:hsla(220, 100%, 90%, 100%);
 }
 
- .answer.level2,
- .answer.level4,
- .answer.level6,
- .answer.level8,
- .answer.level10
+ .contribution.level2,
+ .contribution.level4,
+ .contribution.level6,
+ .contribution.level8,
+ .contribution.level10
  {
   background-color:hsla(220, 100%, 97%, 100%);
+}
+
+.contribution.db_ctb {
+ border: 1px solid var(--color-dba);
+}
+
+
+/* segment contribution form related */
+
+.segment_contribution_form_container {
+  width: 100%;
+}
+
+.segment_contribution_form_container .button-container {
+  background-color: var(--color-contribution-green);
+}
+
+.not_logged_in_warning{
+  margin: 1em 0 1em 0;
+  padding: 0.5em;
+  background-color: hsla(10, 95%, 60%, 100%);
+}
+
+.segment_contribution_hint_container {
+  margin: 1em 0 1em 0;
+  padding: 0.5em;
+  background-color: hsla(10, 95%, 60%, 100%);
+
+}
+
+/* class .hidden moved to base.css */
+
+.contribution_form_separator {
+  padding: 1em 0em 0.3em 0em;
+  background-color: var(--color-contribution-green);
+}
+
+
+/* bottom toolbar */
+
+#bottom_toolbar {
+  /* top right bottom left */
+  padding: 1em;
+  background-color: var(--color-contribution-green);
 }

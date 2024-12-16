@@ -63,6 +63,7 @@ def create_language_dict():
 
     return language_dict
 
+
 language_dict = create_language_dict()
 
 
@@ -75,7 +76,6 @@ def get_sp(pagetype, lang=None) -> SimplePage:
     else:
         # return the only available version
         res = sp_defdict[pagetype]
-
 
     res.language_list = language_dict[pagetype]
 

@@ -5,5 +5,7 @@ config_fedivis.toml
 cache*.pcl
 **/tmp_workdir
 .vscode/*
+content_repos
 
 _git_bundle_*
+*.log

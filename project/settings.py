@@ -4,6 +4,8 @@ from pathlib import Path
 import deploymentutils as du
 import time
 
+from base import release
+
 
 # export DJANGO_DEVMODE=True; py3 manage.py custom_command
 env_devmode = os.getenv("DJANGO_DEVMODE")
@@ -15,7 +17,7 @@ else:
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.as_posix()
 
-cwd = None# os.getcwd()
+cwd = None  # os.getcwd()
 try:
     cfg = du.get_nearest_config("config.toml", devmode=DEVMODE)
 except FileNotFoundError:
@@ -26,7 +28,7 @@ except FileNotFoundError:
             msg = "could not find neither `config.toml` nor config-example.toml`"
             raise FileNotFoundError(msg)
         msg = "Could not find `config.toml. Using `config-example.toml instead."
-    print(du.yellow("Warning:"), msg)
+    print(du.yellow("Warning:"), msg, file=sys.stderr)
 
 SECRET_KEY = cfg("SECRET_KEY")
 
@@ -45,6 +47,12 @@ CATCH_EXCEPTIONS = True
 
 ALLOWED_HOSTS = cfg("ALLOWED_HOSTS")
 
+VERSION = release.__version__
+DEPLOYMENT_DATE = "1970-01-01 00:00:00".replace(" ", "&nbsp;")
+
+# Directory where all the managed repos are located
+REPO_HOST_DIR = cfg("REPO_HOST_DIR").replace("__BASEDIR__", BASE_DIR)
+os.makedirs(REPO_HOST_DIR, exist_ok=True)
 
 # Collect static files here (will be copied to correct location by deployment script)
 STATIC_ROOT = cfg("STATIC_ROOT").replace("__BASEDIR__", BASE_DIR)
@@ -65,7 +73,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'django_bleach',
+    "django.contrib.humanize",
+    "django_bleach",
     "base",
 ]
 
@@ -77,10 +86,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
-    # TODO: make this more professional
-    # this line should be commented out for debugging
-    "base.error_handler.ErrorHandlerMiddleware"
+    "base.error_handler.ErrorHandlerMiddleware",
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -133,6 +139,50 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "base.DebateUser"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} {levelname} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{asctime} {levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file1": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": cfg("DJANGO_LOGFILE").replace("__BASEDIR__", BASE_DIR),
+            "formatter": "verbose",
+        },
+        "file2": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": cfg("BASE_APP_LOGFILE").replace("__BASEDIR__", BASE_DIR),
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file1"],
+            "level": "WARNING",
+            "propagate": True,
+        },
+        # this key is used in logger = logging.getLogger(...)
+        "fair-debate": {
+            "handlers": ["file2"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -151,6 +201,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# prepending this with "/" leads to problems
+LOGIN_URL = "login/"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -158,8 +211,26 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 BLEACH_ALLOWED_TAGS = [
-    'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'ul', 'ol', 'li', 'pre', 'code'
-] + ["br", "hr", "blockquote", "div"]
+    "p",
+    "b",
+    "i",
+    "u",
+    "em",
+    "strong",
+    "a",
+    "span",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "ul",
+    "ol",
+    "li",
+    "pre",
+    "code",
+] + ["br", "hr", "blockquote", "div", "tt"]
 BLEACH_STRIP_COMMENTS = False
 
 
@@ -168,9 +239,13 @@ BLEACH_ALLOWED_ATTRIBUTES = {
     "img": ["src"],
     "a": ["href"],
     "span": ["class", "id"],
-    "div": ["class", "id"],
+    "div": ["class", "id", "data-debate-key", "data-plain_md_src"],
+    "h1": ["class", "id"],
+    "h2": ["class", "id"],
+    "h3": ["class", "id"],
+    "h4": ["class", "id"],
+    "h5": ["class", "id"],
+    "h6": ["class", "id"],
 }
 
-BLEACH_ALLOWED_STYLES = [
-    'font-family', 'font-weight', 'text-decoration', 'font-variant'
-]
+BLEACH_ALLOWED_STYLES = ["font-family", "font-weight", "text-decoration", "font-variant"]

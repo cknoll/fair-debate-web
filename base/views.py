@@ -1,33 +1,38 @@
 import os
+import json
+from urllib.parse import urlencode
+import logging
+from datetime import datetime
+
+from django.conf import settings
 from django.views import View
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.urls import reverse_lazy
-from django.forms import ModelForm
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
+from django.http import HttpResponseRedirect, QueryDict
+from django.shortcuts import render, redirect
+from django.urls import reverse
+
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import QuerySet
 
 from .forms import UserCreationForm, LoginForm
+from .models import Debate, Contribution, DebateUser
 
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 import fair_debate_md as fdmd
 
 from .simple_pages_interface import get_sp, new_sp
-from  . import simple_pages_content_default as spc
+from . import simple_pages_content_default as spc
+from . import utils
 
 from ipydex import IPS
 
 pjoin = os.path.join
 
-
-# it seems not possible to use `reverse("login")` because the decorator executed too early f
-LOGIN_URL = "/login/"
+logger = logging.getLogger("fair-debate")
+logger.info("module views.py loaded")
 
 
 class Container:
@@ -40,13 +45,19 @@ class MainView(View):
             # nested dict for easier debugging in the template
             "data": {
                 "sp": None,
-                "unit_test_comment": f"utc_landingpage",
+                "utd_page_type": "utd_landing_page",
+                "server_status_code": 200,
             }
         }
 
+        if request.user.is_authenticated:
+            user: DebateUser = request.user
+            context["data"]["recent_user_debate_list"] = Debate.get_for_user(user, limit=3)
+        context["data"]["recent_debate_list"] = Debate.get_all(limit=3)
+
         context["data"]["sp"] = get_sp("landing")
         # template = "base/main_simplepage.html"
-        template = "base/main_landingpage.html"
+        template = "base/main_landing_page.html"
 
         return render(request, template, context)
 
@@ -55,28 +66,14 @@ class MainView(View):
         raise NotImplementedError
 
 
+@method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"), name="dispatch")
 class NewDebateView(View):
-    def get(self, request, test=False):
-        return self.render_result_from_md(request, body_content_md="")
-
-    def post(self, request, **kwargs):
-        body_content = request.POST.get("body_content", "")
-        return self.render_result_from_md(request, body_content)
-
-    def render_result_from_md(self, request, body_content_md):
-
-        md_with_keys, segmented_html = fdmd.convert_plain_md_to_segmented_html(body_content_md)
-        if body_content_md:
-            submit_label = "Submit"
-        else:
-            submit_label = "Preview"
+    def get(self, request):
 
         context = {
             "data": {
-                "unit_test_comment": f"utc_new_debate",
-                "md_with_keys": md_with_keys,
-                "segmented_html": segmented_html,
-                "submit_label": submit_label,
+                "utd_page_type": "utd_new_debate",
+                "server_status_code": 200,
             }
         }
         template = "base/main_new_debate.html"
@@ -84,16 +81,30 @@ class NewDebateView(View):
         # TODO: maybe redirect here
         return render(request, template, context)
 
-    def render_result_from_html(self, request, body_content_html):
+    def post(self, request, **kwargs):
+        debate_obj = Debate(user_a=request.user)
+        debate_obj.save()
+        debate_obj.debate_key = f"d{debate_obj.pk}-{request.POST['debate_slug']}"
+        debate_obj.save()
+
+        return ShowDebateView().post(request, debate_key=debate_obj.debate_key, contribution_key="a")
+
+        # body_content = request.POST.get("body", "")
+        # return self.render_result_from_md(request, body_content)
+
+    def render_result_from_md(self, request, body_content_md):
+        raise DeprecationWarning
+
+        mdp = fdmd.MDProcessor(plain_md=body_content_md, convert_now=True)
 
         context = {
             "data": {
-                "unit_test_comment": f"utc_new_debate",
-                "segmented_html": body_content_html,
-                "debate_title": "untitled debate",
+                "utd_page_type": "utd_new_debate",
+                "plain_md": mdp.plain_md_src,
+                "segmented_html": mdp.segmented_html,
             }
         }
-        template = "base/main_show_debate.html"
+        template = "base/main_new_debate.html"
 
         # TODO: maybe redirect here
         return render(request, template, context)
@@ -106,74 +117,396 @@ def test_new_debate(request):
     """
 
     with open(fdmd.fixtures.txt1_md_fpath) as fp:
-            body_content = fp.read()
+        body_content = fp.read()
 
     return NewDebateView().render_result_from_md(request, body_content_md=body_content)
 
 
-def test_show_debate(request):
-    """
-    Show the display (show) mode with some preloaded fixture data (containing answers)
-    This view simplifies interactive testing during development
-    """
-    TEST_DEBATE_DIR1 = pjoin(fdmd.fixtures.path, "debate1")
-    ddl = fdmd.load_dir(TEST_DEBATE_DIR1)
-    return NewDebateView().render_result_from_html(request, body_content_html=ddl.final_html)
+class ProcessContribution(View):
+    def _preprocess_post(self, request):
+        """
+        Motivation: if we send a post request via javascript the request.POST-dict is empty.
+        -> We construct it manually from the body-data
+        """
+        if len(request.POST) == 0:
+            body_data = json.loads(request.body)
+            if not isinstance(body_data, dict):
+                msg = f"Unexpected type of parsed request.body: {type(body_data)}"
+                raise TypeError(msg)
+            request.POST = QueryDict(urlencode(json.loads(request.body)))
+
+    def post(self, request, action=None):
+        self._preprocess_post(request)
+        debate_key = request.POST["debate_key"]
+        if action == "commit":
+            self.commit_contribution(request)
+        elif action == "commit_all":
+            self.commit_all_uc_contribution(request)
+        elif action == "delete":
+            debate_deleted = self.delete_contribution(request)
+
+            # TODO: introduce a info page (deletion was successful etc)
+            if debate_deleted:
+                return redirect("landing_page")
+        else:
+            msg = f"Unexpected action: ('{action}') for view ProcessContribution"
+            error_page(request, title="Error during ProcessContribution", msg=msg)
+        return redirect("show_debate", debate_key=debate_key)
+
+    def get(self, request, **kwargs):
+        msg = f"Get request not allowed for path {request.path}!"
+        return error_page(request, title="Invalid Request", msg=msg, status=403)
+
+    def _get_contribution_set_from_request(self, request, all=False):
+        debate_key = request.POST["debate_key"]
+        debate_obj = Debate.objects.get(debate_key=debate_key)
+
+        ctb_objs: QuerySet
+        if all:
+            ctb_objs = debate_obj.contribution_set.all()
+        else:
+            ctb_key = request.POST["contribution_key"]
+            ctb_objs = debate_obj.contribution_set.filter(contribution_key=ctb_key)
+            msg = (
+                f"Unexpected number of contribution objects ({len(ctb_objs)}) for {debate_key} ctb {ctb_key}"
+            )
+            assert len(ctb_objs) == 1, msg
+
+        res = Container()
+        res.ctb_objs = ctb_objs
+        res.debate_key = debate_key
+        res.debate_obj = debate_obj
+
+        return res
+
+    def commit_contribution(self, request):
+        c = self._get_contribution_set_from_request(request)
+
+        ctb = fdmd.DBContribution(c.ctb_objs[0].contribution_key, c.ctb_objs[0].body)
+
+        if ctb.ctb_key == "a":
+            # This is the first contribution of a new debate
+            # -> a new repo has to be created
+            default_repo_files = get_default_repo_files(
+                context={
+                    "debate_slug": c.debate_key,
+                    "debate_url": "debate_url",
+                    "background_url": "background_url",
+                }
+            )
+            fdmd.repo_handling.create_repo(
+                settings.REPO_HOST_DIR, c.debate_key, initial_files=default_repo_files
+            )
+        fdmd.commit_ctb(settings.REPO_HOST_DIR, c.debate_key, ctb)
+        c.ctb_objs[0].delete()
+
+        c.debate_obj.n_committed_contributions += 1
+        # c.debate_obj.update_date = datetime.utcnow()
+        c.debate_obj.save()
+
+    def commit_all_uc_contribution(self, request):
+
+        c = self._get_contribution_set_from_request(request, all=True)
+
+        ctb_list = []
+        ctb_obj: Contribution
+        for ctb_obj in c.ctb_objs:
+            ctb_list.append(fdmd.DBContribution(ctb_key=ctb_obj.contribution_key, body=ctb_obj.body))
+
+        fdmd.commit_ctb_list(settings.REPO_HOST_DIR, c.debate_key, ctb_list)
+        c.ctb_objs.delete()
+
+        c.debate_obj.n_committed_contributions += len(ctb_list)
+        # c.debate_obj.update_date = datetime.utcnow()
+        c.debate_obj.save()
+
+    def delete_contribution(self, request) -> bool:
+        c = self._get_contribution_set_from_request(request)
+        if len(c.ctb_objs) >= 1 and c.ctb_objs[0].contribution_key == "a":
+            # we want to delete the root contribution -> also delete the whole debate
+            c.debate_obj.delete()
+            debate_deleted = True
+        else:
+            c.ctb_objs.delete()
+            debate_deleted = False
+            # trigger update_date (auto_now)
+            c.debate_obj.save()
+        return debate_deleted
 
 
+def get_default_repo_files(context: dict = None) -> dict:
+    from django.template import loader
 
-def errorpage(request):
+    tmpl_path = "repo-default-files/README.md"
+    if context is None:
+        context = {}
+    res = {}
+
+    # TODO: iterate over templates
+    content = loader.render_to_string(tmpl_path, context, request=None)
+
+    res["README.md"] = content
+    return res
+
+
+class ShowDebateView(View):
+    def get(self, request, debate_key=None):
+
+        assert debate_key is not None
+
+        ctb_list = self._get_ctb_list_from_db(author=request.user, debate_obj_or_key=debate_key)
+
+        if len(ctb_list) == 1 and ctb_list[0].ctb_key == "a":
+            # create the first contribution of a new debate
+            new_debate = True
+        else:
+            new_debate = False
+
+        try:
+            ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list, new_debate=new_debate)
+        except FileNotFoundError:
+            msg = f"No debate with key `{debate_key}` could be found."
+            return error_page(request, title="Not Found", msg=msg, status=404)
+        return self.render_result_from_html(request, ddl)
+
+    @method_decorator(login_required(login_url=f"/{settings.LOGIN_URL}"))
+    def post(self, request, **kwargs):
+        """
+        Note: this method might be called explicitly with suitable keyword args from NewDebate.post(...).
+        """
+
+        if debate_key := kwargs.get("debate_key"):
+            pass
+        else:
+            debate_key = request.POST["debate_key"]
+        debate_obj = Debate.objects.get(debate_key=debate_key)
+
+        if contribution_key := kwargs.get("contribution_key"):
+            # This never happens but the negated condition would be harder to read
+            pass
+        else:
+            if request.POST["reference_segment"] == "root_segment":
+                contribution_key = "a"
+            else:
+                # the post-request contains an answer e.g. to a2b1a4
+                # get contribution key as a2b1a4b
+                contribution_key = fdmd.get_contribution_key(request.POST["reference_segment"])
+        contribution_mode = contribution_key[-1]
+        assert contribution_mode in ("a", "b")
+
+        user_role = debate_obj.get_user_role(request.user)
+        if err_page := self._ensure_suitable_user_role(request, user_role, contribution_mode, debate_obj):
+            return err_page
+
+        self.create_or_update_contribution(request, debate_obj, contribution_key)
+
+        return redirect("show_debate", debate_key=debate_key)
+
+    def create_or_update_contribution(
+        self, request, debate_obj: Debate, contribution_key: str
+    ) -> Contribution:
+        """
+        return updated existing or new Contribution-object
+        """
+
+        contribution_obj: Contribution
+        if contribution_obj := utils.get_or_none(
+            debate_obj.contribution_set, contribution_key=contribution_key
+        ):
+            contribution_obj.body = request.POST["body"]
+
+        else:
+            contribution_obj = Contribution(
+                author=request.user,
+                debate=debate_obj,
+                contribution_key=contribution_key,
+                body=request.POST["body"],
+            )
+
+        if contribution_obj.body == "":
+            msg = (
+                f"Unexpectedly received empty body for contribution {contribution_key}. "
+                "-> Contribution ignored."
+            )
+            raise utils.UsageError(msg)
+
+        contribution_obj.save()
+        return contribution_obj
+
+    def _ensure_suitable_user_role(self, request, user_role, contribution_mode, debate_obj: Debate):
+
+        if contribution_mode == "b" and debate_obj.user_b is None and user_role is None:
+            # the current user will claim role b for this debate
+            return
+
+        if user_role is None:
+            msg = (
+                f"You ({request.user}) are not allowed to contribute to this debate."
+                "<!-- utc_no_contribution_allowed_for_user -->"
+            )
+            return error_page(request, title="Contribution Error", msg=msg, status=403)
+
+        if contribution_mode != user_role:
+            msg = (
+                f"You ({request.user}) have role {user_role} in this debate but tried to "
+                f"contribute with role {contribution_mode}. This is not allowed."
+                "<!-- utc_contribution_with_wrong_mode_not_allowed_for_user -->"
+            )
+            return error_page(request, title="Contribution Error", msg=msg, status=403)
+
+    def _get_ctb_list_from_db(self, author: DebateUser, debate_obj_or_key) -> list[fdmd.DBContribution]:
+
+        if not author.is_authenticated:
+            return []
+
+        if isinstance(debate_obj_or_key, str):
+            debate_obj = Debate.objects.get(debate_key=debate_obj_or_key)
+        else:
+            debate_obj = debate_obj_or_key
+        assert isinstance(debate_obj, Debate)
+
+        ctb_list = []
+        ctb_obj: Contribution
+        ctb_obj_set = debate_obj.contribution_set.filter(author=author)
+        for ctb_obj in ctb_obj_set:
+            ctb_list.append(fdmd.DBContribution(ctb_key=ctb_obj.contribution_key, body=ctb_obj.body))
+
+        return ctb_list
+
+    def render_result_from_html(self, request, ddl: fdmd.DebateDirLoader):
+
+        body_content_html = ddl.final_html
+        debate_obj = Debate.objects.get(debate_key=ddl.debate_key)
+
+        if request.user.is_authenticated:
+            len_ctb_obj_set = len(debate_obj.contribution_set.filter(author=request.user))
+        else:
+            len_ctb_obj_set = 0
+
+        if debate_obj.user_b is None:
+            # we do not use `None` here to distinguish the "explicitly undefined"-case from
+            # the "json-data could not be retrieved"-case
+            user_b = "__undefined__"
+        else:
+            # use the id
+            user_b = debate_obj.user_b.pk
+
+        context = {
+            "data": {
+                "utd_page_type": f"utd_new_debate",
+                "segmented_html": body_content_html,
+                "debate_title": debate_obj.debate_key,  # TODO: the title should come from metadata.toml
+                "debate_key": debate_obj.debate_key,
+                "user_role": debate_obj.get_user_role(request.user),
+                "num_db_ctbs": len_ctb_obj_set,
+                "num_answers": ddl.num_answers,
+                "user_b": user_b,
+                "deepest_level": len(ddl.level_tree) - 1,  # start level counting at 0
+                "server_status_code": 200,
+                # make some data available for js api
+                "api_data": json.dumps(
+                    {
+                        "delete_url": reverse("delete_contribution"),
+                        "commit_url": reverse("commit_contribution"),
+                        "commit_all_url": reverse("commit_all_contributions"),
+                        "debate_key": debate_obj.debate_key,
+                    }
+                ),
+            }
+        }
+        template = "base/main_show_debate.html"
+        return render(request, template, context)
+
+
+def assertion_error_page(request):
     # serve a page via get request to simplify the display of source code in browser
 
     assert False, "intentionally raised assertion error"
 
-def debugpage(request):
+
+def debug_page(request):
     # serve a page via get request to simplify the display of source code in browser
-    msg="this is a debug page<br><br>\n"*10
+    msg = f"""
+    this is a debug page\n
+
+    {settings.REPO_HOST_DIR=}
+    {settings.VERSION=}
+
+    """
     return error_page(request, title="debug page", msg=msg, status=200)
 
 
-def error_page(request, title, msg, status=500):
-        sp_type = title.lower().replace(" ", "_")
-        sp = new_sp(
-            type=sp_type,
-            title=title,
-            # TODO handle translation (we can not simple use
-            # django.utils.translation.gettext here)
-            content=msg
-        )
+def js_error_page(request):
+    """
+    This view-function serves to deliberately trigger an javascript error.
+    Motivation: check if this error is caught by unittests.
+    """
 
-        context = {
-            # nested dict for easier debugging in the template
-            "data": {
-                "sp": sp,
-                "main_class": "error_container",
-                "unit_test_comment": f"utc_{sp_type}",
-            }
+    res = error_page(
+        request,
+        title="deliberate javascript error (for testing purposes)",
+        msg="This page contains a deliberate javascript error (for testing purposes).",
+        status=200,
+        extra_data={
+            "trigger_js_error": True,
+            "utd_page_type": f"utd_trigger_js_error_page",
+        },
+    )
+
+    return res
+
+
+def error_page(request, title, msg, status=500, extra_data: dict = None):
+    sp_type = title.lower().replace(" ", "_")
+    sp = new_sp(
+        type=sp_type,
+        title=title,
+        # TODO handle translation (we can not simple use
+        # django.utils.translation.gettext here)
+        content=msg,
+    )
+
+    context = {
+        # nested dict for easier debugging in the template
+        "data": {
+            "sp": sp,
+            "main_class": "error_container",
+            "utd_page_type": f"utd_{sp_type}",
+            "server_status_code": status,
         }
+    }
 
-        template = "base/main_simplepage.html"
+    if extra_data:
+        context["data"].update(extra_data)
 
-        return render(request, template, context, status=status)
+    template = "base/main_simplepage.html"
+
+    return render(request, template, context, status=status)
+
 
 def about_page(request):
 
-        context = {
-            # nested dict for easier debugging in the template
-            "data": {
-                "sp": get_sp("about"),
-                # "main_class": "error_container",
-                "unit_test_comment": f"utc_about_page",
-            }
+    context = {
+        # nested dict for easier debugging in the template
+        "data": {
+            "sp": get_sp("about"),
+            # "main_class": "error_container",
+            "utd_page_type": f"utd_about_page",
+            "server_status_code": 200,
         }
+    }
 
-        template = "base/main_simplepage.html"
+    template = "base/main_simplepage.html"
 
-        return render(request, template, context)
+    return render(request, template, context)
 
 
 def menu_page(request):
-    context = {}
+    context = {
+        "data": {
+            "server_status_code": 200,
+        }
+    }
     template = "base/main_menu_page.html"
 
     return render(request, template, context)
@@ -181,35 +514,62 @@ def menu_page(request):
 
 # Source: https://medium.com/@devsumitg/django-auth-user-signup-and-login-7b424dae7fab
 
+
 # signup page
 def user_signup(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect("login")
     else:
         form = UserCreationForm()
-    return render(request, 'main_auth_signup.html', {'form': form})
+    return render(request, "main_auth_signup.html", {"form": form})
+
 
 # login page
 def user_login(request):
-    if request.method == 'POST':
+    data = {
+        "failed_login_attempt": None,
+        "next_url": request.GET.get("next"),  # this allows requests to /login/?next=/show/test
+    }
+
+    if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                return redirect('landingpage')
+                if next_url := request.POST.get("next_url"):
+                    return HttpResponseRedirect(next_url)
+                else:
+                    return redirect("landing_page")
+            else:
+                data["failed_login_attempt"] = True
     else:
         form = LoginForm()
-    return render(request, 'main_auth_login.html', {'form': form})
+    return render(request, "main_auth_login.html", {"form": form, "data": data})
+
 
 # logout page
 def user_logout(request):
     logout(request)
-    return redirect('landingpage')
+    return redirect("landing_page")
 
-# End of medium source
+
+def user_profile(request):
+
+    context = {
+        # nested dict for easier debugging in the template
+        "data": {
+            "sp": get_sp("user_profile"),
+            "utd_page_type": f"utd_user_profile",
+            "server_status_code": 200,
+        }
+    }
+
+    template = "base/main_simplepage.html"
+
+    return render(request, template, context)

@@ -1,2 +1,180 @@
 [
+  {
+    "fields" : {
+        "name" : "d1-lorem_ipsum_a",
+        "url" : "__url__a"
+      },
+    "model" : "base.repo",
+    "pk" : 1
+  },
+  {
+    "fields" : {
+        "name" : "d1-lorem_ipsum_b",
+        "url" : "__url__b"
+      },
+    "model" : "base.repo",
+    "pk" : 2
+  },
+  {
+    "fields" : {
+        "debate_key" : "d1-lorem_ipsum",
+        "repo_a" : 1,
+        "repo_b" : 2,
+        "user_a" : 2,
+        "user_b" : 3,
+        "n_committed_contributions": 7,
+        "update_date" : "2024-11-01T05:00:00.0Z"
+      },
+    "model" : "base.debate",
+    "pk" : 1
+  },
+  {
+    "fields" : {
+        "debate_key" : "d02-test_debate",
+        "repo_a" : 1,
+        "repo_b" : 2,
+        "user_a" : 2,
+        "n_committed_contributions": 2,
+        "user_b" : 3,
+        "update_date" : "2024-12-15T16:02:00.0Z"
+      },
+    "model" : "base.debate",
+    "pk" : 2
+  },
+  {
+    "fields" : {
+        "debate_key" : "d03-test_debate",
+        "repo_a" : 1,
+        "repo_b" : 2,
+        "user_a" : 2,
+        "user_b" : 3,
+        "n_committed_contributions": 2,
+        "update_date" : "2024-12-15T16:03:00.0Z"
+      },
+    "model" : "base.debate",
+    "pk" : 3
+  },
+  {
+    "fields" : {
+        "debate_key" : "d04-test_debate",
+        "repo_a" : 1,
+        "repo_b" : 2,
+        "user_a" : 2,
+        "user_b" : 4,
+        "n_committed_contributions": 2,
+        "update_date" : "2024-12-10T16:04:00.0Z"
+      },
+    "model" : "base.debate",
+    "pk" : 4
+  },
+  {
+    "fields" : {
+        "date_joined" : "2024-05-22T22:41:00.946Z",
+        "email" : "",
+        "first_name" : "",
+        "groups" : [  ],
+        "is_active" : true,
+        "is_staff" : true,
+        "is_superuser" : true,
+        "last_login" : "2024-05-22T22:41:31.020Z",
+        "last_name" : "",
+        "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
+        "username" : "admin",
+        "user_permissions" : [  ]
+      },
+    "model" : "base.debateuser",
+    "pk" : 1
+  },
+  {
+    "fields" : {
+        "date_joined" : "2024-05-22T22:41:00.946Z",
+        "email" : "",
+        "first_name" : "",
+        "groups" : [  ],
+        "is_active" : true,
+        "is_staff" : false,
+        "is_superuser" : false,
+        "last_login" : "2024-05-22T22:41:31.020Z",
+        "last_name" : "",
+        "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
+        "username" : "testuser_1",
+        "user_permissions" : [  ]
+      },
+    "model" : "base.debateuser",
+    "pk" : 2
+  },
+  {
+    "fields" : {
+        "date_joined" : "2024-05-22T22:41:00.946Z",
+        "email" : "",
+        "first_name" : "",
+        "groups" : [  ],
+        "is_active" : true,
+        "is_staff" : false,
+        "is_superuser" : false,
+        "last_login" : "2024-05-22T22:41:31.020Z",
+        "last_name" : "",
+        "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
+        "username" : "testuser_2",
+        "user_permissions" : [  ]
+      },
+    "model" : "base.debateuser",
+    "pk" : 3
+  },
+  {
+    "fields" : {
+        "date_joined" : "2024-05-22T22:41:00.946Z",
+        "email" : "",
+        "first_name" : "",
+        "groups" : [  ],
+        "is_active" : true,
+        "is_staff" : false,
+        "is_superuser" : false,
+        "last_login" : "2024-05-22T22:41:31.020Z",
+        "last_name" : "",
+        "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
+        "username" : "testuser_3",
+        "user_permissions" : [  ]
+      },
+    "model" : "base.debateuser",
+    "pk" : 4
+  },
+  {
+    "fields" : {
+        "date_joined" : "2024-05-22T22:41:00.946Z",
+        "email" : "",
+        "first_name" : "",
+        "groups" : [  ],
+        "is_active" : true,
+        "is_staff" : false,
+        "is_superuser" : false,
+        "last_login" : "2024-05-22T22:41:31.020Z",
+        "last_name" : "",
+        "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
+        "username" : "testuser_3",
+        "user_permissions" : [  ]
+      },
+    "model" : "base.debateuser",
+    "pk" : 4
+  },
+  {
+    "fields" : {
+        "author" : 3,
+        "body" : "This is a level 1 contribution defined in the fixtures.",
+        "contribution_key" : "a15b",
+        "debate" : 1
+      },
+    "model" : "base.contribution",
+    "pk" : 1
+  },
+  {
+    "fields" : {
+        "author" : 3,
+        "body" : "This is a level 3 contribution defined in the fixtures.",
+        "contribution_key" : "a2b1a1b",
+        "debate" : 1
+      },
+    "model" : "base.contribution",
+    "pk" : 2
+  }
 ]

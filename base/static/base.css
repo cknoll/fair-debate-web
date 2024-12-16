@@ -5,9 +5,11 @@
 
     --color-global-bg: #FFF;
     --color-gray-dark-text: #333;
+    --color-gray-dark-text-link-underline: #30303040;
     --color-dim-text: hsl(00, 0%, 50%);
     --color-red-dark-text: #733;
     --color-quote-background: hsl(25, 0%, 97%);
+    --color-tt-background: hsla(25, 0%, 97%, 50%);
     --color-header-background: #EEE;
     --color-header-menu-background: #F8F8F8;
     --color-header-menu-item-hover-background: #E8E8E8;
@@ -22,7 +24,7 @@
     --color-error-border: hsl(5, 100%, 50%);
     --color-alert-background: hsl(40, 80%, 80%);
     --color-alert-border: hsl(40, 100%, 50%);
-    --header-height: 2em;
+    --header-height: 2.0em;
     --padding-header: 0.3em;
     --padding-v-quote: 4px;
     --padding-h-quote: 1em;
@@ -35,7 +37,7 @@
     --col-height: calc(100vh - var(--header-height)*3);
 
     /*  the following scaling factor k is calculated by  16px/<min-viewport-width-in-px-at-which-still-normal-font-size> e.g. 16px/640px = 0.025 → 2.5vw    */
-    --font-size-all: max(min(16px, 2.5vw), 10px);
+    --font-size-all: max(min(16px, 2.5vw), 12px);
 
 }
 
@@ -45,8 +47,11 @@ html, body {
     margin: 0px;
     padding: 0px;
     height:100%;
-    width:98%;
+    width:100%;
     font-size: var(--font-size-all);
+
+    /* prevent horizontal scrolling */
+    overflow-x: hidden;
 }
 
 
@@ -63,12 +68,13 @@ html, body {
   }
 
 
-@media (max-width: 650px) {
+/*
+  @media (max-width: 650px) {
     #header2 {
       display: block;
       text-align: right;
     }
-  }
+  } */
 
 
 
@@ -82,7 +88,9 @@ body {
 
 body a{
     color: inherit;
-    text-decoration: underline dotted;
+    /* text-decoration: underline dotted; */
+    text-decoration: underline;
+    text-decoration-color: var(--color-gray-dark-text-link-underline);
 }
 
 
@@ -103,7 +111,8 @@ body a:hover{
     background-color: var(--color-header-background);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 
-    /* height: var(--header-height); */
+    /* explicit specification is important for second_sticky_bar */
+    height: var(--header-height);
 
 }
 .vertical-center0 {
@@ -118,6 +127,11 @@ body a:hover{
     width: var(--width-content);
 
     padding: var(--padding-header);
+}
+
+.dim {
+  font-size: 70%;
+  color: var(--color-dim-text);
 }
 
 .h3c {
@@ -230,9 +244,12 @@ div.header a:hover{
     padding-top: 0em;
     padding-bottom: 2em;
     margin-top: calc(var(--header-height)*1.5);
+
+    width: var(--width-content);
+
     margin-left: auto;
     margin-right: auto;
-    width: var(--width-content);
+
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.12),0 1px 5px 0 rgba(0,0,0,0.2);
     border-radius: 2px;
 
@@ -413,6 +430,11 @@ div.header a:hover{
   background-color: var(--color-error-background);
   border: solid 3px var(--color-error-border);;
 }
+.error_container tt {
+  background-color: var(--color-tt-background);
+  padding: 0 0.5em 0 0.5em;
+
+}
 
 .alert_container {
   background-color: var(--color-alert-background);
@@ -464,7 +486,8 @@ div.footer a:hover{
 /* head menu */
 
 .header {
-  display: flex; justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .header-left-part {
@@ -554,4 +577,52 @@ div.footer a:hover{
 .show {
   /* allows to toggle visibility of elements */
   display: block;
+}
+
+/* used for different types of interactive elements */
+.hidden{
+  display: none;
+}
+
+
+/* modal dialog (used for gui warnings) */
+
+
+.modal {
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  border: 1px solid #888;
+  width: var(--width-content);
+}
+.modal-content-inner {
+  padding: 20px;
+}
+
+/* The Close Button */
+.close-modal {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  margin-right: 0.3em;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }

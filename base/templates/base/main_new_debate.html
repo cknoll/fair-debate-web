@@ -16,7 +16,7 @@
 {% if data.segmented_html %}
 <!-- utc_segmented_html -->
 <h3>Preview</h3>
-    <div class="rendered_content_preview">
+    <div class="rendered_content">
         {{data.segmented_html|bleach}}
     </div>
 {% endif %}
@@ -24,10 +24,11 @@
 <div class="ta-container">
     <form id="new-debate-form" action="{{ request.path }}" method="POST">
         {% csrf_token %}
-        <textarea class="custom-textarea" placeholder="Add markdown source here." name="body_content">{{ data.md_with_keys }}</textarea>
+        <input type="text" placeholder="slug" id="debate_slug_input" name="debate_slug"><br><br>
+        <textarea id="new-debate-body-ta" class="custom-textarea" placeholder="Add markdown source here." name="body">{{ data.plain_md }}</textarea>
         <div class="button-container">
             <button type="button" onclick="window.history.back();">Cancel</button>
-            <button id="id_submit" type="submit">{{ data.submit_label }}</button>
+            <button id="new-debate-submit-btn" type="submit">Submit (Preview)</button>
         </div>
      </form>
 

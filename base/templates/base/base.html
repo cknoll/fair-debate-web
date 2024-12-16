@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
-{#{% load extra_filters %}#}
+{% load bleach_tags %}
+{% load extra_filters %}
 
 <html>
 <head lang="en">
@@ -26,7 +27,7 @@
 <div class="headerbar">
     <div class="header">
         <div class="header-left-part">
-            <a href="{% url 'landingpage'%}" style="text-decoration: none;">
+            <a href="{% url 'landing_page'%}" style="text-decoration: none;">
                 <div id="header1" class="box-frame">
                     <div class="boxed">F</div> <div class="boxed">D</div> <div class="boxed">W</div>
                 </div>
@@ -47,6 +48,22 @@
 
 <div id="outer-container">
 
+{% block modal_dialog %}
+<div id="modal-dialog" class="modal hidden">
+
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-content-inner">
+            <p id="modal-dialog-text-message">With this action you will lose your unsaved text.</p>
+            <div class="button-container">
+                <button id="modal-dialog-cancel-button" type="button">Cancel</button>
+                <button id="modal-dialog-ok-button" type="button">Proceed</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
 
 <div id="id_main" class="{% block main_class %}main{% endblock %}">
 {% block content %}
@@ -66,14 +83,14 @@ add content
 <div class="footer">
     <div class="footerbar">
         <div class="footer-content">
-            {#<a href="{% url 'about' %}">about markpad</a> |#}
+            {#<a href="{% url 'about' %}">about fair-debate-web</a> |#}
             {#<a href="{% url 'legal-notice' %}">legal notice</a> |#}
-            ... made with <a href="https://www.djangoproject.com">django</a> and
+            fair-debate-web {{"VERSION"|settings_value}} |
+            made with <a href="https://www.djangoproject.com">django</a> and
             <a href="https://django-bleach.readthedocs.io">django-bleach</a> |
             hosted on <a href="https://uberspace.de/">uberspace</a> |
-            source code at <a href="https://codeberg.org/cknoll/fair_debate_web">codeberg</a>
-            <br>
-            {# last deployment: {{"foobar"|get_last_deployment}}. #}
+            source code at <a href="https://codeberg.org/cknoll/fair_debate_web">codeberg</a> |
+            deployment:&nbsp;{{"DEPLOYMENT_DATE"|settings_value|bleach}}.
         </div>
     </div>
 </div>
@@ -83,6 +100,24 @@ add content
 
 {% block extra_content %}
 {% endblock %}
+
+{# html templates for inserting dynamic elements via JS#}
+{% block templates_and_data %}
+{% endblock %}
+
+{# store some (more) json data #}
+{% if data.utd_page_type %}
+    {{ data.utd_page_type|json_script:"data-utd_page_type" }}
+{% endif %}
+
+{# this variable is set by the error handler and also serves for unit testing #}
+{% if data.server_status_code %}
+    {{ data.server_status_code|json_script:"data-server_status_code" }}
+{% endif %}
+
+{{ request.user.username | json_script:"data-user_name" }}
+{{ request.user.is_authenticated | json_script:"data-user_is_authenticated" }}
+
 
 {% block load_js_lib %}
 <script type="text/javascript" src="{% static 'core.js' %}"></script>
