@@ -330,6 +330,14 @@ def initialize_db(c):
     # TODO: implement option to load latest backup
     c.run(f"python manage.py loaddata {init_fixture_path}", target_spec="both")
 
+# TODO: this has to change for production phase (or even for beta-testing)
+def initialize_test_repos(c):
+    c.activate_venv(f"~/{venv}/bin/activate")
+    c.chdir(target_deployment_path)
+
+    c.run('git config --global user.email "system@fair-debate.org"')
+    c.run('git config --global user.name "fair-debate-system"')
+    c.run("fdmd unpack-repos ./content_repos")
 
 
 def generate_static_files(c):
@@ -388,10 +396,14 @@ if args.debug:
     # upload_files(c)
     # update_supervisorctl(c)
 
-    set_web_backend(c)
+    # set_web_backend(c)
     # initialize_db(c)
     # generate_static_files(c)
-    # finalize(c)
+
+    # upload_files(c)
+    deploy_local_dependency(c)
+    initialize_test_repos(c)
+    finalize(c)
 
     exit()
 
@@ -434,6 +446,7 @@ if not args.omit_requirements:
 
 if not args.omit_database:
     initialize_db(c)
+    initialize_test_repos(c)
 
 if not args.omit_static:
     generate_static_files(c)

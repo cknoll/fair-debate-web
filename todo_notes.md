@@ -1,7 +1,12 @@
 - [] add metadata for repo (debate title)
-- [.] first test-deployment on the web
+- [] add deployment information in the footer
+- [] allow anchor-links to segments
+- [x] first test-deployment on the web
     - [x] adapt `deploy.py`
-    - [] create test-repos
+    - [x] deploy test-repos
+        - [x] find out why d02 etc are not processed
+            - they are somehow not included in package_data when installing
+            - [x] use MANIFEST.in as workaround
 - [x] #i11 answered segments should be highlighted noticeably.
 - [x] #i7 list recent debates on landing page
     - [x] for logged in user

@@ -264,7 +264,8 @@ class ShowDebateView(View):
 
         try:
             ddl = fdmd.load_repo(settings.REPO_HOST_DIR, debate_key, ctb_list=ctb_list, new_debate=new_debate)
-        except FileNotFoundError:
+        except FileNotFoundError as ex:
+            logger.info(ex)
             if settings.CATCH_EXCEPTIONS:
                 msg = f"No debate with key `{debate_key}` could be found."
                 return error_page(request, title="Not Found", msg=msg, status=404)
