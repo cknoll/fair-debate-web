@@ -396,8 +396,9 @@ function segmentClicked(segmentSpan){
                 // logged-in user with no role: no click-action
                 insertedForm = null;
             }
+        } else {
+            insertedForm = insertContributionFormOrNot(segmentSpan, contributionKey);
         }
-        insertedForm = insertContributionFormOrNot(segmentSpan, contributionKey);
 
         var toggleMode;
         if (insertedForm == null) {
@@ -407,6 +408,7 @@ function segmentClicked(segmentSpan){
             // without toggle mode
             toggleMode = false;
         }
+        console.log("toggleMode", toggleMode, insertedForm);
         activateSegmentToolbar(segmentSpan, toggleMode);
     }
 }

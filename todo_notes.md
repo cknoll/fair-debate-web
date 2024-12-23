@@ -13,7 +13,8 @@
             - [.] **unfold answer**
                 - 1st click: unfold answer, 2nd click: toolbar, 3rd click hide both
                 - if answer is already unfolded -> same as if 1st click done.
-                - [] fix bug with multiple toolbars
+                - [x] fix bug with multiple toolbars
+                    - [] test frontend
 
 - [x] first test-deployment on the web
     - [x] adapt `deploy.py`
