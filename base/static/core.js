@@ -91,6 +91,7 @@ const apiData = JSON.parse(readJsonWithDefault("data-api_data", "null"));
 const csrfToken = readJsonWithDefault("data-csrf_token", null);
 const modalDialog = document.getElementById("modal-dialog");
 var activeTextArea = null;
+var activeSegmentToolbar = null;
 let currentLevel = 0;
 const deepestLevel = readJsonWithDefault("data-deepest_level", null);
 
@@ -332,6 +333,14 @@ function onLoadForShowDebatePage(){
 
     // add square symbols and click-event-handler to those segments which have an answer-contribution
     segmentObjects.forEach(segment_span => {
+
+        // toggle segment toolbar (to copy url)
+        segment_span.addEventListener('click', function() {
+            toggleSegmentToolbar(segment_span);
+        });
+
+
+
         const contributionKey = getContributionKey(segment_span.id);
         if (contributionKey in contributionMap) {
 
@@ -451,6 +460,44 @@ function unfoldAllUncommittedContributions() {
     });
 }
 
+
+function toggleSegmentToolbar(segment_span) {
+
+    if (activeSegmentToolbar != null) {
+        // some toolbar was active -> delete
+        const id = activeSegmentToolbar.id;
+        activeSegmentToolbar.remove();
+        activeSegmentToolbar = null;
+
+        if (id == `segment_toolbar_${segment_span.id}`) {
+            // the toolbar for this segment was already active -> return after deactivation
+            return
+        }
+    }
+
+    // add new toolbar
+
+    const toolbarDiv = getSegmentToolbarDiv(segment_span);
+    insertAfter(toolbarDiv, segment_span);
+    activeSegmentToolbar = toolbarDiv;
+}
+
+function getSegmentToolbarDiv(segment_span){
+    const clonedSeparatorTemplateFragment =  document.getElementById("_SegmentToolbarTemplate").content.cloneNode(true);
+    const toolbarDiv = clonedSeparatorTemplateFragment.querySelector(".contribution_form_separator");
+
+    toolbarDiv.id = `segment_toolbar_${segment_span.id}`
+
+    const textDiv = toolbarDiv.getElementsByClassName("_text")[0];
+
+    // get the url but without any anchors (just host and pathname); then add desired anchor
+    const url = `${window.location.host}${window.location.pathname}#${segment_span.id}`
+    // hcl
+    let info = `Copy URL of this segment (${url}).`
+    textDiv.innerHTML = info;
+    return toolbarDiv
+}
+
 /**
  * create a div-element as separator below an uncommitted contribution
  * (above the edit field which might be inserted)
@@ -460,7 +507,7 @@ function unfoldAllUncommittedContributions() {
  */
 function getSeparatorDiv(segment_span, contributionDiv){
 
-
+    // _UCCtb means: "uncommitted contribution"
     const clonedSeparatorTemplateFragment =  document.getElementById("_UCCtbSeparatorTemplate").content.cloneNode(true);
     // note: .getElementsByClassName is not available for Fragments, but querySelector is
     const separatorDiv = clonedSeparatorTemplateFragment.querySelector(".contribution_form_separator");

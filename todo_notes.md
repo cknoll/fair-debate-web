@@ -1,6 +1,9 @@
 - [] add metadata for repo (debate title)
 - [] add deployment information in the footer
-- [] allow anchor-links to segments
+- [.] #i12 allow anchor-links to segments
+    - links like http://localhost:8000/d/d03-test_debate#a15 are already possible
+    - [.] add a convenient way to copy segment-link -> additional tool bar (activated by click)
+        - [x] add basic toolbar on segment-click
 - [x] first test-deployment on the web
     - [x] adapt `deploy.py`
     - [x] deploy test-repos
