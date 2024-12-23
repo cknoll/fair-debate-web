@@ -140,7 +140,7 @@ function insertAfter(newNode, referenceNode) {
 }
 
 /**
- * Insert contribution-form after after the segment element (when clicked on it)
+ * Insert contribution-form after the segment element (when clicked on it)
  * If the current user has the wrong role for particular contribution: do nothing
  * @param {*} segmentElement
  * @param {*} contributionKey  the key of the contribution which is to be created
@@ -149,17 +149,17 @@ function insertContributionFormOrNot(segmentElement, contributionKey) {
 
     // prevent insertion if current element is already marked as active
     if (segmentElement.getAttribute('data-active') === "true") {
-        return
+        return null;
     }
 
     if ((contributionKey.endsWith(user_role)) || ((user_role === null) && (user_b === "__undefined__"))) {
         // we are allowed to add a contribution
         // either because user user role matches with the required role for the planned contribution
         // or because we have no role yet AND user_b is __undefined__
-        return insertContributionForm(segmentElement, contributionKey);
+        return insertContributionForm(segmentElement, contributionKey, true);
     } else {
         // we should not answer to our own contribution
-        return
+        return null;
         // return insertHintField(segmentElement, contributionKey, user_role);
     }
 }
@@ -335,12 +335,10 @@ function onLoadForShowDebatePage(){
     // add square symbols and click-event-handler to those segments which have an answer-contribution
     segmentObjects.forEach(segment_span => {
 
-        // toggle segment toolbar (to copy url)
+        // handle all click events on segment elements
         segment_span.addEventListener('click', function() {
-            toggleSegmentToolbar(segment_span);
+            segmentClicked(segment_span);
         });
-
-
 
         const contributionKey = getContributionKey(segment_span.id);
         if (contributionKey in contributionMap) {
@@ -352,38 +350,13 @@ function onLoadForShowDebatePage(){
 
             const contributionDiv = contributionMap[contributionKey];
 
-            // -> add function to toggle the visibility of the answer
-            segment_span.addEventListener('click', function() {
-                toggleDisplayNoneBlock(contributionDiv);
-            });
-
             // special treatment for db_contributions
             if (contributionDiv.classList.contains("db_ctb")){
                 segment_span.classList.add("dba");  // distinguish the segment
 
                 const separatorDiv = getSeparatorDiv(segment_span, contributionDiv);
                 contributionDiv.appendChild(separatorDiv);
-
             }
-        } else {
-            // This segment does not yet have an answer
-            if (!userIsAuthenticated){
-                // non-logged-in user: no click-action
-                return
-            }
-
-            if (user_b !== "__undefined__") {
-                // user b has been assigned
-                if (!["a", "b"].includes(user_role)){
-                    // logged-in user with no role: no click-action
-                    return
-                }
-            }
-
-            segment_span.addEventListener('click', function() {
-
-                insertContributionFormOrNot(segment_span, contributionKey);
-            });
         }
     });
 
@@ -392,6 +365,64 @@ function onLoadForShowDebatePage(){
     connectShowAllCtbsButton();
     initializeModalWarningElement();
     connectKeyboardKeys();
+}
+
+
+function segmentClicked(segmentSpan){
+    /**
+     * handle the following:
+     * - unfold answers (if present)
+     * - show/hide contribution dialog (if allowed)
+     * - show/hide segment toolbar (on first or on second click)
+     *
+     * */
+    const contributionKey = getContributionKey(segmentSpan.id);
+    if (contributionKey in contributionMap) {
+        // segment has answer
+        const contributionDiv = contributionMap[contributionKey];
+        segmentWithContributionClicked(segmentSpan, contributionDiv);
+
+
+    } else {
+        // This segment does not yet have an answer
+
+        var insertedForm = null;
+        if (!userIsAuthenticated){
+            // non-logged-in user: no click-action
+            insertedForm = null;
+        } else if (user_b !== "__undefined__") {
+            // user b has been assigned
+            if (!["a", "b"].includes(user_role)){
+                // logged-in user with no role: no click-action
+                insertedForm = null;
+            }
+        }
+        insertedForm = insertContributionFormOrNot(segmentSpan, contributionKey);
+
+        var toggleMode;
+        if (insertedForm == null) {
+            toggleMode = true;
+        } else {
+            // if a form was inserted, then the toolbar should be appended after the form
+            // without toggle mode
+            toggleMode = false;
+        }
+        activateSegmentToolbar(segmentSpan, toggleMode);
+    }
+}
+
+
+function segmentWithContributionClicked(segmentSpan, contributionDiv) {
+    if (contributionDiv.style.display === "none" || contributionDiv.style.display === "") {
+        // contribution is not visible -> show
+        contributionDiv.style.display = "block";
+    } else if (activeSegmentToolbar == null || activeSegmentToolbar.id != `segment_toolbar_${segmentSpan.id}`) {
+        activateSegmentToolbar(segmentSpan, true);
+
+    } else {
+        deactivateSegmentToolbar();
+        contributionDiv.style.display = "none";
+    }
 }
 
 function connectCommitAllCtbsButton() {
@@ -473,18 +504,33 @@ function deactivateSegmentToolbar(){
 
 }
 
-function toggleSegmentToolbar(segment_span) {
+// function toggleSegmentToolbar(segment_span) {
+function activateSegmentToolbar(segmentSpan, toggleMode=false) {
 
-    const deactivatedID = deactivateSegmentToolbar();
-    if (deactivatedID == `segment_toolbar_${segment_span.id}`) {
-        // the toolbar for this segment was already active -> return after deactivation
-        return
+    if (toggleMode) {
+        const deactivatedID = deactivateSegmentToolbar();
+        if (deactivatedID == `segment_toolbar_${segmentSpan.id}`) {
+            // the toolbar for this segment was already active -> return after deactivation
+            deactivateSegmentToolbar();
+            return
+        }
     }
 
     // add new toolbar
+    const toolbarDiv = getSegmentToolbarDiv(segmentSpan);
 
-    const toolbarDiv = getSegmentToolbarDiv(segment_span);
-    insertAfter(toolbarDiv, segment_span);
+    // define predecessor
+    var predecessor = segmentSpan;  // this is the default case
+    if (segmentSpan.nextSibling) {
+        if (segmentSpan.nextSibling.id === "segment_contribution_form") {
+            predecessor = segmentSpan.nextSibling;
+            // when there is an active form the toolbar should be inserted after that
+        }
+        // Note: if the segment belongs to an uncommitted contribution copying the url is questionable
+        // because others will not be able to access it. (But there are thinkable use cases)
+    }
+
+    insertAfter(toolbarDiv, predecessor);
     activeSegmentToolbar = toolbarDiv;
 }
 

@@ -1,5 +1,6 @@
 - [] add metadata for repo (debate title)
 - [] add deployment information in the footer
+- [] add modal warning for creating new contributions (cancel button and activate different contribution form)
 - [.] #i12 allow anchor-links to segments
     - links like http://localhost:8000/d/d03-test_debate#a15 are already possible
     - [.] add a convenient way to copy segment-link -> additional tool bar (activated by click)
@@ -8,9 +9,10 @@
             - **show contribution form**
                 - integrate toolbar consistently:
                 - cancel form -> deactivate segment toolbar
-            - **unfold answer**
+            - [.] **unfold answer**
                 - 1st click: unfold answer, 2nd click: toolbar, 3rd click hide both
                 - if answer is already unfolded -> same as if 1st click done.
+                - [] fix bug with multiple toolbars
 
 - [x] first test-deployment on the web
     - [x] adapt `deploy.py`

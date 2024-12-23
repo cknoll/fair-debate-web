@@ -232,6 +232,10 @@ h3:has(+ .rendered_content) {
   background-color: var(--color-contribution-green);
 }
 
+.contribution.db_ctb .separator_widget {
+  margin-bottom: 0.2em;
+}
+
 .segment_contribution_form_container + .separator_widget {
   margin-top: 0.2em;
 }
