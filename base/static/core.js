@@ -464,6 +464,7 @@ function connectShowAllCtbsButton() {
 
 function unfoldAllUncommittedContributions() {
 
+    var maxLevel = 0;
     dbCtbDivList = Array.from(document.getElementsByClassName("db_ctb"));
     dbCtbDivList.forEach(ansDiv => {
 
@@ -487,9 +488,13 @@ function unfoldAllUncommittedContributions() {
             document.getElementById(getContributionKey(cumKey)).style.display = "block";
         });
 
+        maxLevel = Math.max(maxLevel, parts.length);
+
         // console.log("cumKeys", cumKeys);
 
     });
+
+    currentLevel = maxLevel;
 }
 
 function deactivateSegmentToolbar(){

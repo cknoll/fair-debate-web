@@ -1,6 +1,7 @@
 - [] add metadata for repo (debate title)
 - [] add deployment information in the footer
 - [] add modal warning for creating new contributions (cancel button and activate different contribution form)
+- [x] #i13 make arrow buttons/keys work for debates with automatically uncovered contributions
 - [.] #i12 allow anchor-links to segments
     - links like http://localhost:8000/d/d03-test_debate#a15 are already possible
     - [.] add a convenient way to copy segment-link -> additional tool bar (activated by click)
