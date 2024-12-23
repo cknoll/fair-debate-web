@@ -484,7 +484,7 @@ function toggleSegmentToolbar(segment_span) {
 
 function getSegmentToolbarDiv(segment_span){
     const clonedSeparatorTemplateFragment =  document.getElementById("_SegmentToolbarTemplate").content.cloneNode(true);
-    const toolbarDiv = clonedSeparatorTemplateFragment.querySelector(".contribution_form_separator");
+    const toolbarDiv = clonedSeparatorTemplateFragment.querySelector(".separator_widget");
 
     toolbarDiv.id = `segment_toolbar_${segment_span.id}`
 
@@ -510,7 +510,7 @@ function getSeparatorDiv(segment_span, contributionDiv){
     // _UCCtb means: "uncommitted contribution"
     const clonedSeparatorTemplateFragment =  document.getElementById("_UCCtbSeparatorTemplate").content.cloneNode(true);
     // note: .getElementsByClassName is not available for Fragments, but querySelector is
-    const separatorDiv = clonedSeparatorTemplateFragment.querySelector(".contribution_form_separator");
+    const separatorDiv = clonedSeparatorTemplateFragment.querySelector(".separator_widget");
     const contributionKey = contributionDiv.id;
 
     // convert "contribution_a3b" to "a3b"

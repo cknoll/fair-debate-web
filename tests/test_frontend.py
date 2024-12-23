@@ -311,7 +311,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # test updating of new contribution
 
         contribution_div = b1.find_by_id("contribution_a3b")
-        separator_div = contribution_div.find_by_css(".contribution_form_separator")[0]
+        separator_div = contribution_div.find_by_css(".separator_widget")[0]
         # self.assertTrue(separator_div.is_visible())
         self.assertTrue(separator_div.is_visible())
         edit_button = separator_div.find_by_css("._edit_button")[0]

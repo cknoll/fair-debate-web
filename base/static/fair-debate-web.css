@@ -227,8 +227,7 @@ h3:has(+ .rendered_content) {
 /* class .hidden moved to base.css */
 
 
-/* TODO: rename this class because it is used not only for contribution_forms */
-.contribution_form_separator {
+.separator_widget {
   padding: 1em 0em 0.3em 0em;
   background-color: var(--color-contribution-green);
 }
