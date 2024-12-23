@@ -97,13 +97,23 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         browser.visit(f"{self.live_server_url}{reverse('logout')}")
         self.assertFalse(auth.get_user(self.client).is_authenticated)
 
-    def fast_get(self, browser: Browser, id_str: str, class_str: str = None):
+    def fast_get(self, browser: Browser, id_str: str = None, class_str: str = None):
         """
         Look with JS if the item is present, then return it as splinter object.
 
         This function is faster in cases where the item could not be found.
+
+        If both id_str and class_str are given, then class-based selection is applied to the
+        children of the element specified by id_str
         """
-        js_get_data = f'document.getElementById("{id_str}")'
+
+        assert not ((id_str is None) and (class_str is None))
+
+        if id_str is not None:
+            js_get_data = f'document.getElementById("{id_str}")'
+        else:
+            js_get_data = "document"
+
         if class_str is not None:
             js_get_data = f'{js_get_data}.getElementsByClassName("{class_str}")'
 
@@ -111,7 +121,10 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         if not js_res:
             return None
         else:
-            res = browser.find_by_id(id_str)[0]
+            if id_str is not None:
+                res = browser.find_by_id(id_str)[0]
+            else:
+                res = browser
             if class_str:
                 res = res.find_by_css(f".{class_str}")
             return res
