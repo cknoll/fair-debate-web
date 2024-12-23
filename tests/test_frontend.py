@@ -588,7 +588,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
         modal_div_id = "modal-dialog"
-        modal_div = b1.find_by_id(modal_div_id)
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
         contribution_key1 = "contribution_a15b"
         contribution_key2 = "contribution_a2b1a1b"

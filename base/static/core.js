@@ -277,6 +277,7 @@ function cancelSegmentContributionForm(segment_id) {
     const segment_element = document.getElementById(segment_id);
     segment_element.setAttribute('data-active', false);
     removeSegmentContributionFormContainer();
+    //deactivateSegmentToolbar();
 }
 
 function removeSegmentContributionFormContainer(){
@@ -460,19 +461,24 @@ function unfoldAllUncommittedContributions() {
     });
 }
 
+function deactivateSegmentToolbar(){
+    var id = null;
+    if (activeSegmentToolbar != null) {
+        id = activeSegmentToolbar.id;
+        activeSegmentToolbar.remove();
+        activeSegmentToolbar = null;
+    }
+
+    return id
+
+}
 
 function toggleSegmentToolbar(segment_span) {
 
-    if (activeSegmentToolbar != null) {
-        // some toolbar was active -> delete
-        const id = activeSegmentToolbar.id;
-        activeSegmentToolbar.remove();
-        activeSegmentToolbar = null;
-
-        if (id == `segment_toolbar_${segment_span.id}`) {
-            // the toolbar for this segment was already active -> return after deactivation
-            return
-        }
+    const deactivatedID = deactivateSegmentToolbar();
+    if (deactivatedID == `segment_toolbar_${segment_span.id}`) {
+        // the toolbar for this segment was already active -> return after deactivation
+        return
     }
 
     // add new toolbar

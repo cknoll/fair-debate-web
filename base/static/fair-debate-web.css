@@ -232,6 +232,9 @@ h3:has(+ .rendered_content) {
   background-color: var(--color-contribution-green);
 }
 
+.segment_contribution_form_container + .separator_widget {
+  margin-top: 0.2em;
+}
 
 /* bottom toolbar */
 

@@ -4,6 +4,14 @@
     - links like http://localhost:8000/d/d03-test_debate#a15 are already possible
     - [.] add a convenient way to copy segment-link -> additional tool bar (activated by click)
         - [x] add basic toolbar on segment-click
+        - desired behavior for segments which already have an on-click action:
+            - **show contribution form**
+                - integrate toolbar consistently:
+                - cancel form -> deactivate segment toolbar
+            - **unfold answer**
+                - 1st click: unfold answer, 2nd click: toolbar, 3rd click hide both
+                - if answer is already unfolded -> same as if 1st click done.
+
 - [x] first test-deployment on the web
     - [x] adapt `deploy.py`
     - [x] deploy test-repos
