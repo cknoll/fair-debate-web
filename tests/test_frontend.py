@@ -190,12 +190,16 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             seg_id_text_1 = b1.find_by_id("seg_id_display")[0].text
             self.assertEqual(seg_id_text_1, "a3")
 
-            full_html_1 = b1.html
+            self.assertIsNone(self.fast_get(browser=b1, id_str=None, class_str="separator_widget"))
 
-            # assert that nothing changed
+            # the segment-toolbar with copy-url-widget should appear
             b1.find_by_id("a3").click()
-            full_html_2 = b1.html
-            self.assertEqual(full_html_2, full_html_1)
+            separator_div = self.fast_get(browser=b1, id_str=None, class_str="separator_widget")
+            self.assertIn("#a3", separator_div.find_by_css("._text").html)
+
+            # click again to hide it
+            b1.find_by_id("a3").click()
+            self.assertIsNone(self.fast_get(browser=b1, id_str=None, class_str="separator_widget"))
 
             # now test that elements appear
             trigger_mouseover_event(b1, id="a2")
@@ -204,25 +208,39 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
             # get_js_visibility_for_id(b1,
             self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b"))
-            b1.find_by_id("a2").click()
+            trigger_click_event(b1, id="a2")
+
             self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b"))
 
             # investigate child contribution
             self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b1a"))
-            b1.find_by_id("a2b1").click()
+            trigger_click_event(b1, id="a2b1")
             self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a"))
 
             self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b1a3b"))
-            b1.find_by_id("a2b1a3").click()
+            trigger_click_event(b1, id="a2b1a3")
+
             self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a3b"))
+            separator_div = self.fast_get(browser=b1, id_str=None, class_str="separator_widget")
+            self.assertIn("a2b1a3", separator_div.find_by_css("._text").html)
+
+            # hide widgets again
+            trigger_click_event(b1, id="a2b1a3")
+            self.assertIsNone(b1.evaluate_script("activeSegmentToolbar"))
+            self.assertIsNone(self.fast_get(browser=b1, id_str=None, class_str="separator_widget"))
 
             # also test for non-appearance of contribution dialog after child segment click
             trigger_mouseover_event(b1, id="a2b1a3b1")
             self.assertEqual(b1.find_by_id("seg_id_display")[0].text, "a2b1a3b1")
 
-            # assert that a click on it nothing changes
-            b1.find_by_id("a2b1a3b1").click()
-            self.assertEqual(full_html_2, full_html_1)
+            # assert that a click on it only shows segment toolbar but no contribution dialog
+            self.assertIsNone(self.fast_get(browser=b1, id_str=None, class_str="separator_widget"))
+            self.assertIsNone(self.fast_get(b1, class_str="segment_contribution_form_container"))
+            trigger_click_event(b1, id="a2b1a3b1")
+
+            separator_div = self.fast_get(browser=b1, id_str=None, class_str="separator_widget")
+            self.assertIn("#a2b1a3b1", separator_div.find_by_css("._text").html)
+            self.assertIsNone(self.fast_get(b1, class_str="segment_contribution_form_container"))
 
             # end of def _test_procedure
 
