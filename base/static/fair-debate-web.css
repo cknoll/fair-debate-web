@@ -232,6 +232,30 @@ h3:has(+ .rendered_content) {
   background-color: var(--color-contribution-green);
 }
 
+
+
+.separator_widget.toolbar {
+  padding-top: 0.1em;
+  background-color: var(--color-contribution-green);
+}
+
+.separator_widget.toolbar ._text {
+  margin-top: 0.5em;
+  background-color: red;
+  /* display: flex; */
+}
+
+.button-container .toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+}
+.button-container button  {
+margin-top: 0.1em;
+}
+
+
+
 .contribution.db_ctb .separator_widget {
   margin-bottom: 0.2em;
 }
