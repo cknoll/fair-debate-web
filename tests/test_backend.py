@@ -27,6 +27,7 @@ from .utils import (
     get_form_base_data_from_html_template_host,
     N_CTB_IN_FIXTURES,
     N_DEBATES_IN_FIXTURES,
+    N_USERS_IN_FIXTURES,
     N_COMMITS_TEST_REPO,
     REPO_HOST_DIR,  # note: this is adapted for unittests
 )
@@ -386,6 +387,23 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         deb: models.Debate
         for deb in debates_all_3:
             self.assertLess(oldest_debate.update_date, deb.update_date)
+
+    def test_053__signup(self):
+        users = models.DebateUser.objects.all()
+        self.assertEqual(len(users), N_USERS_IN_FIXTURES)
+
+        res = self.client.get(reverse("signup"))
+        post_data, action_url = generate_post_data_for_form(
+            res, spec_values={"username": "testuser_tmp", "password1": "admin", "password2": "admin"}
+        )
+
+        settings.CATCH_EXCEPTIONS = False
+        res = self.client.post(action_url, post_data)
+        # IPS()
+        self.assertEqual(res.status_code, 200)
+        users = models.DebateUser.objects.all()
+        self.assertEqual(len(users), N_USERS_IN_FIXTURES + 1)
+
 
     def _06x__common(self) -> Container:
 
