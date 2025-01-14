@@ -15,7 +15,7 @@ from packaging.version import Version
 
 from ipydex import IPS
 import fair_debate_md as fdmd
-from base import models
+from base import models, utils
 
 from .utils import (
     logger,
@@ -393,16 +393,37 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(len(users), N_USERS_IN_FIXTURES)
 
         res = self.client.get(reverse("signup"))
+        password = "cho8/Uk8l+5fh"  #
         post_data, action_url = generate_post_data_for_form(
-            res, spec_values={"username": "testuser_tmp", "password1": "admin", "password2": "admin"}
+            res, spec_values={"username": "testuser_tmp", "password1": password, "password2": password}
         )
 
         settings.CATCH_EXCEPTIONS = False
-        res = self.client.post(action_url, post_data)
-        # IPS()
-        self.assertEqual(res.status_code, 200)
+        res2 = self.post_and_follow_redirect(action_url, post_data)
+
+        self.assertEqual(res2.status_code, 200)
         users = models.DebateUser.objects.all()
         self.assertEqual(len(users), N_USERS_IN_FIXTURES + 1)
+
+
+        # now check that exception is thrown for too simple password
+        post_data, action_url = generate_post_data_for_form(
+            res, spec_values={"username": "testuser_tmp2", "password1": "12345678", "password2": "12345678"}
+        )
+
+        CATCH_EXCEPTIONS = settings.CATCH_EXCEPTIONS
+        settings.CATCH_EXCEPTIONS = False
+        with self.assertRaises(utils.FormValidationError):
+            res = self.post_and_follow_redirect(action_url, post_data)
+        settings.CATCH_EXCEPTIONS = CATCH_EXCEPTIONS  # restore previous behavior
+
+        settings.CATCH_EXCEPTIONS = True
+        res = self.client.post(action_url, post_data)
+        self.assertEqual(get_parsed_element_by_id(id="data-server_status_code", res=res), 500)
+        self.assertEqual(
+            get_parsed_element_by_id(id="data-utd_page_type", res=res), "utd_formvalidationerror"
+        )
+
 
 
     def _06x__common(self) -> Container:

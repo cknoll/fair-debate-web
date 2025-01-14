@@ -17,7 +17,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import QuerySet
 
-from .forms import UserCreationForm, LoginForm
+from .forms import SignupForm, LoginForm
 from .models import Debate, Contribution, DebateUser
 
 
@@ -522,12 +522,14 @@ def menu_page(request):
 # signup page
 def user_signup(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = SignupForm(request.POST)
         if form.is_valid():
-            form.save()
+            res = form.save()
             return redirect("login")
+        else:
+            raise utils.FormValidationError(form.errors)
     else:
-        form = UserCreationForm()
+        form = SignupForm()
     return render(request, "main_auth_signup.html", {"form": form})
 
 
