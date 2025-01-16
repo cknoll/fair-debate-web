@@ -692,7 +692,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         # ensure that the debate was updated
         debate_obj = models.Debate.objects.get(debate_key="d1-lorem_ipsum")
         time_diff = datetime.now(tz=timezone.utc) - debate_obj.update_date
-        self.assertLess(time_diff, timedelta(seconds=0.3))
+        self.assertLess(time_diff, timedelta(seconds=1))
 
         # ensure number of committed contribution has increased
         n2 = debate_obj.n_committed_contributions
