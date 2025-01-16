@@ -381,6 +381,8 @@ def deploy_local_dependency(c: du.StateConnection):
 
 def finalize(c):
     c.run(f"touch ~/_this_is_uberspace.txt", target_spec="remote")
+    py_cmd = "import time; print(time.strftime(r'%Y-%m-%d %H:%M:%S'))"
+    c.run(f"""python3 -c "{py_cmd}" > deployment_date.txt""", target_spec="remote")
     print("\n", "restart webservice", "\n")
     c.run(f"supervisorctl restart gunicorn-{project_name}", target_spec="remote")
 

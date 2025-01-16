@@ -210,6 +210,12 @@ STATIC_URL = "static/"
 # prepending this with "/" leads to problems
 LOGIN_URL = "login/"
 
+try:
+    with open(os.path.join(BASE_DIR, "deployment_date.txt")) as txtfile:
+        LAST_DEPLOYMENT = txtfile.read().strip()
+except FileNotFoundError:
+    LAST_DEPLOYMENT = "<not available>"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
