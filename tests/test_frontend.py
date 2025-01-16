@@ -221,6 +221,9 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             trigger_click_event(b1, id="a2b1a3")
 
             self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b1a3b"))
+
+            # 2nd click to display copy-url toolbar
+            trigger_click_event(b1, id="a2b1a3")
             separator_div = self.fast_get(browser=b1, id_str=None, class_str="separator_widget")
             self.assertIn("a2b1a3", separator_div.find_by_css("._text").html)
 
