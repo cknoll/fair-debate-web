@@ -50,6 +50,8 @@ CATCH_EXCEPTIONS = True
 
 
 ALLOWED_HOSTS = cfg("ALLOWED_HOSTS")
+CSRF_TRUSTED_ORIGINS = [f"https://{domain}" for domain in ALLOWED_HOSTS if domain != "localhost"]
+
 
 VERSION = release.__version__
 DEPLOYMENT_DATE = "1970-01-01 00:00:00".replace(" ", "&nbsp;")
