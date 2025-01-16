@@ -387,7 +387,7 @@ def finalize(c):
     print(final_msg)
 
 
-if args.debug:
+def debug():
 
     c.activate_venv(f"~/{venv}/bin/activate")
     # c.deploy_this_package()
@@ -397,12 +397,12 @@ if args.debug:
     # update_supervisorctl(c)
 
     # set_web_backend(c)
-    # initialize_db(c)
+    initialize_db(c)
     # generate_static_files(c)
 
     # upload_files(c)
-    deploy_local_dependency(c)
-    initialize_test_repos(c)
+    # deploy_local_dependency(c)
+    # initialize_test_repos(c)
     finalize(c)
 
     exit()
@@ -416,6 +416,9 @@ if args.debug:
 
     IPS()
     exit()
+
+if args.debug:
+    debug()
 
 if args.initial:
 

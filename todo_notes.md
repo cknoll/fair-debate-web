@@ -1,6 +1,9 @@
-- [] add metadata for repo (debate title)
-- [] add deployment information in the footer
-- [] add modal warning for creating new contributions (cancel button and activate different contribution form)
+- [ ] add metadata for repo (debate title)
+- [ ] add deployment information in the footer
+- [ ] add modal warning for creating new contributions (cancel button and activate different contribution form)
+- [ ] i17 solve issue: uberspace web errorpage 500 status
+- [ ] i16 print correct date for "last deployment" in footer
+- [x] i15 CSRF verification failed
 - [x] i14 make signup work again
     - [x] add failing test
 - [x] #i13 make arrow buttons/keys work for debates with automatically uncovered contributions

@@ -434,7 +434,12 @@ def debug_page(request):
     this is a debug page\n
 
     {settings.REPO_HOST_DIR=}
+
     {settings.VERSION=}
+
+    {settings.DEVMODE=}
+
+    {settings.ALLOWED_HOSTS=}
 
     """
     return error_page(request, title="debug page", msg=msg, status=200)
