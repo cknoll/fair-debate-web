@@ -54,7 +54,6 @@ CSRF_TRUSTED_ORIGINS = [f"https://{domain}" for domain in ALLOWED_HOSTS if domai
 
 
 VERSION = release.__version__
-DEPLOYMENT_DATE = "1970-01-01 00:00:00".replace(" ", "&nbsp;")
 
 # Directory where all the managed repos are located
 REPO_HOST_DIR = cfg("REPO_HOST_DIR").replace("__BASEDIR__", BASE_DIR)
@@ -212,9 +211,9 @@ LOGIN_URL = "login/"
 
 try:
     with open(os.path.join(BASE_DIR, "deployment_date.txt")) as txtfile:
-        LAST_DEPLOYMENT = txtfile.read().strip()
+        DEPLOYMENT_DATE = txtfile.read().strip().replace(" ", "&nbsp;")
 except FileNotFoundError:
-    LAST_DEPLOYMENT = "<not available>"
+    DEPLOYMENT_DATE = "<not available>"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

@@ -6,6 +6,7 @@ cache*.pcl
 **/tmp_workdir
 .vscode/*
 content_repos
+deployment_date.txt
 
 _git_bundle_*
 *.log
