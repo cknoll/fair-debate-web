@@ -386,29 +386,42 @@ function segmentClicked(segmentSpan){
     } else {
         // This segment does not yet have an answer
 
-        var insertedForm = null;
+        var insertedContributionForm = null;
+        var contributionFormAllowed = false;
         if (!userIsAuthenticated){
             // non-logged-in user: no click-action
-            insertedForm = null;
+            insertedContributionForm = null;
+            console.log("user not authenticated");
         } else if (user_b !== "__undefined__") {
             // user b has been assigned
+            console.log("user authenticated and user_b is not undefined");
             if (!["a", "b"].includes(user_role)){
                 // logged-in user with no role: no click-action
-                insertedForm = null;
+                insertedContributionForm = null;
+                console.log("current user is no participant in this debate");
+            } else {
+                console.log("current user is participant in this debate");
+                contributionFormAllowed = true;
             }
         } else {
-            insertedForm = insertContributionFormOrNot(segmentSpan, contributionKey);
+            console.log("user_b = '__undefined__' → insertContributionFormOrNot");
+            contributionFormAllowed = true;
+        }
+
+        if (contributionFormAllowed) {
+            console.log("inserting ContributionForm");
+            insertedContributionForm = insertContributionFormOrNot(segmentSpan, contributionKey);
         }
 
         var toggleMode;
-        if (insertedForm == null) {
+        if (insertedContributionForm == null) {
             toggleMode = true;
         } else {
             // if a form was inserted, then the toolbar should be appended after the form
             // without toggle mode
             toggleMode = false;
         }
-        console.log("toggleMode", toggleMode, insertedForm);
+        console.log("toggleMode", toggleMode, insertedContributionForm);
         activateSegmentToolbar(segmentSpan, toggleMode);
     }
 }
@@ -416,12 +429,15 @@ function segmentClicked(segmentSpan){
 
 function segmentWithContributionClicked(segmentSpan, contributionDiv) {
     if (contributionDiv.style.display === "none" || contributionDiv.style.display === "") {
+        // 1st click: unfold
         // contribution is not visible -> show
         contributionDiv.style.display = "block";
     } else if (activeSegmentToolbar == null || activeSegmentToolbar.id != `segment_toolbar_${segmentSpan.id}`) {
+        // 2nd click: show toolbar
         activateSegmentToolbar(segmentSpan, true);
 
     } else {
+        // 3rd click: hide toolbar and fold tree
         deactivateSegmentToolbar();
         contributionDiv.style.display = "none";
     }

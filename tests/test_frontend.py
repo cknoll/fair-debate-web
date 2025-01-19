@@ -256,7 +256,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
     def test_g032__gui_behavior_for_users(self):
 
-        # self.headless = False
+        self.headless = False
         b1 = self.new_browser()
 
         # testuser_2 (role b)
@@ -279,6 +279,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
         trigger_click_event(b1, id="a3")
+        IPS()
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         # assert that the form does not appear multiple times
