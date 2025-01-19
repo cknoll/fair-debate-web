@@ -368,6 +368,83 @@ function onLoadForShowDebatePage(){
 }
 
 
+// source: http://stackoverflow.com/questions/19127650/ddg#44622467
+
+class DefaultDict {
+    constructor(defaultVal) {
+      return new Proxy({}, {
+        get: (target, name) => name in target ? target[name] : defaultVal
+      })
+    }
+  }
+
+  const counts = new DefaultDict(0)
+  console.log(counts.c) // 0
+
+
+class segmentClickManager {
+    constructor(){
+        this.clickCounter = new DefaultDict(0);
+        this.lastActiveSegment = null;
+    }
+
+     clicked(segment) {
+
+        var confirmation;
+        if (this.lastActiveSegment == segment || this.lastActiveSegment == null) {
+            confirmation = true;
+        } else {
+            // user clicked on a segment which was not active last
+
+            // check for user input which would get lost
+            if (this.clickCounter[segment.id] == 0) {
+                confirmation = this.showWarningIfNecessary(segment);
+
+                // TODO: set activeTextArea to null again at correct place
+            } else {
+                confirmation = true;
+            }
+
+
+        }
+        if (confirmation) {
+            // now we can increment the counter
+            this.clickCounter[segment.id] = (this.clickCounter[segment.id] + 1) % 3;
+            this.lastActiveSegment = segment;
+            this.updateUI(segment);
+        } else {
+            console.log("action was canceled by modal dialog")
+        }
+
+    }
+
+    showWarningIfNecessary(segment) {
+        async function okFunc() {
+            cancelSegmentContributionForm(segmentElement.id);
+        }
+        activateModalWarningIfNecessary(okFunc);
+
+    }
+
+
+    updateUI(segment) {
+        if (this.clickCounter[segment.id] === 0) {
+            // do not show copy-toolbar nor contribution toolbar
+            deactivateSegmentToolbar();
+            removeSegmentContributionFormContainer();
+
+        } else if (this.clickCounter[segment.id] === 1) {
+            // show copy toolbar
+        } else if (this.clickCounter[segment.id] === 2) {
+            // show contribution toolbar
+        }
+
+    }
+}
+
+var scm = new segmentClickManager()
+
+
 function segmentClicked(segmentSpan){
     /**
      * handle the following:
@@ -376,11 +453,13 @@ function segmentClicked(segmentSpan){
      * - show/hide segment toolbar (on first or on second click)
      *
      * */
+    scm.clicked(segmentSpan);
+
     const contributionKey = getContributionKey(segmentSpan.id);
     if (contributionKey in contributionMap) {
         // segment has answer
         const contributionDiv = contributionMap[contributionKey];
-        segmentWithContributionClicked(segmentSpan, contributionDiv);
+        segmentWithExistingContributionClicked(segmentSpan, contributionDiv);
 
 
     } else {
@@ -427,7 +506,25 @@ function segmentClicked(segmentSpan){
 }
 
 
-function segmentWithContributionClicked(segmentSpan, contributionDiv) {
+function segmentWithPossibleContributionClicked(segmentSpan, contributionDiv) {
+    // 1st click: show copy toolbar only
+    // 2nd click: contribution toolbar only
+    // 3rd click: no toolbar
+
+    const segmentToolbarID = `segment_toolbar_{segmentSpan.id}`;
+    const segmentToolbarElement = document.getElementById(segmentToolbarID);
+    if (segmentToolbarElement === null)
+    {
+        // just in case another toolbar was active
+        deactivateSegmentToolbar();
+
+    }
+
+}
+
+
+
+function segmentWithExistingContributionClicked(segmentSpan, contributionDiv) {
     if (contributionDiv.style.display === "none" || contributionDiv.style.display === "") {
         // 1st click: unfold
         // contribution is not visible -> show
@@ -534,7 +631,9 @@ function activateSegmentToolbar(segmentSpan, toggleMode=false) {
         const deactivatedID = deactivateSegmentToolbar();
         if (deactivatedID == `segment_toolbar_${segmentSpan.id}`) {
             // the toolbar for this segment was already active -> return after deactivation
-            deactivateSegmentToolbar();
+
+            // TODO: obsolete?
+            //deactivateSegmentToolbar();
             return
         }
     }
@@ -545,6 +644,9 @@ function activateSegmentToolbar(segmentSpan, toggleMode=false) {
     // define predecessor
     var predecessor = segmentSpan;  // this is the default case
     if (segmentSpan.nextSibling) {
+
+        // TODO: this behavior (adding after `segment_contribution_form`) is now discouraged
+        // We want to show the segment toolbar xor the contribution form
         if (segmentSpan.nextSibling.id === "segment_contribution_form") {
             predecessor = segmentSpan.nextSibling;
             // when there is an active form the toolbar should be inserted after that

@@ -11,6 +11,7 @@
     - links like http://localhost:8000/d/d03-test_debate#a15 are already possible
     - [.] add a convenient way to copy segment-link -> additional tool bar (activated by click)
         - [x] add basic toolbar on segment-click
+        - [ ] #i13.2 implement segmentClickManager to handle complexity
         - [ ] #i13.1 desired behavior for segments which might receive an answer:
             - 1st click: copy toolbar
             - 2nd click: contribution toolbar
