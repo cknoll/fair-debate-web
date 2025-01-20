@@ -1,6 +1,8 @@
 - [ ] add metadata for repo (debate title)
 - [ ] add deployment information in the footer
 - [ ] add modal warning for creating new contributions (cancel button and activate different contribution form)
+- [ ] i18 how should we handle segments which completely consists of links?
+    - idea: add a button, which deactivates all links in every segment, such that it could be toggled as ordinary text
 - [ ] i17 solve issue: uberspace web errorpage 500 status
 - [ ] i16 print correct date for "last deployment" in footer
 - [x] i15 CSRF verification failed
@@ -11,8 +13,16 @@
     - links like http://localhost:8000/d/d03-test_debate#a15 are already possible
     - [.] add a convenient way to copy segment-link -> additional tool bar (activated by click)
         - [x] add basic toolbar on segment-click
-        - [ ] #i13.2 implement segmentClickManager to handle complexity
-        - [ ] #i13.1 desired behavior for segments which might receive an answer:
+        - [ ] #i12.2 implement segmentClickManager to handle complexity
+            - What should happen when a segment is clicked? Depends on:
+                - Does Segment have an answer?
+                - Is clicking user logged in?
+                - Has debate user_b specified?
+                - Is the clicking user allowed to answer the clicked segment?
+                - Is there an active textarea with some unsubmitted user input (which would require modal warning?)
+                - How many times has the segment being clicked directly before that click?
+
+        - [ ] #i12.1 desired behavior for segments which might receive an answer:
             - 1st click: copy toolbar
             - 2nd click: contribution toolbar
             - 3rd click or click another segment:

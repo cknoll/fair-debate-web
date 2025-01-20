@@ -91,6 +91,7 @@ const apiData = JSON.parse(readJsonWithDefault("data-api_data", "null"));
 const csrfToken = readJsonWithDefault("data-csrf_token", null);
 const modalDialog = document.getElementById("modal-dialog");
 var activeTextArea = null;
+var modalWarningState = null;
 var activeSegmentToolbar = null;
 let currentLevel = 0;
 const deepestLevel = readJsonWithDefault("data-deepest_level", null);
@@ -390,24 +391,24 @@ class segmentClickManager {
 
      clicked(segment) {
 
-        var confirmation;
+        var click_accepted;
         if (this.lastActiveSegment == segment || this.lastActiveSegment == null) {
-            confirmation = true;
+            click_accepted = true;
         } else {
             // user clicked on a segment which was not active last
 
             // check for user input which would get lost
             if (this.clickCounter[segment.id] == 0) {
-                confirmation = this.showWarningIfNecessary(segment);
+                click_accepted = this.showWarningIfNecessary(segment);
 
                 // TODO: set activeTextArea to null again at correct place
             } else {
-                confirmation = true;
+                click_accepted = true;
             }
 
 
         }
-        if (confirmation) {
+        if (click_accepted) {
             // now we can increment the counter
             this.clickCounter[segment.id] = (this.clickCounter[segment.id] + 1) % 3;
             this.lastActiveSegment = segment;
@@ -418,12 +419,14 @@ class segmentClickManager {
 
     }
 
-    showWarningIfNecessary(segment) {
+    showWarningIfNecessary(segmentElement) {
+
+        // this function is executed if the OK-button in the Modal dialog is clicked
         async function okFunc() {
             cancelSegmentContributionForm(segmentElement.id);
+            clicked(segmentElement)
         }
         activateModalWarningIfNecessary(okFunc);
-
     }
 
 
@@ -808,7 +811,8 @@ function initializeModalWarningElement(){
 
 /**
  *
- * @param {*} oKFunc  function which is executed on OK
+ * @param {*} oKFunc  function which is executed on OK#
+ * returns true if the modal action was accepted (or not necessary, false if modal warning was closed/canceled)
  */
 function activateModalWarningIfNecessary(okFunc) {
     if (activeTextArea !== null) {
@@ -837,12 +841,15 @@ function activateModalWarning(okFunc) {
 
     document.getElementById("modal-dialog-ok-button").addEventListener("click", function() {
         okFunc();
-        closeModalWarning();
+        closeModalWarning("ok");
     }, { once: true });
+
+    // the event listener is only added once
 }
 
-function closeModalWarning() {
+function closeModalWarning(state="closed") {
     modalDialog.classList.add("hidden");
+    modalWarningState = state;
 }
 
 
