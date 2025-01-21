@@ -100,7 +100,11 @@ const deepestLevel = readJsonWithDefault("data-deepest_level", null);
 
 
 
-
+/**
+ *  for a given contribution key like "a2b3a1" generate the new contribution key like "a2b3a1b"
+ * @param {*} key
+ * @returns
+ */
 function getContributionKey(key){
     var parts = key.match(/[ab]\d+/g);
     var first_letter_of_last_element = parts.pop()[0]
@@ -263,14 +267,13 @@ function insertContributionForm(segmentElement, contributionKey, returnMode=null
         activateModalWarningIfNecessary(okFunc);
     });
 
-    if (returnMode === null) {
-        insertAfter(clonedFormTemplate, segmentElement);
-    } else {
+    if (returnMode === true) {
+        return clonedFormTemplate;
         // this is used to edit existing contributions
         // (append the form to the contributionDiv element)
-        return clonedFormTemplate;
     }
 
+    insertAfter(clonedFormTemplate, segmentElement);
     segmentElement.setAttribute('data-active', "true");
 }
 
@@ -278,7 +281,7 @@ function cancelSegmentContributionForm(segment_id) {
     const segment_element = document.getElementById(segment_id);
     segment_element.setAttribute('data-active', false);
     removeSegmentContributionFormContainer();
-    //deactivateSegmentToolbar();
+    activeTextArea = null;
 }
 
 function removeSegmentContributionFormContainer(){
@@ -374,8 +377,7 @@ function addMainClickEventListener() {
     mainContainer.addEventListener('click', function (event) {
         // Check if the clicked element is a span with class 'main'
         if (event.target.tagName === 'SPAN' && event.target.classList.contains('segment')) {
-            console.log("clicked:", event.target);
-            segmentClicked(event.target);
+            scm.clicked(event.target);
         }
     });
 
@@ -393,134 +395,124 @@ class DefaultDict {
   }
 
   const counts = new DefaultDict(0)
-  console.log(counts.c) // 0
+
+class SegmentClickState {
+    constructor(segmentElement){
+        this.contributionKey = getContributionKey(segmentElement.id);
+        this.segmentHasAnswer = (this.contributionKey in contributionMap);
+        this.contributionDiv = contributionMap[this.contributionKey];  // might be null
+        this.answerIsVisible = (this.segmentHasAnswer && this.contributionDiv.style.display === "block");
+        this.userIsAuthenticated = userIsAuthenticated;
+        this.debateHasUserB = (user_b !== "__undefined__");
+        this.userDoesParticipateInDebate = ["a", "b"].includes(user_role)
+
+        this.userIsAllowedToAnswer = (this.contributionKey.endsWith(user_role) || ((user_role === null) && (user_b === "__undefined__")))
+        // we are allowed to add a contribution
+        // either because user user role matches with the required role for the planned contribution
+        // or because we have no role yet AND user_b is __undefined__;
+
+        // `ta` ≙ textarea
+        this.taWithUnsubmittedText = ((activeTextArea !== null) && (activeTextArea.getAttribute("data-has_changed") === "true"));
+        this.clickCount = scm.clickCounter[segmentElement.id];
+
+        // some other textarea is active and uncommitted and we want to create a new one
+        const condition1 = (this.userIsAllowedToAnswer && this.clickCount == 1 && this.taWithUnsubmittedText);
+
+        // the textarea for this segment is active and uncommitted and we want to discard it
+        const condition2 = (this.userIsAllowedToAnswer && this.clickCount == 2 && this.taWithUnsubmittedText && activeTextArea.id == `ta_${this.contributionKey}`);
+        this.modalWarningIsNecessary = condition1 || condition2;
+    }
+}
 
 
-class segmentClickManager {
+class SegmentClickManager {
     constructor(){
         this.clickCounter = new DefaultDict(0);
         this.lastActiveSegment = null;
     }
 
-     clicked(segment) {
+     clicked(segmentElement) {
 
-        var click_accepted;
-        if (this.lastActiveSegment == segment || this.lastActiveSegment == null) {
-            click_accepted = true;
-        } else {
-            // user clicked on a segment which was not active last
+        const state = new SegmentClickState(segmentElement);
+        // console.log(state);
 
-            // check for user input which would get lost
-            if (this.clickCounter[segment.id] == 0) {
-                click_accepted = this.showWarningIfNecessary(segment);
+        if (state.modalWarningIsNecessary) {
+            this.showModalWarningForSegment(segmentElement);
 
-                // TODO: set activeTextArea to null again at correct place
-            } else {
-                click_accepted = true;
-            }
-
-
-        }
-        if (click_accepted) {
-            // now we can increment the counter
-            this.clickCounter[segment.id] = (this.clickCounter[segment.id] + 1) % 3;
-            this.lastActiveSegment = segment;
-            this.updateUI(segment);
-        } else {
-            console.log("action was canceled by modal dialog")
+            // if modalWarning is closed with "OK" then
+            //  - the textarea will be closed and
+            //  - scm.clicked(segment) will be executed again
+            // TODO-2025-01: test_frontend
+            return
         }
 
-    }
+        // the click can be counted
+        deactivateSegmentToolbar();  // this done in any state
 
-    showWarningIfNecessary(segmentElement) {
+        /**
+         *
+         * now we do a big case distinction (which is similar to a state-machine)
+         *
+         */
 
-        // this function is executed if the OK-button in the Modal dialog is clicked
+        // count == 0
+        if (state.clickCount == 0 && !state.segmentHasAnswer) {
+            activateSegmentToolbar(segmentElement, false);
+            this.clickCounter[segmentElement.id] = 1;
+        } else if (state.clickCount == 0 && state.segmentHasAnswer && state.answerIsVisible) {
+            // answer is visible (due to some external reason) -> same as if we are now in state 2
+            // hide answer, show toolbar
+            state.contributionDiv.style.display = "none";
+            activateSegmentToolbar(segmentElement, false);
+            this.clickCounter[segmentElement.id] = 2;
+        } else if (state.clickCount == 0 && state.segmentHasAnswer && !state.answerIsVisible) {
+            state.contributionDiv.style.display = "block";
+            // answer is not visible -> show it
+            this.clickCounter[segmentElement.id] = 1;
+
+            // count == 1
+        } else if (state.clickCount == 1 && !state.segmentHasAnswer && state.userIsAllowedToAnswer) {
+            insertContributionForm(segmentElement, state.contributionKey, returnMode=false);
+            this.clickCounter[segmentElement.id] = 2;
+        } else if (state.clickCount == 1 && !state.segmentHasAnswer && !state.userIsAllowedToAnswer) {
+            // do nothing (apart of deactivating the toolbar as always)
+            this.clickCounter[segmentElement.id] = 0;
+        } else if (state.clickCount == 1 && state.segmentHasAnswer && state.answerIsVisible) {
+            state.contributionDiv.style.display = "none";
+            console.log("bingo 1")
+            activateSegmentToolbar(segmentElement, false);
+            this.clickCounter[segmentElement.id] = 2;
+        } else if (state.clickCount == 1 && state.segmentHasAnswer && !state.answerIsVisible) {
+            console.log("bingo 2")
+            // this is can only be caused by strange click pattern -> reset state to 0
+            this.clickCounter[segmentElement.id] = 0;
+
+            // count == 2
+        } else if (state.clickCount == 2 && !state.segmentHasAnswer) {
+            cancelSegmentContributionForm(segmentElement.id);
+            this.clickCounter[segmentElement.id] = 0;
+        } else if (state.clickCount == 2 && state.segmentHasAnswer) {
+            // ensure that no answer is shown
+            state.contributionDiv.style.display = "none";
+            this.clickCounter[segmentElement.id] = 0;
+        }
+    }  // end of clicked(segmentElement)
+
+    showModalWarningForSegment(segmentElement) {
+
+        // define function which is executed if the OK-button in the Modal dialog is clicked
         async function okFunc() {
             cancelSegmentContributionForm(segmentElement.id);
-            clicked(segmentElement)
+            scm.clicked(segmentElement)
         }
+
+        // pass this function to the modal Dialog as okFunc
         activateModalWarningIfNecessary(okFunc);
     }
 
-
-    updateUI(segment) {
-        if (this.clickCounter[segment.id] === 0) {
-            // do not show copy-toolbar nor contribution toolbar
-            deactivateSegmentToolbar();
-            removeSegmentContributionFormContainer();
-
-        } else if (this.clickCounter[segment.id] === 1) {
-            // show copy toolbar
-        } else if (this.clickCounter[segment.id] === 2) {
-            // show contribution toolbar
-        }
-
-    }
 }
 
-var scm = new segmentClickManager()
-
-
-function segmentClicked(segmentSpan){
-    /**
-     * handle the following:
-     * - unfold answers (if present)
-     * - show/hide contribution dialog (if allowed)
-     * - show/hide segment toolbar (on first or on second click)
-     *
-     * */
-    scm.clicked(segmentSpan);
-
-    const contributionKey = getContributionKey(segmentSpan.id);
-    if (contributionKey in contributionMap) {
-        // segment has answer
-        const contributionDiv = contributionMap[contributionKey];
-        segmentWithExistingContributionClicked(segmentSpan, contributionDiv);
-
-
-    } else {
-        // This segment does not yet have an answer
-
-        var insertedContributionForm = null;
-        var contributionFormAllowed = false;
-        if (!userIsAuthenticated){
-            // non-logged-in user: no click-action
-            insertedContributionForm = null;
-            console.log("user not authenticated");
-        } else if (user_b !== "__undefined__") {
-            // user b has been assigned
-            console.log("user authenticated and user_b is not undefined");
-            if (!["a", "b"].includes(user_role)){
-                // logged-in user with no role: no click-action
-                insertedContributionForm = null;
-                console.log("current user is no participant in this debate");
-            } else {
-                console.log("current user is participant in this debate");
-                contributionFormAllowed = true;
-            }
-        } else {
-            console.log("user_b = '__undefined__' → insertContributionFormOrNot");
-            contributionFormAllowed = true;
-        }
-
-        if (contributionFormAllowed) {
-            console.log("inserting ContributionForm");
-            insertedContributionForm = insertContributionFormOrNot(segmentSpan, contributionKey);
-        }
-
-        var toggleMode;
-        if (insertedContributionForm == null) {
-            toggleMode = true;
-        } else {
-            // if a form was inserted, then the toolbar should be appended after the form
-            // without toggle mode
-            toggleMode = false;
-        }
-        console.log("toggleMode", toggleMode, insertedContributionForm);
-        activateSegmentToolbar(segmentSpan, toggleMode);
-    }
-}
-
+var scm = new SegmentClickManager()
 
 function segmentWithPossibleContributionClicked(segmentSpan, contributionDiv) {
     // 1st click: show copy toolbar only
@@ -628,6 +620,12 @@ function unfoldAllUncommittedContributions() {
     currentLevel = maxLevel;
 }
 
+
+/**
+ * deactivates the segmentToolbar if it is active, else do nothing
+ * note: there should be only one active segmentToolbar
+ * @returns
+ */
 function deactivateSegmentToolbar(){
     var id = null;
     if (activeSegmentToolbar != null) {
