@@ -17,7 +17,7 @@ function closeActiveMenu(){
 
 }
 
-// add eventlisteners for all menus
+// add eventlisteners for all drop down menus
 itemMenus.forEach((ddms, idx) => {
 
     // get id of menu from the id of the symbol (ims -> im)
@@ -336,11 +336,6 @@ function onLoadForShowDebatePage(){
     // add square symbols and click-event-handler to those segments which have an answer-contribution
     segmentObjects.forEach(segment_span => {
 
-        // handle all click events on segment elements
-        segment_span.addEventListener('click', function() {
-            segmentClicked(segment_span);
-        });
-
         const contributionKey = getContributionKey(segment_span.id);
         if (contributionKey in contributionMap) {
 
@@ -361,11 +356,29 @@ function onLoadForShowDebatePage(){
         }
     });
 
+    addMainClickEventListener();
     unfoldAllUncommittedContributions();
     connectCommitAllCtbsButton();
     connectShowAllCtbsButton();
     initializeModalWarningElement();
     connectKeyboardKeys();
+}
+
+/**
+ * handle all click events on segment elements in one event handler
+ */
+function addMainClickEventListener() {
+    const mainContainer = document.getElementById('contribution_a');
+
+    // Add event listener to the main container
+    mainContainer.addEventListener('click', function (event) {
+        // Check if the clicked element is a span with class 'main'
+        if (event.target.tagName === 'SPAN' && event.target.classList.contains('segment')) {
+            console.log("clicked:", event.target);
+            segmentClicked(event.target);
+        }
+    });
+
 }
 
 
