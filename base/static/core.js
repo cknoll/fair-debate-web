@@ -251,6 +251,9 @@ function insertContributionForm(segmentElement, contributionKey, returnMode=null
     const submitButton = form.getElementsByClassName("_submit_button")[0];
     submitButton.id = `submit_btn_${contributionKey}`;
 
+    const ta_element = form.getElementsByTagName("textarea")[0];
+    ta_element.id = `ta_${contributionKey}`;
+
     // prevent empty textarea from being submitted
 
     ta.addEventListener('input', function() {
@@ -261,6 +264,7 @@ function insertContributionForm(segmentElement, contributionKey, returnMode=null
     const cancelButton = form.getElementsByClassName("_cancel_button")[0];
     cancelButton.id = `cancel_btn_${contributionKey}`
     cancelButton.addEventListener('click', function() {
+        console.log("cancel contribution form")
         async function okFunc() {
             cancelSegmentContributionForm(segmentElement.id);
         }
@@ -400,6 +404,8 @@ class DefaultDict {
 
 class SegmentClickState {
     constructor(segmentElement){
+
+        this.segmentElementId = segmentElement.id
         this.contributionKey = getContributionKey(segmentElement.id);
         this.segmentHasAnswer = (this.contributionKey in contributionMap);
         this.contributionDiv = contributionMap[this.contributionKey];  // might be null
@@ -439,7 +445,7 @@ class SegmentClickManager {
         // console.log(state);
 
         if (state.modalWarningIsNecessary) {
-            this.showModalWarningForSegment(segmentElement);
+            this.showModalWarningForSegment(segmentElement, state);
 
             // if modalWarning is closed with "OK" then
             //  - the textarea will be closed and
@@ -475,37 +481,52 @@ class SegmentClickManager {
             // count == 1
         } else if (state.clickCount == 1 && !state.segmentHasAnswer && state.userIsAllowedToAnswer) {
             insertContributionForm(segmentElement, state.contributionKey, false);
+            const taElement = document.getElementById(`ta_${state.contributionKey}`)
+            initActiveTextArea(taElement);
             this.clickCounter[segmentElement.id] = 2;
         } else if (state.clickCount == 1 && !state.segmentHasAnswer && !state.userIsAllowedToAnswer) {
             // do nothing (apart of deactivating the toolbar as always)
             this.clickCounter[segmentElement.id] = 0;
         } else if (state.clickCount == 1 && state.segmentHasAnswer && state.answerIsVisible) {
             state.contributionDiv.style.display = "none";
-            console.log("bingo 1")
             activateSegmentToolbar(segmentElement, false);
             this.clickCounter[segmentElement.id] = 2;
         } else if (state.clickCount == 1 && state.segmentHasAnswer && !state.answerIsVisible) {
-            console.log("bingo 2")
             // this is can only be caused by strange click pattern -> reset state to 0
             this.clickCounter[segmentElement.id] = 0;
 
             // count == 2
-        } else if (state.clickCount == 2 && !state.segmentHasAnswer) {
-            cancelSegmentContributionForm(segmentElement.id);
+        // } else if (state.clickCount == 2 && !state.segmentHasAnswer) {
+        //     cancelSegmentContributionForm(segmentElement.id);
+        //     this.clickCounter[segmentElement.id] = 0;
+        // } else if (state.clickCount == 2 && state.segmentHasAnswer) {
+        } else if (state.clickCount == 2) {
+            this.showNoWidget(state);
             this.clickCounter[segmentElement.id] = 0;
-        } else if (state.clickCount == 2 && state.segmentHasAnswer) {
-            // ensure that no answer is shown
-            state.contributionDiv.style.display = "none";
-            this.clickCounter[segmentElement.id] = 0;
+        } else {
+            console.log("no condition matched");
         }
     }  // end of clicked(segmentElement)
 
-    showModalWarningForSegment(segmentElement) {
+    showNoWidget(state) {
+
+        deactivateSegmentToolbar();
+        cancelSegmentContributionForm(state.segmentElementId);
+        if (state.contributionDiv) {
+            state.contributionDiv.style.display = "none";
+        }
+
+    }
+
+    showModalWarningForSegment(segmentElement, state) {
 
         // define function which is executed if the OK-button in the Modal dialog is clicked
+        console.log("showModalWarningForSegment", state);
         async function okFunc() {
             cancelSegmentContributionForm(segmentElement.id);
-            scm.clicked(segmentElement)
+            scm.clickCounter[state.segmentElementId] = 0;
+            scm.showNoWidget(state)
+            console.log("showNoWidget", scm.clickCounter[segmentElement.id])
         }
 
         // pass this function to the modal Dialog as okFunc
