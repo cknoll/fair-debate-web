@@ -171,7 +171,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     def test_g031__segment_clicks_for_anonymous_or_no_role_user(self):
 
         # for test development
-        # self.headless = False
+        self.headless = False
 
         b1 = self.new_browser()
 
@@ -194,6 +194,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
             # the segment-toolbar with copy-url-widget should appear
             b1.find_by_id("a3").click()
+            IPS()
             separator_div = self.fast_get(browser=b1, id_str=None, class_str="separator_widget")
             self.assertIn("#a3", separator_div.find_by_css("._text").html)
 

@@ -376,8 +376,10 @@ function addMainClickEventListener() {
     // Add event listener to the main container
     mainContainer.addEventListener('click', function (event) {
         // Check if the clicked element is a span with class 'main'
-        if (event.target.tagName === 'SPAN' && event.target.classList.contains('segment')) {
-            scm.clicked(event.target);
+        const closestSpan = event.target.closest("span");
+
+        if (closestSpan !== null && closestSpan.classList.contains('segment')) {
+            scm.clicked(closestSpan);
         }
     });
 
