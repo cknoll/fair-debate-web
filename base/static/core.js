@@ -474,7 +474,7 @@ class SegmentClickManager {
 
             // count == 1
         } else if (state.clickCount == 1 && !state.segmentHasAnswer && state.userIsAllowedToAnswer) {
-            insertContributionForm(segmentElement, state.contributionKey, returnMode=false);
+            insertContributionForm(segmentElement, state.contributionKey, false);
             this.clickCounter[segmentElement.id] = 2;
         } else if (state.clickCount == 1 && !state.segmentHasAnswer && !state.userIsAllowedToAnswer) {
             // do nothing (apart of deactivating the toolbar as always)

@@ -194,7 +194,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
             # the segment-toolbar with copy-url-widget should appear
             b1.find_by_id("a3").click()
-            IPS()
             separator_div = self.fast_get(browser=b1, id_str=None, class_str="separator_widget")
             self.assertIn("#a3", separator_div.find_by_css("._text").html)
 
@@ -279,14 +278,17 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         )
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
+        # first click: toolbar
         trigger_click_event(b1, id="a3")
-        IPS()
+        # 2nd click: contribution form
+        trigger_click_event(b1, id="a3")
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
         # assert that the form does not appear multiple times
         trigger_click_event(b1, id="a3")
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
+        trigger_click_event(b1, id="a3")
         trigger_click_event(b1, id="a3")
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
@@ -294,6 +296,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         b1.find_by_css("._cancel_button").click()
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
+        trigger_click_event(b1, id="a3")
         trigger_click_event(b1, id="a3")
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
 
