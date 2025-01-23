@@ -14,7 +14,7 @@
     - links like http://localhost:8000/d/d03-test_debate#a15 are already possible
     - [.] add a convenient way to copy segment-link -> additional tool bar (activated by click)
         - [x] add basic toolbar on segment-click
-        - [ ] #i12.2 implement segmentClickManager to handle complexity
+        - [.] #i12.2 implement segmentClickManager to handle complexity
             - What should happen when a segment is clicked? Depends on:
                 - Does Segment have an answer?
                 - Is clicking user logged in?
@@ -22,6 +22,8 @@
                 - Is the clicking user allowed to answer the clicked segment?
                 - Is there an active textarea with some unsubmitted user input (which would require modal warning?)
                 - How many times has the segment being clicked directly before that click?
+            - [ ] #i12.2.2 reset segment click counter to 0 if another segment is clicked.
+            - [ ] #i12.2.3 handle modal warning consistently if other segment is clicked.
         - [x] #i12.2.1 unify modalWarning behavior if Contribution form is closed via a: click on Segment or b: click on cancel-button
             - the click counter state of the segment should be the same in both cases
             - currently: case a is correct, case b: counter is still 2

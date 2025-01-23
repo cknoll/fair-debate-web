@@ -171,7 +171,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     def test_g031__segment_clicks_for_anonymous_or_no_role_user(self):
 
         # for test development
-        self.headless = False
+        # self.headless = False
 
         b1 = self.new_browser()
 
@@ -256,7 +256,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
     def test_g032__gui_behavior_for_users(self):
 
-        self.headless = False
+        # self.headless = False
         b1 = self.new_browser()
 
         # testuser_2 (role b)
@@ -411,19 +411,23 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
         self.assertIsNone(self.fast_get(b1, "a3b1"))
 
-        IPS()
-
         # testuser_1 should be able to answer to a2b2
         trigger_click_event(b1, id="a2")  # open existing answer
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
-        trigger_click_event(b1, id="a2b2")
 
-        # does the form appear as expected?
+        # 1st click: toolbar
+        trigger_click_event(b1, id="a2b2")
+        self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a2b2"))
+
+        # 2nd click: contribution form
+        trigger_click_event(b1, id="a2b2")
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
+
         trigger_click_event(b1, id="cancel_btn_contribution_a2b2a")
 
         trigger_click_event(b1, id="a3")
         # no form should open:
+        self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a3"))
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
     def test_g040__segment_contribution_level1(self):
