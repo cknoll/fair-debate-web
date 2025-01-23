@@ -451,6 +451,11 @@ class SegmentClickManager {
         }
 
         // the click can be counted
+
+        // first step: reset the clickCounter for the last active segment
+        this.resetCounterForLastActiveElement()
+        this.lastActiveSegment = segmentElement;
+
         deactivateSegmentToolbar();  // this done in any state
 
         /**
@@ -503,6 +508,13 @@ class SegmentClickManager {
             console.log("SegmentClickManager: no condition matched");
         }
     }  // end of clicked(segmentElement)
+
+    resetCounterForLastActiveElement() {
+        if (this.lastActiveSegment !== null) {
+            this.clickCounter[this.lastActiveSegment.id] = 0;
+        }
+
+    }
 
     showNoWidget(state) {
 
@@ -803,6 +815,8 @@ function getSeparatorDiv(segment_span, contributionDiv){
 
     editButton.addEventListener('click', function() {
         function okFunc() {
+
+            scm.resetCounterForLastActiveElement()
 
             // append update form (specify optional second argument)
             const formElement = insertContributionForm(segment_span, contributionKey, true);

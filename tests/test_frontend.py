@@ -465,7 +465,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
     def test_g050__segment_contribution_form_toggling(self):
 
-        self.headless = False
+        # self.headless = False
         b1 = self.new_browser()
 
         # testuser_2 -> role b
@@ -493,9 +493,8 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # reactivate the form which we deactivated before
         trigger_click_event(b1, id="a8")  # -> toolbar
-
-        # TODO: this currently fails due to #i12.2.2
         self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a8"))
+
         trigger_click_event(b1, id="a8")  # -> contribution_form
         form_container_div = b1.find_by_id("segment_contribution_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a8")
@@ -511,7 +510,9 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(form_container_div["data-related_segment"], "a15")
 
         trigger_click_event(b1, id="a8")
-        # b1.find_by_id("a8").click()  # does somehow not work in headless mode
+        self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a8"))
+
+        trigger_click_event(b1, id="a8")
         form_container_div = b1.find_by_id("segment_contribution_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a8")
 
