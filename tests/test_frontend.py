@@ -902,8 +902,10 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # testuser_2 (in browser b2) should be able to open answer forms
         trigger_click_event(b2, id="a3")
+        trigger_click_event(b2, id="a3")
         self.assertEqual(len(b2.evaluate_script(self.js_segment_contribution_forms)), 1)
 
+        trigger_click_event(b2, id="a4")
         trigger_click_event(b2, id="a4")
         self.assertEqual(len(b2.evaluate_script(self.js_segment_contribution_forms)), 1)
 

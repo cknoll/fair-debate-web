@@ -25,12 +25,13 @@
             - [x] #i12.2.2 reset segment click counter to 0 if another segment is clicked.
                 - [x] test_frontend
             - [ ] #i12.2.3 handle modal warning consistently if other segment is clicked.
+                [ ] test_frontend
         - [x] #i12.2.1 unify modalWarning behavior if Contribution form is closed via a: click on Segment or b: click on cancel-button
             - the click counter state of the segment should be the same in both cases
             - currently: case a is correct, case b: counter is still 2
                 - probable reason: different okFunc objects
 
-        - [ ] #i12.1 desired behavior for segments which might receive an answer:
+        - [x] #i12.1 desired behavior for segments which might receive an answer:
             - 1st click: copy toolbar
             - 2nd click: contribution toolbar
             - 3rd click or click another segment:
@@ -40,11 +41,11 @@
             - **show contribution form**
                 - integrate toolbar consistently:
                 - cancel form -> deactivate segment toolbar
-            - [.] **unfold answer**
+            - [x] **unfold answer**
                 - 1st click: unfold answer, 2nd click: toolbar, 3rd click hide both
                 - if answer is already unfolded -> same as if 1st click done.
                 - [x] fix bug with multiple toolbars
-                    - [] test frontend
+                    - [x] test frontend
 
 - [x] first test-deployment on the web
     - [x] adapt `deploy.py`
