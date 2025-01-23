@@ -441,7 +441,8 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.perform_login(browser=b1, username="testuser_2")
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
 
-        b1.find_by_id("a3").click()
+        trigger_click_event(b1, id="a3")  # -> toolbar
+        trigger_click_event(b1, id="a3")  # -> contribution form
 
         form = b1.find_by_id("segment_contribution_form")[0]
         ta = form.find_by_tag("textarea")[0]
@@ -464,7 +465,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
     def test_g050__segment_contribution_form_toggling(self):
 
-        # self.headless = False
+        self.headless = False
         b1 = self.new_browser()
 
         # testuser_2 -> role b
@@ -476,18 +477,26 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         )
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
 
-        b1.find_by_id("a8").click()
+        trigger_click_event(b1, id="a8")  # -> toolbar
+        self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a8"))
+        trigger_click_event(b1, id="a8")  # -> contribution_form
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
         form_container_div = b1.find_by_id("segment_contribution_form_container")
         # check data attribute
         self.assertEqual(form_container_div["data-related_segment"], "a8")
 
-        b1.find_by_id("a9").click()
+        trigger_click_event(b1, id="a9")  # -> toolbar
+        self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a9"))
+        trigger_click_event(b1, id="a9")  # -> contribution_form
         form_container_div = b1.find_by_id("segment_contribution_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a9")
 
         # reactivate the form which we deactivated before
-        b1.find_by_id("a8").click()
+        trigger_click_event(b1, id="a8")  # -> toolbar
+
+        # TODO: this currently fails due to #i12.2.2
+        self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a8"))
+        trigger_click_event(b1, id="a8")  # -> contribution_form
         form_container_div = b1.find_by_id("segment_contribution_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a8")
 

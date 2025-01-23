@@ -23,6 +23,7 @@
                 - Is there an active textarea with some unsubmitted user input (which would require modal warning?)
                 - How many times has the segment being clicked directly before that click?
             - [ ] #i12.2.2 reset segment click counter to 0 if another segment is clicked.
+                - [.] test_frontend
             - [ ] #i12.2.3 handle modal warning consistently if other segment is clicked.
         - [x] #i12.2.1 unify modalWarning behavior if Contribution form is closed via a: click on Segment or b: click on cancel-button
             - the click counter state of the segment should be the same in both cases
