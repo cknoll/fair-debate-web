@@ -22,8 +22,10 @@
                 - Is the clicking user allowed to answer the clicked segment?
                 - Is there an active textarea with some unsubmitted user input (which would require modal warning?)
                 - How many times has the segment being clicked directly before that click?
-        - [ ] #i12.2.1 unify modalWarning behavior if Contribution form is closed via a: click on Segment or b: click on cancel-button
+        - [x] #i12.2.1 unify modalWarning behavior if Contribution form is closed via a: click on Segment or b: click on cancel-button
             - the click counter state of the segment should be the same in both cases
+            - currently: case a is correct, case b: counter is still 2
+                - probable reason: different okFunc objects
 
         - [ ] #i12.1 desired behavior for segments which might receive an answer:
             - 1st click: copy toolbar

@@ -25,7 +25,7 @@ itemMenus.forEach((ddms, idx) => {
     var itemMenu = document.getElementById(im_id);
 
     ddms.addEventListener('click', function() {
-        console.log("click", ddms.id);
+        // console.log("click", ddms.id);
 
         if (activeItemMenu == itemMenu) {
             closeActiveMenu();
@@ -264,11 +264,7 @@ function insertContributionForm(segmentElement, contributionKey, returnMode=null
     const cancelButton = form.getElementsByClassName("_cancel_button")[0];
     cancelButton.id = `cancel_btn_${contributionKey}`
     cancelButton.addEventListener('click', function() {
-        console.log("cancel contribution form 123")
-        async function okFunc() {
-            cancelSegmentContributionForm(segmentElement.id);
-        }
-        mwm.activateModalWarningIfNecessary(okFunc);
+        mwm.activateModalWarningIfNecessary(scm.produceModalWarningOKFunc(segmentElement));
     });
 
     if (returnMode === true) {
@@ -449,7 +445,7 @@ class SegmentClickManager {
 
             // if modalWarning is closed with "OK" then
             //  - the textarea will be closed and
-            //  - scm.clicked(segment) will be executed again
+            //  - segment click counter is set to 0
             // TODO-2025-01: test_frontend
             return
         }
@@ -504,7 +500,7 @@ class SegmentClickManager {
             this.showNoWidget(state);
             this.clickCounter[segmentElement.id] = 0;
         } else {
-            console.log("no condition matched");
+            console.log("SegmentClickManager: no condition matched");
         }
     }  // end of clicked(segmentElement)
 
@@ -518,19 +514,22 @@ class SegmentClickManager {
 
     }
 
-    showModalWarningForSegment(segmentElement, state) {
+    produceModalWarningOKFunc(segmentElement, state=null) {
+        if (state === null) {
+            state = new SegmentClickState(segmentElement);
+        }
 
-        // define function which is executed if the OK-button in the Modal dialog is clicked
-        console.log("showModalWarningForSegment", state);
         async function okFunc() {
             cancelSegmentContributionForm(segmentElement.id);
             scm.clickCounter[state.segmentElementId] = 0;
             scm.showNoWidget(state)
-            console.log("showNoWidget", scm.clickCounter[segmentElement.id])
         }
 
-        // pass this function to the modal Dialog as okFunc
-        mwm.activateModalWarningIfNecessary(okFunc);
+        return okFunc
+    }
+
+    showModalWarningForSegment(segmentElement, state) {
+        mwm.activateModalWarning(scm.produceModalWarningOKFunc(segmentElement, state));
     }
 
 }
@@ -550,9 +549,9 @@ class ModalWarningManager {
         const modalDialogCloseWidget = modalDialog.getElementsByClassName("close-modal")[0];
 
         // When the user clicks on <span> (x), close the modal
-        modalDialogCloseWidget.onclick = closeModalWarning;
+        modalDialogCloseWidget.onclick = mwm.closeModalWarning;
         document.getElementById("modal-dialog-cancel-button").onclick = function () {
-            closeModalWarning();
+            mwm.closeModalWarning();
         }
     }
 
@@ -579,7 +578,7 @@ class ModalWarningManager {
 
         document.getElementById("modal-dialog-ok-button").addEventListener("click", function () {
             okFunc();
-            closeModalWarning("ok");
+            mwm.closeModalWarning("ok");
         }, { once: true });
 
         // the event listener is only added once
