@@ -264,11 +264,11 @@ function insertContributionForm(segmentElement, contributionKey, returnMode=null
     const cancelButton = form.getElementsByClassName("_cancel_button")[0];
     cancelButton.id = `cancel_btn_${contributionKey}`
     cancelButton.addEventListener('click', function() {
-        console.log("cancel contribution form")
+        console.log("cancel contribution form 123")
         async function okFunc() {
             cancelSegmentContributionForm(segmentElement.id);
         }
-        activateModalWarningIfNecessary(okFunc);
+        mwm.activateModalWarningIfNecessary(okFunc);
     });
 
     if (returnMode === true) {
@@ -367,7 +367,7 @@ function onLoadForShowDebatePage(){
     unfoldAllUncommittedContributions();
     connectCommitAllCtbsButton();
     connectShowAllCtbsButton();
-    initializeModalWarningElement();
+    mwm.initializeModalWarningElement();
     connectKeyboardKeys();
 }
 
@@ -530,13 +530,76 @@ class SegmentClickManager {
         }
 
         // pass this function to the modal Dialog as okFunc
-        activateModalWarningIfNecessary(okFunc);
+        mwm.activateModalWarningIfNecessary(okFunc);
     }
 
 }
 
 var scm = new SegmentClickManager()
 
+class ModalWarningManager {
+    constructor(){
+
+        // either "hidden" or "visible"
+        this.displayState = "hidden"
+    }
+
+    // todo: respect the segment state
+    initializeModalWarningElement() {
+        // Get the modal
+        const modalDialogCloseWidget = modalDialog.getElementsByClassName("close-modal")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        modalDialogCloseWidget.onclick = closeModalWarning;
+        document.getElementById("modal-dialog-cancel-button").onclick = function () {
+            closeModalWarning();
+        }
+    }
+
+    /**
+     *
+     * @param {*} oKFunc  function which is executed on OK#
+     * returns true if the modal action was accepted (or not necessary, false if modal warning was closed/canceled)
+     */
+    activateModalWarningIfNecessary(okFunc) {
+        if (activeTextArea !== null) {
+            if (activeTextArea.getAttribute("data-has_changed") === "true") {
+                // modal warning dialog is necessary
+                this.activateModalWarning(okFunc);
+                return
+            }
+        }
+
+        // modal warning dialog was not necessary
+        okFunc();
+    }
+
+    activateModalWarning(okFunc) {
+        modalDialog.classList.remove("hidden");
+
+        document.getElementById("modal-dialog-ok-button").addEventListener("click", function () {
+            okFunc();
+            closeModalWarning("ok");
+        }, { once: true });
+
+        // the event listener is only added once
+    }
+
+    closeModalWarning(mode = "closed") {
+        modalDialog.classList.add("hidden");
+
+        // todo: obsolete?
+        modalWarningState = mode;
+    }
+
+
+}
+
+var mwm = new ModalWarningManager()
+
+
+
+// TODO: obsolete?
 function segmentWithPossibleContributionClicked(segmentSpan, contributionDiv) {
     // 1st click: show copy toolbar only
     // 2nd click: contribution toolbar only
@@ -589,7 +652,7 @@ function connectCommitAllCtbsButton() {
                 console.error(err);
             }
         }
-        activateModalWarningIfNecessary(okFunc);
+        mwm.activateModalWarningIfNecessary(okFunc);
     });
 }
 
@@ -757,7 +820,7 @@ function getSeparatorDiv(segment_span, contributionDiv){
                 activeTextArea.innerHTML = JSON.parse(originalMdSrc);
             }
         }
-        activateModalWarningIfNecessary(okFunc);
+        mwm.activateModalWarningIfNecessary(okFunc);
     });
 
     // add unique ids to identify the buttons in unittests
@@ -782,7 +845,7 @@ function getSeparatorDiv(segment_span, contributionDiv){
                 console.error(err);
             }
         }
-        activateModalWarningIfNecessary(okFunc);
+        mwm.activateModalWarningIfNecessary(okFunc);
     });
 
     deleteButton.addEventListener('click', async function() {
@@ -802,7 +865,7 @@ function getSeparatorDiv(segment_span, contributionDiv){
                 console.error(err);
             }
         }
-        activateModalWarningIfNecessary(okFunc);
+        mwm.activateModalWarningIfNecessary(okFunc);
     });
 
     return separatorDiv
@@ -832,34 +895,6 @@ function generateRequestObjectForCtb(debateKey, contributionKeyShort=null) {
     return requestObj
 }
 
-function initializeModalWarningElement(){
-    // Get the modal
-    const modalDialogCloseWidget = modalDialog.getElementsByClassName("close-modal")[0];
-
-    // When the user clicks on <span> (x), close the modal
-    modalDialogCloseWidget.onclick = closeModalWarning;
-    document.getElementById("modal-dialog-cancel-button").onclick = function() {
-        closeModalWarning();
-    }
-}
-
-/**
- *
- * @param {*} oKFunc  function which is executed on OK#
- * returns true if the modal action was accepted (or not necessary, false if modal warning was closed/canceled)
- */
-function activateModalWarningIfNecessary(okFunc) {
-    if (activeTextArea !== null) {
-        if (activeTextArea.getAttribute("data-has_changed") === "true") {
-            // modal warning dialog is necessary
-            activateModalWarning(okFunc);
-            return
-        }
-    }
-
-    // modal warning dialog was not necessary
-    okFunc();
-}
 
 function initActiveTextArea(taElement) {
     activeTextArea = taElement;
@@ -868,22 +903,6 @@ function initActiveTextArea(taElement) {
     taElement.addEventListener('keydown', function(){
         taElement.setAttribute("data-has_changed", "true");
     }, { once: true });
-}
-
-function activateModalWarning(okFunc) {
-    modalDialog.classList.remove("hidden");
-
-    document.getElementById("modal-dialog-ok-button").addEventListener("click", function() {
-        okFunc();
-        closeModalWarning("ok");
-    }, { once: true });
-
-    // the event listener is only added once
-}
-
-function closeModalWarning(state="closed") {
-    modalDialog.classList.add("hidden");
-    modalWarningState = state;
 }
 
 
