@@ -322,14 +322,23 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertIsNone(submit_button["disabled"])
 
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
-        # form.find_by_css("._submit_button").click()
         submit_button.click()
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         # test for new element (should be visible by default)
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a3b"))
+
+        # 1st click (because uncommitted answer is already visible): show toolbar
         trigger_click_event(b1, id="a3")
+        self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a3"))
         self.assertFalse(get_js_visibility_for_id(b1, "contribution_a3b"))
+
+        # 2nd click: now both widgets are hidden
+        trigger_click_event(b1, id="a3")
+        self.assertIsNone(self.fast_get(b1, id_str="segment_toolbar_a3"))
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a3b"))
+
+        # 3rd click: uncommitted contribution is visible again:
         trigger_click_event(b1, id="a3")
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a3b"))
 
@@ -401,6 +410,8 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
         self.assertIsNone(self.fast_get(b1, "a3b1"))
+
+        IPS()
 
         # testuser_1 should be able to answer to a2b2
         trigger_click_event(b1, id="a2")  # open existing answer
