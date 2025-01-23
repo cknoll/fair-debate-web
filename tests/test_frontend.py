@@ -703,13 +703,19 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         num_answers = get_parsed_element_by_id("data-num_answers", browser=b1)
         self.assertEqual(num_answers, 6 + N_CTB_IN_FIXTURES - 1)
 
+        # we are starting with level one because we have one uncommitted contribution in the fixtures
+        # which is shown by default
+        self.assertEqual(b1.evaluate_script("currentLevel"), 1)
+
+        # go back to level 0
+        trigger_click_event(b1, "btn_hide_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 0)
+
         self.assertFalse(get_js_visibility_for_id(b1, "contribution_a2b"))
         self.assertFalse(get_js_visibility_for_id(b1, "contribution_a4b"))
         self.assertFalse(get_js_visibility_for_id(b1, "contribution_a6b"))
         self.assertFalse(get_js_visibility_for_id(b1, "contribution_a7b"))
 
-        # this is faster than finding the elements and calling .click()
         trigger_click_event(b1, "btn_show_level")
         self.assertEqual(b1.evaluate_script("currentLevel"), 1)
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a2b"))
