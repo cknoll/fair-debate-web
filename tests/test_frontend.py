@@ -361,16 +361,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         form_container_div = b1.find_by_id("segment_contribution_form_container")
         self.assertEqual(form_container_div["data-related_segment"], "a3")
 
-
-        IPS()
-        # 1st click on a6 -> unfold (works)
-        # 2nd click on a6 -> toolbar
-        # 3rd click on a6 -> fold, toolbar hidden
-
-
-        # current bug: a3 unsubmitted text -> click a6 -> 2 times a8 -> cancel -> 2 times a6 => a3 text is lost
-
-
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         submit_button.click()
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)

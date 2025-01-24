@@ -10,11 +10,11 @@
 - [x] i14 make signup work again
     - [x] add failing test
 - [x] #i13 make arrow buttons/keys work for debates with automatically uncovered contributions
-- [.] #i12 allow anchor-links to segments
+- [x] #i12 allow anchor-links to segments
     - links like http://localhost:8000/d/d03-test_debate#a15 are already possible
-    - [.] add a convenient way to copy segment-link -> additional tool bar (activated by click)
+    - [x] add a convenient way to copy segment-link -> additional tool bar (activated by click)
         - [x] add basic toolbar on segment-click
-        - [.] #i12.2 implement segmentClickManager to handle complexity
+        - [x] #i12.2 implement segmentClickManager to handle complexity
             - What should happen when a segment is clicked? Depends on:
                 - Does Segment have an answer?
                 - Is clicking user logged in?
@@ -24,10 +24,10 @@
                 - How many times has the segment being clicked directly before that click?
             - [x] #i12.2.2 reset segment click counter to 0 if another segment is clicked.
                 - [x] test_frontend
-            - [ ] #i12.2.3 handle modal warning consistently if other segment is clicked.
-                [.] test_frontend
+            - [x] #i12.2.3 handle modal warning consistently if other segment is clicked.
+                [x] test_frontend
                 - [x] #i12.2.3.1 modal triggered wrongly when folding a6
-            - [ ] #i12.2.4 unsubmitted form vanishes when folding a6
+            - [x] #i12.2.4 unsubmitted form vanishes when folding a6
         - [x] #i12.2.1 unify modalWarning behavior if Contribution form is closed via a: click on Segment or b: click on cancel-button
             - the click counter state of the segment should be the same in both cases
             - currently: case a is correct, case b: counter is still 2

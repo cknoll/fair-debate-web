@@ -279,6 +279,16 @@ function insertContributionForm(segmentElement, contributionKey, returnMode=null
 
 function cancelSegmentContributionForm(segment_id) {
     const segment_element = document.getElementById(segment_id);
+
+    // check if contribution form belongs to the passed segment_id
+    // necessary because the click (and thus showNoWidget(state)) might be triggered for a different segment.
+    const segment_contribution_form_container = document.getElementById("segment_contribution_form_container");
+    if (segment_contribution_form_container != null) {
+        if (segment_id !== segment_contribution_form_container.getAttribute("data-related_segment")) {
+            return
+        }
+    }
+
     segment_element.setAttribute('data-active', false);
     removeSegmentContributionFormContainer();
     activeTextArea = null;
@@ -523,6 +533,8 @@ class SegmentClickManager {
 
         deactivateSegmentToolbar();
         cancelSegmentContributionForm(state.segmentElementId);
+
+        // this is to hide any possible answer
         if (state.contributionDiv) {
             state.contributionDiv.style.display = "none";
         }
@@ -535,7 +547,6 @@ class SegmentClickManager {
         }
 
         async function okFunc() {
-            cancelSegmentContributionForm(segmentElement.id);
             scm.clickCounter[state.segmentElementId] = 0;
             scm.showNoWidget(state)
         }
