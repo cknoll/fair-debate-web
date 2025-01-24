@@ -321,6 +321,47 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         ta.type(msg_content1)
         self.assertIsNone(submit_button["disabled"])
 
+        # contribution form for segment_a3 is active and contains unsubmitted text.
+        # Now we test what happens if we click on another segment.
+        # First click: copy-toolbar for that segment should appear
+
+        trigger_click_event(b1, id="a8")
+        self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a8"))
+
+        # contribution form should still be present for a3
+        form_container_div = b1.find_by_id("segment_contribution_form_container")
+        self.assertEqual(form_container_div["data-related_segment"], "a3")
+
+        modal_div_id = "modal-dialog"
+        self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
+        trigger_click_event(b1, id="a8")  # this would open the contribution form for a8 but since we have content in the textarea we get a modal warning
+        self.assertTrue(get_js_visibility_for_id(b1, modal_div_id))
+
+        trigger_click_event(b1, f"modal-dialog-cancel-button")
+
+        # now test folding behavior with some unsubmitted text elsewhere
+
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a6b"))
+        trigger_click_event(b1, id="a6")
+        self.assertTrue(get_js_visibility_for_id(b1, "contribution_a6b"))
+
+        # now toolbar should appear for a6
+        trigger_click_event(b1, id="a6")
+
+        # this fails for #i12.2.3.1
+        self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
+        self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a6"))
+
+
+        IPS()
+        # 1st click on a6 -> unfold (works)
+        # 2nd click on a6 -> toolbar
+        # 3rd click on a6 -> fold, toolbar hidden
+
+
+        # current bug: a3 unsubmitted text -> click a6 -> 2 times a8 -> cancel -> 2 times a6 => a3 text is lost
+
+
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         submit_button.click()
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
