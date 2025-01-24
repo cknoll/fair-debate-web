@@ -410,7 +410,7 @@ class SegmentClickState {
         this.debateHasUserB = (user_b !== "__undefined__");
         this.userDoesParticipateInDebate = ["a", "b"].includes(user_role)
 
-        this.userIsAllowedToAnswer = (this.contributionKey.endsWith(user_role) || ((user_role === null) && (user_b === "__undefined__")))
+        this.userIsAllowedToAnswer = ((this.contributionKey.endsWith(user_role) && !this.segmentHasAnswer) || ((user_role === null) && (user_b === "__undefined__")))
         // we are allowed to add a contribution
         // either because user user role matches with the required role for the planned contribution
         // or because we have no role yet AND user_b is __undefined__;
@@ -424,6 +424,9 @@ class SegmentClickState {
 
         // the textarea for this segment is active and uncommitted and we want to discard it
         const condition2 = (this.userIsAllowedToAnswer && this.clickCount == 2 && this.taWithUnsubmittedText && activeTextArea.id == `ta_${this.contributionKey}`);
+
+        console.log("condition1:", condition1)
+        console.log("condition2:", condition2)
         this.modalWarningIsNecessary = condition1 || condition2;
     }
 }

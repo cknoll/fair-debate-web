@@ -26,7 +26,8 @@
                 - [x] test_frontend
             - [ ] #i12.2.3 handle modal warning consistently if other segment is clicked.
                 [.] test_frontend
-                - #i12.2.3.1 modal triggered wrongly when folding a6
+                - [x] #i12.2.3.1 modal triggered wrongly when folding a6
+            - [ ] #i12.2.4 unsubmitted form vanishes when folding a6
         - [x] #i12.2.1 unify modalWarning behavior if Contribution form is closed via a: click on Segment or b: click on cancel-button
             - the click counter state of the segment should be the same in both cases
             - currently: case a is correct, case b: counter is still 2

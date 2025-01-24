@@ -348,9 +348,18 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # now toolbar should appear for a6
         trigger_click_event(b1, id="a6")
 
-        # this fails for #i12.2.3.1
+        # this failed for #i12.2.3.1
         self.assertFalse(get_js_visibility_for_id(b1, modal_div_id))
         self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a6"))
+
+        # hide a6-widgets again
+        trigger_click_event(b1, id="a6")
+        self.assertFalse(get_js_visibility_for_id(b1, "contribution_a6b"))
+        self.assertIsNone(self.fast_get(b1, id_str="segment_toolbar_a6"))
+
+        # contribution form should still be present for a3 (fails for #i12.2.4)
+        form_container_div = b1.find_by_id("segment_contribution_form_container")
+        self.assertEqual(form_container_div["data-related_segment"], "a3")
 
 
         IPS()
