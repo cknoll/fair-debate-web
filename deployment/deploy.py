@@ -400,9 +400,9 @@ def debug():
 
     # set_web_backend(c)
     # initialize_db(c)
-    # generate_static_files(c)
 
     upload_files(c)
+    generate_static_files(c)
     # deploy_local_dependency(c)
     # initialize_test_repos(c)
     finalize(c)
