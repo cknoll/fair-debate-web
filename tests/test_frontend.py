@@ -137,6 +137,14 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         """
         chrome_options = Options()
         chrome_options.add_argument("--disable-search-engine-choice-screen")
+
+        # necessary for testing clipboard access
+        chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        chrome_options.add_argument("--use-fake-device-for-media-stream")
+        chrome_options.add_experimental_option("prefs", {
+            "profile.default_content_setting_values.clipboard": 1
+        })
+
         if self.headless:
             chrome_options.add_argument("--headless=new")
 
@@ -469,6 +477,25 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # no form should open:
         self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a3"))
         self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
+
+    def test_g033__segment_toolbar_and_anchor_link(self):
+        # self.headless = False
+
+        b1 = self.new_browser()
+        url = f"{self.live_server_url}{reverse('test_show_debate')}"
+        b1.visit(url)
+
+        trigger_click_event(b1, id="a3")  # -> toolbar
+        trigger_click_event(b1, id="segment_url_copy_button_a3")
+
+        # in headless mode the splinter-browser seems not to be able to write to the clipboard.
+        # -> workaround: we evaluate a special js variable
+        last_log_msg = b1.driver.execute_script("return window.console_messages;")[-1]["message"]
+        clipboard_content = last_log_msg.replace("Copied string to clipboard: ", "")
+
+        url_plus_anchor = f"{url}#a3"
+        # the two strings differ by http:// (not contain in clipboard_content)
+        self.assertTrue(url_plus_anchor.endswith(clipboard_content))
 
     def test_g040__segment_contribution_level1(self):
         """

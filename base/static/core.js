@@ -324,6 +324,9 @@ function handleRootContribution(){
 
 }
 function onLoadForShowDebatePage(){
+
+    monkeyPatchConsoleLogging();
+
     contributionObjects = Array.from(document.getElementsByClassName("contribution"));
     contributionObjects.forEach(ansDiv => {
         contributionMap[ansDiv.id] = ansDiv;
@@ -811,21 +814,22 @@ function activateSegmentToolbar(segmentSpan, toggleMode=false) {
     activeSegmentToolbar = toolbarDiv;
 }
 
-function getSegmentToolbarDiv(segment_span){
+function getSegmentToolbarDiv(segmentElement){
     const clonedSeparatorTemplateFragment =  document.getElementById("_SegmentToolbarTemplate").content.cloneNode(true);
     const toolbarDiv = clonedSeparatorTemplateFragment.querySelector(".separator_widget");
 
-    toolbarDiv.id = `segment_toolbar_${segment_span.id}`
+    toolbarDiv.id = `segment_toolbar_${segmentElement.id}`
 
     const textDiv = toolbarDiv.getElementsByClassName("_text")[0];
 
     // get the url but without any anchors (just host and pathname); then add desired anchor
-    const url = `${window.location.host}${window.location.pathname}#${segment_span.id}`
+    const url = `${window.location.host}${window.location.pathname}#${segmentElement.id}`
     // hcl
     let info = `Copy URL of this segment (${url}).`
     textDiv.innerHTML = info;
 
     const copyButton = toolbarDiv.getElementsByClassName("_copy_button")[0];
+    copyButton.id = `segment_url_copy_button_${segmentElement.id}`;
     copyButton.addEventListener('click', function () {
         copyStrToClipboard(url);
         }
@@ -973,13 +977,36 @@ async function copyFullURL(){
 async function copyStrToClipboard(contentStr) {
     https://stackoverflow.com/a/30810322
     navigator.clipboard.writeText(contentStr).then(function () {
-        console.log('Async: Copying to clipboard was successful!');
+        // this log message is used for at least one unittest (test_g033__segment_toolbar_and_anchor_link)
+        console.log('Copied string to clipboard:', contentStr);
     }, function (err) {
-        console.error('Async: Could not copy text: ', err);
+        console.error('Could not copy text. Error:', err);
     });
 
     // TODO: add some visual feedback here (like stack overflow does)
 
+}
+
+/**
+ * This function replaces console.log(...) and the other logging functions such that
+ * every message is also appended to a global variable.
+ * Motivation: easy access to console messages from unittests
+ *
+ */
+function monkeyPatchConsoleLogging() {
+
+    window.console_messages = [];
+
+    ['log', 'debug', 'info', 'warn', 'error'].forEach(function(level) {
+        var original = console[level];
+        console[level] = function() {
+            window.console_messages.push({
+                level: level,
+                message: Array.prototype.slice.call(arguments).join(' ')
+            });
+            original.apply(console, arguments);
+        };
+    });
 }
 
 function showNextContributionLevel(){
