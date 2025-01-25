@@ -6,8 +6,10 @@
 - [ ] i17 solve issue: uberspace web errorpage 500 status
 - [.] i22 anchor link should highlight segment + unfold
     - [x] i22.1 js implementation for unfolding
-    - [ ] test_frontend
-- [ ] i21 add/fix copy functionality
+    - [ ] i22.2 test_frontend
+- [ ] i21 add functionality to segment-toolbar-copy-button
+    - [x] i21.1 js implementation
+    - [ ] i21.2 test_frontend
 - [x] i20 improve style of copy toolbar
 - [x] add deployment information in the footer
 - [x] i16 print correct date for "last deployment" in footer

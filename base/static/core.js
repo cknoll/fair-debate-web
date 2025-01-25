@@ -824,6 +824,12 @@ function getSegmentToolbarDiv(segment_span){
     // hcl
     let info = `Copy URL of this segment (${url}).`
     textDiv.innerHTML = info;
+
+    const copyButton = toolbarDiv.getElementsByClassName("_copy_button")[0];
+    copyButton.addEventListener('click', function () {
+        copyStrToClipboard(url);
+        }
+    )
     return toolbarDiv
 }
 
@@ -959,18 +965,21 @@ function initActiveTextArea(taElement) {
     }, { once: true });
 }
 
-
+// this function is bound via onclick="copyFullURL()" in the html template
 async function copyFullURL(){
-    const fullURL = document.URL;  //readJsonWithDefault("data-full_url", null);
+    copyStrToClipboard(document.URL);
+}
 
+async function copyStrToClipboard(contentStr) {
     https://stackoverflow.com/a/30810322
-    navigator.clipboard.writeText(fullURL).then(function () {
+    navigator.clipboard.writeText(contentStr).then(function () {
         console.log('Async: Copying to clipboard was successful!');
     }, function (err) {
         console.error('Async: Could not copy text: ', err);
     });
 
     // TODO: add some visual feedback here (like stack overflow does)
+
 }
 
 function showNextContributionLevel(){
