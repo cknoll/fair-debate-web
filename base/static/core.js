@@ -371,6 +371,11 @@ function onLoadForShowDebatePage(){
 
     addMainClickEventListener();
     unfoldAllUncommittedContributions();
+    unfoldAnchorLinkTarget();
+
+    // that function should be called every time the hash-part of the url changes
+    window.addEventListener('hashchange', unfoldAnchorLinkTarget);
+
     connectCommitAllCtbsButton();
     connectShowAllCtbsButton();
     mwm.initializeModalWarningElement();
@@ -642,7 +647,7 @@ function segmentWithPossibleContributionClicked(segmentSpan, contributionDiv) {
 }
 
 
-
+// todo: obsolete?
 function segmentWithExistingContributionClicked(segmentSpan, contributionDiv) {
     if (contributionDiv.style.display === "none" || contributionDiv.style.display === "") {
         // 1st click: unfold
@@ -658,6 +663,30 @@ function segmentWithExistingContributionClicked(segmentSpan, contributionDiv) {
         contributionDiv.style.display = "none";
     }
 }
+
+
+function unfoldAnchorLinkTarget(){
+
+    console.log("unfold target 1");
+    const anchorPart = window.location.hash.slice(1);
+    if (anchorPart === "") { return }
+
+    console.log("unfold target 2");
+
+    // (.*?): This captures any characters (non-greedy) up to the last sequence of digits.
+    // (\d*)$: This captures zero or more digits at the end of the string.
+    const match = anchorPart.match(/^(.*?)(\d*)$/);
+    const parentContributionKey = `contribution_${match[1]}`;
+    console.log("unfold target 3", parentContributionKey);
+    if (!(parentContributionKey in contributionMap)) { return }
+
+    iterativelyUnfoldNestedSegments(parentContributionKey);
+}
+
+/**
+ * connect the "commit-all-contributions"-Button
+ * @returns
+ */
 
 function connectCommitAllCtbsButton() {
 
@@ -698,7 +727,6 @@ function connectShowAllCtbsButton() {
 
 function unfoldAllUncommittedContributions() {
 
-    var maxLevel = 0;
     dbCtbDivList = Array.from(document.getElementsByClassName("db_ctb"));
     dbCtbDivList.forEach(ansDiv => {
 
@@ -710,25 +738,24 @@ function unfoldAllUncommittedContributions() {
 
         // convert "contribution_a3b4a12b" to "a3b4a12"
         const key = ansDiv.id.replace("contribution_", "").slice(0, -1);
-        let parts = key.match(/[ab]\d+/g);
-        let cumKey = "";
-        // let cumKeys = [];
-        parts.forEach(part => {
-            cumKey += part;
-            // create strings like "a3", "a3b4", "a3b4a12"
-            // cumKeys.push(cumKey);
-
-            // ensure element is visible
-            document.getElementById(getContributionKey(cumKey)).style.display = "block";
-        });
-
-        maxLevel = Math.max(maxLevel, parts.length);
-
-        // console.log("cumKeys", cumKeys);
-
+        iterativelyUnfoldNestedSegments(key);
     });
 
-    currentLevel = maxLevel;
+}
+
+function iterativelyUnfoldNestedSegments(keyOfDeepestSegment) {
+
+    let parts = keyOfDeepestSegment.match(/[ab]\d+/g);
+    let cumKey = "";
+    parts.forEach(part => {
+        cumKey += part;
+        // create strings like "a3", "a3b4", "a3b4a12"
+
+        // ensure element is visible
+        document.getElementById(getContributionKey(cumKey)).style.display = "block";
+    });
+
+    currentLevel = Math.max(currentLevel, parts.length);
 }
 
 

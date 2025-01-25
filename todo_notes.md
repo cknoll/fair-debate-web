@@ -4,7 +4,9 @@
 - [ ] i18 how should we handle segments which completely consists of links?
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled as ordinary text
 - [ ] i17 solve issue: uberspace web errorpage 500 status
-- [.] i22 anchor link should highlight segment (maybe unfold)
+- [.] i22 anchor link should highlight segment + unfold
+    - [x] i22.1 js implementation for unfolding
+    - [ ] test_frontend
 - [ ] i21 add/fix copy functionality
 - [x] i20 improve style of copy toolbar
 - [x] add deployment information in the footer
