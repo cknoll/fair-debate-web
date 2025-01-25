@@ -241,7 +241,7 @@ h3:has(+ .rendered_content) {
 
 .separator_widget.toolbar ._text {
   margin-top: 0.5em;
-  background-color: red;
+  /* background-color: red; */
   /* display: flex; */
 }
 
@@ -250,7 +250,9 @@ h3:has(+ .rendered_content) {
   justify-content: space-between;
   gap: 1em;
 }
-.button-container button  {
+
+
+.button-container button:not(._copy_button)  {
 margin-top: 0.1em;
 }
 

@@ -302,6 +302,23 @@ div.header a:hover{
     background: var(--color-quote-background) !important;
 }
 
+._copy_button {
+
+  background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8' standalone='no'%3F%3E%3C!-- Created with Inkscape (http://www.inkscape.org/) --%3E%3Csvg version='1.1' id='svg178' width='23.989534' height='30.418509' viewBox='0 0 23.989534 30.418508' sodipodi:docname='copy.svg' inkscape:version='1.2.2 (b0a8486541, 2022-12-01)' xmlns:inkscape='http://www.inkscape.org/namespaces/inkscape' xmlns:sodipodi='http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3E%3Csodipodi:namedview id='namedview7' pagecolor='%23ffffff' bordercolor='%23000000' borderopacity='0.25' inkscape:showpageshadow='2' inkscape:pageopacity='0.0' inkscape:pagecheckerboard='0' inkscape:deskcolor='%23d1d1d1' showgrid='false' inkscape:zoom='10.993847' inkscape:cx='34.38287' inkscape:cy='32.199831' inkscape:window-width='1920' inkscape:window-height='1007' inkscape:window-x='107' inkscape:window-y='0' inkscape:window-maximized='1' inkscape:current-layer='svg178' /%3E%3Cdefs id='defs182' /%3E%3Crect style='fill:none;stroke:%23303030;stroke-width:2;stroke-dasharray:none;stroke-opacity:1' id='rect436' width='15.225993' height='21.086597' x='1' y='8.331912' rx='2.0209472' ry='2.0209472' /%3E%3Cpath id='rect1046' style='fill:none;stroke:%23303030;stroke-width:2;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1' d='M 7.7635406,4.3896511 V 3.0209472 C 7.7635406,1.9013425 8.664883,1 9.7844878,1 H 20.968586 c 1.119605,0 2.020948,0.9013425 2.020948,2.0209472 V 20.06565 c 0,1.119605 -1.433941,2.020899 -2.020948,2.020948 -0.587006,4.9e-5 -0.909426,0 -0.909426,0' /%3E%3C/svg%3E%0A");
+  background-position: center center;
+  background-size: 50%;
+  /* background-size: cover; */
+  background-repeat: no-repeat;
+  width: 30px;
+  height: 30px;
+  margin: 0.3em;
+  margin-right: 0.7em;
+  border-radius: 99px;
+  border: none;
+  /* border: 1px blue solid; */
+  /* padding-left: 20px; */
+}
+
 .arrow-button {
   display: inline-flex;
   align-items: center;

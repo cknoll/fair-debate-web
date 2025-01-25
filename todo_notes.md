@@ -1,11 +1,12 @@
 - [ ] add metadata for repo (debate title)
-- [ ] add deployment information in the footer
 - [ ] add modal warning for creating new contributions (cancel button and activate different contribution form)
 - [ ] i19 add mouseover hint for « and » buttons
 - [ ] i18 how should we handle segments which completely consists of links?
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled as ordinary text
 - [ ] i17 solve issue: uberspace web errorpage 500 status
-- [ ] i16 print correct date for "last deployment" in footer
+- [x] i20 improve style of copy toolbar
+- [x] add deployment information in the footer
+- [x] i16 print correct date for "last deployment" in footer
 - [x] i15 CSRF verification failed
 - [x] i14 make signup work again
     - [x] add failing test
