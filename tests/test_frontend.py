@@ -497,6 +497,11 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # the two strings differ by http:// (not contain in clipboard_content)
         self.assertTrue(url_plus_anchor.endswith(clipboard_content))
 
+        contribution_div_id = "contribution_a2b1a3b"
+        self.assertFalse(get_js_visibility_for_id(b1, contribution_div_id))
+        b1.visit(f"{url}#a2b1a3b1")
+        self.assertTrue(get_js_visibility_for_id(b1, contribution_div_id))
+
     def test_g040__segment_contribution_level1(self):
         """
         This test somewhat overlaps with g032 but is useful for development (faster)
