@@ -1,14 +1,16 @@
-# KDDK-Plattform: faire-debatte.de
+# KDDK-Plattform: Faire Debatte
 
-- noch frei: https://bero-host.de/webhosting/prepaid-domains-mieten
 
-Hintergrund zur Namensnennung: https://www.uopeople.edu/blog/debate-and-discussion/ -> was ich anstrebe ist eher debatte (kompetetiver, Zielgruppe ist eher das Publikum)
+## Zusammenfassung
+
+Es wird eine Plattform vorgestellt, auf der textbasierte kontroverse Diskussionen geführt werden können, und zwar so dass mit wenig Aufwand auf die einzelnen konkreten Aussagen inhaltlich eingegangen werden kann. Durch die Verwendung von Versionskontrolle und öffentlich lesbare Git-Repos ist die Manipulationssicherheit und Neutralität der Plattform gegeben.
+
 
 ## Hintergrund – Problembeschreibung
 
 ### Problem 1: Struktureller Aufwand sich inhaltlich mit einzelnen Aussagen auseinanderzusetzen.
 
-Bisher laufen Debatten typischerweise so ab, dass eine Seite einen Block an Aussagen veröffentlicht (Text, Audio, Video). Die andere Seite, die das kritisieren möchte müsste dann mit Aufwand diesen Block untergliedern und inhaltlich auf die Teilaussagen eingehen. Dieser Aufwand wird oft nicht geleistet. Stattdessen wird der gesamte Block pauschal kritisiert oder in einem eigenen monolithischen Block eine Gegenposition veröffentlicht, welche sich aus strukturellen Gründen ebenfalls nur mit Aufwand inhaltlich adäquat kritisieren lässt. Dieser Debattenprozess setzt sich ggf. noch einige Runden fort, bis er meist irgendwann im Sande verläuft.
+Bisher laufen Debatten typischerweise so ab, dass eine Seite einen Block an Aussagen veröffentlicht (Text, Audio, Video). Die andere Seite, die das kritisieren möchte, müsste dann mit Aufwand diesen Block untergliedern und inhaltlich auf die Teilaussagen eingehen. Dieser Aufwand wird oft nicht geleistet. Stattdessen wird der gesamte Block pauschal kritisiert oder in einem eigenen monolithischen Block eine Gegenposition veröffentlicht, welche sich aus strukturellen Gründen ebenfalls nur mit Aufwand inhaltlich adäquat kritisieren lässt. Dieser Debattenprozess setzt sich ggf. noch einige Runden fort, bis er meist irgendwann im Sande verläuft oder nach einer Eskalation abgebrochen wird. Eine objektiv gute Lösung des diskutierten Problems ist dann meist noch nicht gefunden.
 
 ### Problem 2: Zerstreuung der Debatte auf unterschiedliche Medien
 
@@ -21,24 +23,33 @@ Problem 2 kann vermieden werden, indem die Debatte auf einem Medium (z.B. Online
 
 ### Problem 4: Unklarheit über Akteure
 
-Weiterhin ist es oft schwierig den Überblick zu behalten, welche Akteure an der Debatte überhaupt teilnehmen und auf welcher Seite sie stehen. Z.B. kritisiert Partei C ebenfalls Aussagen-Block 1, aber mit anderen Argumenten als Partei B und Partei D kritisiert sowohl Aussagen-Block 1 als auch 2. Partei E wiederum gibt vor, für Partei A zu sprechen, allerdings ist unklar wie legitim dieser Anspruch ist.
+Weiterhin ist es oft schwierig, den Überblick zu behalten, welche Akteure an der Debatte überhaupt teilnehmen und auf welcher Seite sie stehen. Z.B. kritisiert Partei C ebenfalls Aussagen-Block 1, aber mit anderen Argumenten als Partei B und Partei D kritisiert sowohl Aussagen-Block 1 als auch 2. Partei E wiederum gibt vor, für Partei A zu sprechen, allerdings ist unklar wie legitim dieser Anspruch ist.
 
 ## Lösungsvorschlag:
 
 
 ### Zu Problem 1:
 
-Ein Text wird digital veröffentlicht. Jeder Satz und weitere relevante Elemente (Überschriften, Stichpunkte, Abbildungen) sind a) referenzierbare Objekte. Jedes referenzierbare Objekt ist kommentierbar. Jeder Kommentar besteht selbst wieder aus kommentierbaren Objekten. Der Aufwand, sich auf die konkreten inhaltlich strittigen Aussagen zu beziehen, ist sehr gering. Das gleiche gilt für die Antwort auf die Antwort etc.
+Ein Text wird digital veröffentlicht. Jeder Satz und weitere relevante Elemente (Überschriften, Stichpunkte, Abbildungen) sind a) referenzierbare Objekte (wie z.B. auch in der Bibel). Jedes referenzierbare Objekt ist über einen Klick kommentierbar. Jeder Kommentar besteht selbst wieder aus kommentierbaren Objekten. **Der Aufwand, sich auf die konkreten inhaltlich strittigen Aussagen zu beziehen, ist mithin sehr gering**. Das gleiche gilt für die Antwort auf die Antwort etc.
 
 ### Zu Problem 2 und 3:
 
 Es gibt *eine* Plattform, auf der die gesamte Debatte sichtbar ist. Um Problem 3 (Beeinflussung der Debatte durch Kontrolle über das Medium) zu vermeiden, bezieht die Plattform die angezeigten Debattenbeiträge aus unabhängigen und vertrauenswürdigen Quellen, z.B. öffentlichen git-Repositorien (z.B. bei github)). Jede an der Debatte beteiligte Partei hat selber die alleinige Kontrolle über den Schreibzugriff auf ihr Repo. Die Debattenplattform dient lediglich der übersichtlichen Anzeige der Debattenbeiträge und der technischen Unterstützung beim Aktualisieren des Repos.
 
-Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. Allerdings hat die Plattform einen starken Anreiz, ihre Glaubwürdigkeit zu behalten und eine Manipulation der Anzeige wäre sehr einfach nachweisbar, da die manipulationssicheren Originalinhalte öffentlich einsehbar sind (nur eben nicht in einer auf Übersicht optimierten Darstellung).
+Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. Allerdings hat die Plattform einen starken Anreiz, ihre Glaubwürdigkeit zu behalten und eine Manipulation der Anzeige wäre sehr einfach nachweisbar, da die manipulationssicheren Originalinhalte in den öffentlich lesbaren Repos einsehbar sind (nur eben nicht in einer auf Übersichtlichkeit optimierten Darstellung, sondern als normaler Text).
 
 ### Zu Problem 4:
 
 Über die Repositorien, aus denen die Debatten-Beiträge bezogen werden, wird eine klare Identifikation der Akteure ermöglicht. Wenn sich ein Teil des Publikums nur für die Debatte zwischen den Parteien A und B interessiert, dann werden nur die sich aufeinander beziehenden Beiträge dieser Parteien (d.h. der zugehörigen Repositorien) angezeigt. Wenn Partei E beansprucht, für Partei A zu sprechen, muss sie innerhalb von Partei A Überzeugungsarbeit leisten, um die eigenen Beiträge innerhalb des Repos von Partei A veröffentlichen zu können. Technisch ist das mit Hilfe sog. Merge-Requests (auch Pull-Requests) sehr einfach möglich. Es eröffnet zudem die Chance für eine gruppeninterne Profilierung durch inhaltlich qualitative Beiträge.
+
+
+---
+
+## Technische Umsetzung
+
+Die prototypische technische Umsetzung ist fortgeschritten aber noch nicht abgeschlossen. Die folgenden Notizen dienem dem Autor bei der Feinplanung (sind aber z.T. überholt).
+
+---
 
 
 
