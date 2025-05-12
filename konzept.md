@@ -3,18 +3,18 @@
 
 ## Zusammenfassung
 
-Es wird eine Plattform vorgestellt, auf der textbasierte kontroverse Diskussionen geführt werden können, und zwar so dass mit wenig Aufwand auf die einzelnen konkreten Aussagen inhaltlich eingegangen werden kann. Durch die Verwendung von Versionskontrolle und öffentlich lesbare Git-Repos ist die Manipulationssicherheit und Neutralität der Plattform gegeben.
+Es wird eine Plattform vorgestellt, auf der textbasierte kontroverse Diskussionen geführt werden können, und zwar so, dass mit wenig Aufwand auf die einzelnen konkreten Aussagen inhaltlich eingegangen werden kann. Durch die Verwendung von Versionskontrolle und öffentlich lesbare Git-Repos ist die Manipulationssicherheit und Neutralität der Plattform gegeben.
 
 
 ## Hintergrund – Problembeschreibung
 
 ### Problem 1: Struktureller Aufwand sich inhaltlich mit einzelnen Aussagen auseinanderzusetzen.
 
-Bisher laufen Debatten typischerweise so ab, dass eine Seite einen Block an Aussagen veröffentlicht (Text, Audio, Video). Die andere Seite, die das kritisieren möchte, müsste dann mit Aufwand diesen Block untergliedern und inhaltlich auf die Teilaussagen eingehen. Dieser Aufwand wird oft nicht geleistet. Stattdessen wird der gesamte Block pauschal kritisiert oder in einem eigenen monolithischen Block eine Gegenposition veröffentlicht, welche sich aus strukturellen Gründen ebenfalls nur mit Aufwand inhaltlich adäquat kritisieren lässt. Dieser Debattenprozess setzt sich ggf. noch einige Runden fort, bis er meist irgendwann im Sande verläuft oder nach einer Eskalation abgebrochen wird. Eine objektiv gute Lösung des diskutierten Problems ist dann meist noch nicht gefunden.
+Bisher laufen Debatten typischerweise so ab, dass eine Seite einen Block an Aussagen veröffentlicht (Text, Audio, Video). Die andere Seite, die das kritisieren möchte, müsste dann mit Aufwand diesen Block untergliedern und inhaltlich auf die Teilaussagen eingehen. Dieser Aufwand wird oft nicht oder nicht ausreichend geleistet. Stattdessen wird oft der gesamte Block pauschal kritisiert oder in einem eigenen monolithischen Block eine Gegenposition veröffentlicht, welche sich aus strukturellen Gründen ebenfalls nur mit Aufwand inhaltlich adäquat kritisieren lässt. Dieser Debattenprozess setzt sich ggf. noch einige Runden fort, bis er meist irgendwann im Sande verläuft oder nach einer Eskalation abgebrochen wird. Eine objektiv gute Lösung des diskutierten Problems ist dann meist noch nicht gefunden.
 
 ### Problem 2: Zerstreuung der Debatte auf unterschiedliche Medien
 
-Hinzu kommt, dass die Debatte meist sehr verstreut stattfindet: Partei A veröffentlicht Aussagen-Block 1 in Medium X, Partei B Antwortet darauf mit Aussagen-Block 2 in Medium Y. Das muss Partei A erstmal mitbekommen um darauf wiederum eingehen zu können. Und das Publikum von Aussagen-Block 1 müsste es auch mitbekommen, um diese Aussagen mit ihrer Kritik abzugleichen. Wenn die Debatte noch einige Runden weitergeht, kommen meist weitere Medien ins Spiel. Was es für die beteiligten und das Publikum schwer bis unmöglich macht, die Debatte geziehlt zu verfolgen.
+Hinzu kommt, dass die Debatte meist sehr verstreut stattfindet: Partei A veröffentlicht Aussagen-Block 1 in Medium X, Partei B Antwortet darauf mit Aussagen-Block 2 in Medium Y. Das muss Partei A erstmal mitbekommen um darauf wiederum eingehen zu können. Und das Publikum von Aussagen-Block 1 müsste es auch mitbekommen, um diese Aussagen mit der geäußerten Kritik abzugleichen. Wenn die Debatte noch einige Runden weitergeht, kommen meist weitere Medien ins Spiel. Was es für die beteiligten und das Publikum schwer bis unmöglich macht, die Debatte gezielt zu verfolgen.
 
 
 ### Problem 3: Beeinflussung der Debatte durch Kontrolle über das Medium
@@ -30,7 +30,7 @@ Weiterhin ist es oft schwierig, den Überblick zu behalten, welche Akteure an de
 
 ### Zu Problem 1:
 
-Ein Text wird digital veröffentlicht. Jeder Satz und weitere relevante Elemente (Überschriften, Stichpunkte, Abbildungen) sind a) referenzierbare Objekte (wie z.B. auch in der Bibel). Jedes referenzierbare Objekt ist über einen Klick kommentierbar. Jeder Kommentar besteht selbst wieder aus kommentierbaren Objekten. **Der Aufwand, sich auf die konkreten inhaltlich strittigen Aussagen zu beziehen, ist mithin sehr gering**. Das gleiche gilt für die Antwort auf die Antwort etc.
+Ein Text wird digital veröffentlicht. Jeder Satz und weitere relevante Elemente (Überschriften, Stichpunkte, Abbildungen) sind a) referenzierbare Objekte (wie z.B. die Buch-Kapitel-Vers-Gliederung der Bibel). Jedes referenzierbare Objekt ist über einen Klick kommentierbar. Jeder Kommentar besteht selbst wieder aus kommentierbaren Objekten. **Der Aufwand, sich auf die konkreten inhaltlich strittigen Aussagen zu beziehen, ist dadurch sehr gering**. Das gleiche gilt für die Antwort auf die Antwort etc.
 
 ### Zu Problem 2 und 3:
 
@@ -45,9 +45,29 @@ Natürlich könnte die Plattform bei der Anzeige der Repo-Inhalte manipulieren. 
 
 ---
 
+## Multi-User-Problem
+
+Dass nur zwei Akteure diskutieren, ist unrealistisch. Z.B. könnte das Tool ja eine kontroverse Debatte auf einer Mailingliste ersetzen, aber dort diskutieren typischerweise 2 bis 20 Leute, ggf. sogar mehr.
+
+Grundsätzlich geht das mit den verfügbaren Keys: A Schreibt Block, B und C antworten, A antwortet auf B und C, C antwortet auf B usw.
+
+
+Gefahren:
+- mehr irrelevante und redundante Beiträge
+- allgemeine Unübersichtlichkeit: Gute Argumente werden durch benachbarte Nebelkerzen-Beiträge verdeckt
+
+
+Lösungsideen:
+- Voting oder Nebelkerzen-Flagging durch User. → Einladung an Mehrfach-Accounts etc.
+- KI → teuer, nicht nachhaltig, nicht zuverlässig genug
+- Manuelle Moderation (skaliert nicht)
+- Trusted Flagger, reduzierte Sichtbarkeit, Reputationsmanagement
+
+---
+
 ## Technische Umsetzung
 
-Die prototypische technische Umsetzung ist fortgeschritten aber noch nicht abgeschlossen. Die folgenden Notizen dienem dem Autor bei der Feinplanung (sind aber z.T. überholt).
+Die prototypische technische Umsetzung ist fortgeschritten aber noch nicht abgeschlossen. Die folgenden Notizen dienen dem Autor bei der Feinplanung (sind aber z.T. überholt).
 
 ---
 

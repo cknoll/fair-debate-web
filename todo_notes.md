@@ -1,9 +1,11 @@
+
 - [ ] add metadata for repo (debate title)
 - [ ] add modal warning for creating new contributions (cancel button and activate different contribution form)
 - [ ] i18 how should we handle segments which completely consists of links?
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
-- [ ] i17 solve issue: uberspace web errorpage 500 status -> unclear how to trigger
+- [ ] i24 use mastodon for sign up
+- [w] i17 solve issue: uberspace web errorpage 500 status -> unclear how to trigger (wontfix)
 - [x] i19 add mouseover hint for « and » buttons
 - [x] i22 anchor link should highlight segment + unfold
     - [x] i22.1 js implementation for unfolding
@@ -82,13 +84,15 @@
         - [x] test backend for all commits
         - [x] test backend for single commit
 
-- [.] create a concept for a scenario where multiple parties want to participate:
+- [.] i23 create a concept for a scenario where multiple parties want to participate:
     - challenges:
         - we want to prevent a situation where many people effectively make the same statement
-        - we want to enable parties C and D to add meaningful content, either as role a or role b
-            - → should be done via inclusion requests (= ui-supported merge requests)
-                - simple-version: shallow authorship-tracking in git repo
-                - full-featured-version: authorship-tracking in git repo
+            - special briefing dialog: you are "late to the party" are you sure this is a relevant and non-redundant contribution?
+        - we want to enable parties C and D to add meaningful content, either as role A or role B (but not on level 0)
+            - Additional contributions are marked as "unofficial" by default. Their display is opt-in, beginning with a certain level of complexity
+            - They can be marked official by A, B, or community (depending on the level)
+
+
         - we want to enable parties E and F to react to the original contribution independently of B
             - There should be some hurdle (approval from either a, b, moderator or community)
             - The main hurdle might also be: reduced visibility
@@ -108,6 +112,9 @@
         - some reward system has to be established
         - challenge:
             - reviews should be anonymous but reward status should be transparent
+
+
+    - idea: use social media (mastodon + blue-sky) for signin
 
 
 - [x] own segment_elements should be hover-able but not clickable ("you cannot answer to your own segment")
