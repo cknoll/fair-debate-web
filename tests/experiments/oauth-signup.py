@@ -16,6 +16,17 @@ INSTANCE_FORM = """
     </form>
 """
 
+
+# WIP
+@app.route('/debug')
+def debug():
+    template = """
+        <h2>debug</h2>
+
+    """
+
+    return render_template_string(template)
+
 @app.route('/')
 def index():
     return render_template_string(INSTANCE_FORM)

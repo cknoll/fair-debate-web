@@ -99,6 +99,12 @@
         - who decides which party has the privilege of role b (for now: instance moderator via admin interface)
             - The platform probably cannot solve this; also: has not to solve this.
             - The platform provides a medium, which allows to gather arguments in a traceable and comprehensible way.
+            - **Rethink:** This is a crucial point, especially when bootstrapping the community, because if some average troll takes role B, no good discussion will spawn
+                - Strategies:
+                    - take existing texts and use them as role A → We can be role B and ensure quality
+                    - personally invite or challenge persons/groups as role B ("here is my chain of thoughts proof me wrong")
+                    - target group: intellectual capable persons who have a clear position on some topic
+
     - LLM challenges:
         - prevent that users dump llm generated content without approving it.
             - as anonymous contributions are discarded, users have an incentive to only publish good statements (from their perspective)
