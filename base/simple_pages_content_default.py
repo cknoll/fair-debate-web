@@ -73,7 +73,7 @@ We can not assume any liability for the content of such external websites becaus
 This website contains content which was created and/or edited by users which are unknown to the maintainer.
 We strive for compliance with all applicable laws and try to remove unlawful or otherwise inappropriate content.
 However we can not guarantee the immediate removal.
-Should there be any problem with the operation or the content of this website, please contanct the maintainer.
+Should there be any problem with the operation or the content of this website, please contact the maintainer.
 <br><br>
 Contact information: \n\n
 - [http://cknoll.github.io/pages/impressum.html](http://cknoll.github.io/pages/impressum.html)
@@ -147,13 +147,13 @@ new_sp(
 This website aims for data **frugality**.
 We only collect data which is necessary to operate this website or which is explicitly
 submitted voluntarily by the user.
-We use **cookies** to enable an interal area which serves to store settings and manage
+We use **cookies** to enable an internal area which serves to store settings and manage
 access-rights for content.
 
 In particular we collect and process the following data:
 
  - Content (if voluntarily submitted)
- - Webserverlogs (contains ip-addresses, browser version and url of origin("referer");
+ - Webserver logs (contains ip-addresses, browser version and url of origin("referrer");
  Duration of storage of this data: 14 day; This data is collected to prevent abuse and facilitate secure operation
  of this website; See also  [Reason 49](https://dsgvo-gesetz.de/erwaegungsgruende/nr-49/))
 
@@ -180,10 +180,10 @@ Die Seite setzt **Cookies** ein, um einen internen
 Bereich zu ermöglichen, der zur Speicherung von Einstellungen und
 dem Management von Zugriffsberechtigungen auf Inhalte dient.
 
-Im Einzelen werden folgende Daten erfasst und verarbeitet.:
+Im Einzelnen werden folgende Daten erfasst und verarbeitet.:
 
  - Inhalte (wenn freiwillig angegeben, offensichtlich notwendig für den Betrieb der Seite)
- - Webserverlogs (beinhalten IP-Adressen, Browser-Version und Herkunftsseite ("Referer");
+ - Webserver-Logs (beinhalten IP-Adressen, Browser-Version und Herkunftsseite ("Referrer");
  Speicherdauer 14 Tage; Notwendig zum Schutz gegen Missbrauch und zum sicheren Betrieb der Webseite;
  [Erwägungsgrund 49](https://dsgvo-gesetz.de/erwaegungsgruende/nr-49/))
 
