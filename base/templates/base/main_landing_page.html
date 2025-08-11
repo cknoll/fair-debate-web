@@ -15,6 +15,7 @@
 <div>
     <hr>
     {% if request.user.is_authenticated %}
+    {% if data.recent_user_debate_list %}
     You participated in the following debates:
     <ul>
       {% for debate in data.recent_user_debate_list %}
@@ -22,12 +23,15 @@
       {% endfor %}
     </ul>
     {% else %}
+    You have not participated in any debates yet.
+    {% endif %}
+    {% else %}
     To actively participate in debates you need to <a href="{% url 'login' %}">login</a>
     or <a href="{% url 'signup' %}">sign up</a> first.
     {% endif %}
 
     <hr>
-    Debates with most recent activity:
+    Public debates with most recent activity:
     {# now the list for all recent debates (independently of user) #}
     <ul>
       {% for debate in data.recent_debate_list %}
