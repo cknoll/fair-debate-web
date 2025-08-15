@@ -234,7 +234,7 @@ new_sp(type="general_error", title="general error page", content=_("""Some Error
 
 # TODO: add content
 about_text_en = """
-# About *Fair Debate* `
+# About *Fair Debate*
 
 *Fair Debate* is a platform on which text-based controversial discussions can be held in such a way
 that the content of the individual concrete statements can be addressed with little effort.
