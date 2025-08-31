@@ -1058,6 +1058,21 @@ function processLevel(level, workerFunc) {
 function connectKeyboardKeys() {
 
     document.addEventListener('keydown', (event) => {
+
+        // Check if user is typing in an input field
+        const activeElement = document.activeElement;
+        const isInputActive = activeElement && (
+            activeElement.tagName === 'TEXTAREA' ||
+            activeElement.tagName === 'INPUT' ||
+            activeElement.contentEditable === 'true'
+        );
+
+        // Don't handle arrow keys if user is in an input field
+        if (isInputActive) {
+            //console.log("pressed key in input field"); // used for debugging
+            return;
+        }
+
         if (event.key === 'ArrowLeft') {
             hideCurrentContributionLevel();
         } else if (event.key === 'ArrowRight') {

@@ -4,6 +4,8 @@
 - [ ] i18 how should we handle segments which completely consists of links?
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
+- [x] i27: frontend-bug: arrow-keys trigger contribution visibility when textfield is active -> prevents cursor-navigation with arrow keys
+- [ ] i26: markdown-bug: tripple backticks are not rendered correctly (e.g. line breaks, lines beginning with "#")
 - [x] i25: bug: slug with special character -> no reverse match
     - [x] i25.1: add failing test
     - [x] i25.2: sanitize incoming slugs
