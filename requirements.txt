@@ -1,6 +1,6 @@
 django
 bleach
-django-bleach
+django-bleach>=3.1
 djangorestframework
 markdown
 deploymentutils
@@ -11,3 +11,4 @@ packaging
 splinter
 selenium
 python-slugify
+demjson3
