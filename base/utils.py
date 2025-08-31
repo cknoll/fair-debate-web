@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from slugify import slugify
 
 from ipydex import IPS
 
@@ -21,7 +22,6 @@ class UsageError(ValueError):
 
 class FormValidationError(UsageError):
     pass
-
 
 
 # we define this literal here to prevent circular imports
@@ -49,3 +49,18 @@ def get_contribution_numbers():
         n = [v.db_ctb for v in ddl.tree.values()].count(False)
         res.append((debate_obj.debate_key, n))
     return res
+
+
+def sanitize_slug(text):
+
+    GERMAN_REPLACEMENTS = [
+        ["ä", "ae"],
+        ["ö", "oe"],
+        ["ü", "ue"],
+        ["ß", "ss"],
+        ["Ä", "Ae"],
+        ["Ö", "Oe"],
+        ["Ü", "Ue"],
+    ]
+
+    return slugify(text, replacements=GERMAN_REPLACEMENTS)

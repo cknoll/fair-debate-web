@@ -84,7 +84,9 @@ class NewDebateView(View):
     def post(self, request, **kwargs):
         debate_obj = Debate(user_a=request.user)
         debate_obj.save()
-        debate_obj.debate_key = f"d{debate_obj.pk}-{request.POST['debate_slug']}"
+
+        slug = utils.sanitize_slug(request.POST["debate_slug"])
+        debate_obj.debate_key = f"d{debate_obj.pk}-{slug}"
         debate_obj.save()
 
         return ShowDebateView().post(request, debate_key=debate_obj.debate_key, contribution_key="a")

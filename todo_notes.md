@@ -4,8 +4,9 @@
 - [ ] i18 how should we handle segments which completely consists of links?
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
-- [ ] i25: bug: slug with umlaut -> no reverse match
+- [x] i25: bug: slug with special character -> no reverse match
     - [x] i25.1: add failing test
+    - [x] i25.2: sanitize incoming slugs
 - [ ] i24 use mastodon for sign up
 - [w] i17 solve issue: uberspace web errorpage 500 status -> unclear how to trigger (wontfix)
 - [x] i19 add mouseover hint for « and » buttons

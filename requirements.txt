@@ -10,3 +10,4 @@ pytest-django
 packaging
 splinter
 selenium
+python-slugify
