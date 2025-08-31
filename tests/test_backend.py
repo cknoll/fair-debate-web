@@ -223,7 +223,22 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         utd = get_parsed_element_by_id(id="data-utd_page_type", res=response)
         self.assertEqual(utd, "utd_landing_page")
 
-    def test_031__new_debate_commit(self):
+    def test_030_i25__slug_with_umlaut(self):
+        self.perform_login("testuser_1")
+
+        with open(fdmd.fixtures.txt1_md_fpath) as fp:
+            content = fp.read()
+
+        response = self.post_to_view(
+            viewname="new_debate",
+            spec_values={"body_content": content, "debate_slug": "slug_with_umlaut_ü"},
+            follow_redirect=True,
+        )
+
+        # now the client should be redirected show_debate for preview
+        self.assertEqual(response.status_code, 200)
+
+    def test_035__new_debate_commit(self):
         # settings.CATCH_EXCEPTIONS = False
 
         self.perform_login("testuser_1")
