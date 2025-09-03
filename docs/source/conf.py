@@ -13,10 +13,23 @@ author = 'cark'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinxcontrib.plantuml",]
+extensions = ["sphinxcontrib.plantuml", "myst_parser"]
 
 templates_path = ['_templates']
 exclude_patterns = []
+
+# MyST parser configuration
+myst_enable_extensions = [
+    "colon_fence",
+    "deflist",
+    "html_admonition",
+    "html_image",
+    "linkify",
+    "replacements",
+    "smartquotes",
+    "substitution",
+    "tasklist",
+]
 
 
 
