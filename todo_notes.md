@@ -4,8 +4,8 @@
 - [ ] i18 how should we handle segments which completely consists of links?
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
-
-- [ ] i29: deployment: allow to update the code without changing data
+- [.] i29: deployment: allow to update the code without changing data
+    - is already partially implemented via (`python deployment/deploy.py --omit-database`)
 - [.] i28: deployment: make complete backup (data-base + repos)
     - [x] i28.1: save db-content as .json file to backup_path (from config.toml)
 - [ ] i26: markdown-bug: tripple backticks are not rendered correctly (e.g. line breaks, lines beginning with "#")
@@ -111,7 +111,7 @@
             - **Rethink:** This is a crucial point, especially when bootstrapping the community, because if some average troll takes role B, no good discussion will spawn
                 - Strategies:
                     - take existing texts and use them as role A → We can be role B and ensure quality
-                    - personally invite or challenge persons/groups as role B ("here is my chain of thoughts proof me wrong")
+                    - personally invite or challenge persons/groups as role B ("here is my chain of thoughts, proof me wrong")
                     - target group: intellectual capable persons who have a clear position on some topic
 
     - LLM challenges:
