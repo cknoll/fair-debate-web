@@ -1,5 +1,8 @@
 # Use Cases
 
+This part of the documentation is targeted towards the development team. It documents the details of the usage mechanics.
+
+
 ```{uml}
 
 :User: --> (Use)

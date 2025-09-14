@@ -1,5 +1,6 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Documentation Status](https://readthedocs.org/projects/fair-debate-web/badge/?version=latest)](https://fair-debate-web.readthedocs.io/)
 
 # Fair-Debate-Web
 

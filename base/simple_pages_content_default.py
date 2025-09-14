@@ -335,7 +335,7 @@ their expertise and communications skills by submitting qualitative contribution
 
 ### Summary
 
-*Fair-Debate* solves or avoids the four identified problems and thus can provide platform for factual and
+*Fair-Debate* solves or avoids the four identified problems and thus can provide a platform for factual and
 solution-orientend debates on controversial topics.
 The main challenge is to convince people that the initial extra effort (familiarize with a new platform and
 new discussion concept) is worth it. This requires open-minded people with dedication to convince
