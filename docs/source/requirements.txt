@@ -10,6 +10,7 @@ pytest-django
 packaging
 python-slugify
 demjson3
+linkify-it-py
 sphinx
 sphinxcontrib-plantuml
 myst-parser
