@@ -13,4 +13,5 @@ demjson3
 linkify-it-py
 sphinx
 sphinxcontrib-plantuml
+sphinx-rtd-theme
 myst-parser
