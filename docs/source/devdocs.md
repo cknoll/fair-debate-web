@@ -1,19 +1,17 @@
-# Use Cases
+# Development Documentation
+
+## Use Cases
 
 This part of the documentation is targeted towards the development team. It documents the details of the usage mechanics.
 
 
-```{uml}
 
-:User: --> (Use)
-"Group of\nAdministrators " as Admin
-"Using the\napplication" as (Use)
-Admin --> (Administering\nthe Application)
-```
+### Basic Use Case (with multiple users)
 
 
-
-## Basic Use Case (with multiple users)
+:::{attention}
+This section is yet only a placeholder.
+:::
 
 ```{uml}
 

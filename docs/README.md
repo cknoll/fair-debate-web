@@ -6,7 +6,7 @@ This directory contains the documentation.
 ### Requirements
 
 - `sudo apt install plantuml`
-- `pip install sphinx myst-parser sphinxcontrib-plantuml`
+- `pip install -r docs/source/requirements.txt`
 
 ### Build
 

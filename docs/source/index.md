@@ -8,7 +8,7 @@ caption: "Contents:"
 ---
 background.md
 user-guide.md
-usecases.md
+devdocs.md
 ```
 
 ## About *Fair Debate*
@@ -23,3 +23,5 @@ The main features are:
 ## Project Status and Contributing
 
 Currently the project is in early stage of development (first public prototype is running) and in search of support (testing, development, public relation).
+
+If you are interested or want to give feedback please use `contact{ät}fair-debate{d0t}net`.
