@@ -9,6 +9,8 @@
 - [.] i28: deployment: make complete backup (data-base + repos)
     - [x] i28.1: save db-content as .json file to backup_path (from config.toml)
 - [ ] i26: markdown-bug: tripple backticks are not rendered correctly (e.g. line breaks, lines beginning with "#")
+    - [x] i26.1: create a backend test
+    - [ ] i26.2: fix
 - [x] i27: frontend-bug: arrow-keys trigger contribution visibility when textfield is active -> prevents cursor-navigation with arrow keys
 - [x] i25: bug: slug with special character -> no reverse match
     - [x] i25.1: add failing test

@@ -302,7 +302,9 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             # hard coded data
             "reference_segment": "a3",
             "debate_key": debate_key,
-            "body": "This is a level 1 **answer** from a unittest.",
+            "body": (
+                "This is a level 1 **answer** from a unittest."
+            ),
         }
         response = self.post_and_follow_redirect(action_url, post_data_a3)
         self.assertEqual(response.status_code, 200)
@@ -325,6 +327,31 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         self.assertEqual(get_parsed_element_by_id("data-num_db_ctbs", res=response), 0)
         self.assertEqual(get_parsed_element_by_id("data-num_answers", res=response), 1)
+
+    def test_036__markdown_rendering_of_backticks(self):
+        self.perform_login("testuser_1")
+        # response = self.client.get(reverse("new_debate"))
+
+        # create new contribution in database mode
+
+        content = (
+            "This is a level 0 **post** from a unittest"
+            "\n\n```\nincluding\n#triple\nbackticks```\n."
+        ),
+        response = self.post_to_view(
+            viewname="new_debate",
+            spec_values={"body": content, "debate_slug": "test_slug1"},
+            follow_redirect=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, "html.parser")
+        code_element = soup.find(id="a2")
+
+        # TODO fix this using the newest version of fdmd (also fix test_030 there)
+        # IPS(-1)
+        self.assertEqual(code_element.name, "code")
+
 
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
@@ -420,7 +447,6 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         users = models.DebateUser.objects.all()
         self.assertEqual(len(users), N_USERS_IN_FIXTURES + 1)
 
-
         # now check that exception is thrown for too simple password
         post_data, action_url = generate_post_data_for_form(
             res, spec_values={"username": "testuser_tmp2", "password1": "12345678", "password2": "12345678"}
@@ -438,8 +464,6 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(
             get_parsed_element_by_id(id="data-utd_page_type", res=res), "utd_formvalidationerror"
         )
-
-
 
     def _06x__common(self) -> Container:
 
