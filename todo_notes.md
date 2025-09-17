@@ -4,6 +4,10 @@
 - [ ] i18 how should we handle segments which completely consists of links?
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
+- [x] i30: Edit Unpublished Contribution → Cancel → nothing happens (reason: key == "root_segment" but should be "a")
+    - key comes from `segmentElement.id` which is "root_segment" instead of "a"
+    - [x] i30.1 test
+    - [ ] i30.2 fix
 - [.] i29: deployment: allow to update the code without changing data
     - is already partially implemented via (`python deployment/deploy.py --omit-database`)
 - [.] i28: deployment: make complete backup (data-base + repos)

@@ -72,11 +72,25 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         browser.logs.append(res)
         return res
 
-    def visit(self, url, browser: Browser = None):
+    def visit(self, url, browser: Browser = None, wait_for_page_load: bool = True):
         if browser is None:
             # assume a browser has already been created
             browser = self.browsers[-1]
-        browser.visit(f"{self.live_server_url}{url}")
+        if url.startswith("http://") or url.startswith("https://"):
+            full_url = url
+        else:
+            full_url = f"{self.live_server_url}{url}"
+        browser.visit(full_url)
+        if wait_for_page_load:
+            max_attempts = 3
+            for i in range(max_attempts):
+                if browser.url == full_url:
+                    break
+                print(f"failed to load page {full_url} (attempt {i+1}/{max_attempts}) ({browser.url})")
+                time.sleep(0.5)
+            else:
+                msg = f"Could not load page {full_url} within {max_attempts} attempts"
+                raise ValueError(msg)
 
     def perform_login(self, browser: Browser, username: str = "testuser_1"):
         self.visit(reverse("login"), browser=browser)
@@ -860,16 +874,31 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         trigger_click_event(b1, "btn_show_all_ctbs")
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a15b"))
 
-    def _g120__common(self):
+    def _g120__common(self, create_b2=True):
         # self.headless = False
         res = Container()
         res.b1 = self.new_browser()
-        res.b2 = self.new_browser()
+        if create_b2:
+            res.b2 = self.new_browser()
+        else:
+            res.b2 = None
 
         # testuser_1 -> role a
         time.sleep(0.5)  # prevent test from failing strangely on some machines
         self.perform_login(browser=res.b1, username="testuser_1")
-        res.b1.visit(f"{self.live_server_url}{reverse('new_debate')}")
+
+        time.sleep(0.3)
+
+        self.assertTrue(res.b1.is_element_present_by_id("data-user_is_authenticated", wait_time=5))
+        authenticated_element = res.b1.find_by_id("data-user_is_authenticated")
+        user_element = res.b1.find_by_id("data-user_name")
+
+        # TODO: repair this
+        # self.assertEqual(authenticated_element[0].text, "True")
+        # self.assertEqual(user_element[0].text, "testuser_1")
+
+        full_url = f"{self.live_server_url}{reverse('new_debate')}"
+        self.visit(full_url, browser=res.b1)
 
         with open(fdmd.fixtures.txt1_md_fpath) as fp:
             res.content = fp.read()
@@ -1027,6 +1056,17 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         self.assertEqual(get_parsed_element_by_id("data-num_db_ctbs", browser=b2), 0)
         self.assertEqual(get_parsed_element_by_id("data-num_answers", browser=b2), 1)
+
+    def test_g122__new_debate_cancel(self):
+        # self.headless = False
+        c = self._g120__common(create_b2=False)  # this creates a new a-contribution in the database
+        b1 = c.b1
+
+        trigger_click_event(b1, id="edit_btn_contribution_a")
+        trigger_click_event(b1, id="cancel_btn_contribution_a")
+
+        error_list = get_js_error_list(b1)
+        self.assertFalse(error_list)
 
 
 # #################################################################################################
