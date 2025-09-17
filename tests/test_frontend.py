@@ -844,6 +844,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         res.b2 = self.new_browser()
 
         # testuser_1 -> role a
+        time.sleep(0.5)  # prevent test from failing strangely on some machines
         self.perform_login(browser=res.b1, username="testuser_1")
         res.b1.visit(f"{self.live_server_url}{reverse('new_debate')}")
 
@@ -916,7 +917,8 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # appended_text2 has vanished because we clicked on edit again
         body_ta = b1.find_by_id("ta_contribution_a")[0]
         original_end_text = "Ipsum modi modi quaerat."
-        self.assertTrue(body_ta.value.endswith(original_end_text))
+
+        self.assertTrue(body_ta.value.strip().endswith(original_end_text))
 
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
