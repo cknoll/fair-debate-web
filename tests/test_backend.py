@@ -151,7 +151,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         response = self.post_to_view(
             viewname="new_debate",
-            spec_values={"body_content": content, "debate_slug": "test_slug1"},
+            spec_values={"body": content, "debate_slug": "test_slug1"},
             follow_redirect=True,
         )
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
@@ -179,11 +179,13 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         _, csrf_token = get_form_base_data_from_html_template_host(response.content)
 
         self.assertNotIn(b"Updated content", response.content)
+
+        code_block = "```this\nis\na\n   multiline\n   code\nblock```"
         post_data = {
             "csrfmiddlewaretoken": csrf_token,
             "reference_segment": "root_segment",
             "debate_key": api_data["debate_key"],
-            "body": f"# Updated content \n\n some new words \n\n {content}",
+            "body": f"# Updated content \n\n some new words \n\n {content}\n{code_block}".replace("\n", "\r\n"),
         }
 
         response = response = self.post_and_follow_redirect(new_url, post_data)
@@ -232,7 +234,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         response = self.post_to_view(
             viewname="new_debate",
-            spec_values={"body_content": content, "debate_slug": "Slug with special→Chars: ¡…¿łöſµŋéÑ? !"},
+            spec_values={"body": content, "debate_slug": "Slug with special→Chars: ¡…¿łöſµŋéÑ? !"},
             follow_redirect=True,
         )
         self.assertEqual(response.status_code, 200)
@@ -249,7 +251,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         # create new contribution in database mode
         response = self.post_to_view(
             viewname="new_debate",
-            spec_values={"body_content": content, "debate_slug": "test_slug1"},
+            spec_values={"body": content, "debate_slug": "test_slug1"},
             follow_redirect=True,
         )
 
@@ -275,7 +277,9 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         # simulate commit button press
-        self.dirs_to_remove.append(pjoin(REPO_HOST_DIR, api_data["debate_key"]))
+
+        target_dir = pjoin(REPO_HOST_DIR, api_data["debate_key"])
+        self.dirs_to_remove.append(target_dir)
         response = self.post_and_follow_redirect(action_url=api_data["commit_url"], post_data=post_data)
 
         assert "testdata" in REPO_HOST_DIR
@@ -285,6 +289,12 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(len(models.Debate.objects.all()), N_DEBATES_IN_FIXTURES + 1)
         # debate should still be there
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
+
+        fpath = pjoin(target_dir, "a", "a.md")
+        with open(fpath) as fp:
+            md_content = fp.read()
+
+        self.assertNotIn("::code_placeholder_", md_content)
 
         # now add reply (db_ctb) by testuser_2
         debate_key = api_data["debate_key"]

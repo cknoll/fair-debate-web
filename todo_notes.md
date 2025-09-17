@@ -12,9 +12,10 @@
     - is already partially implemented via (`python deployment/deploy.py --omit-database`)
 - [.] i28: deployment: make complete backup (data-base + repos)
     - [x] i28.1: save db-content as .json file to backup_path (from config.toml)
-- [x] i26: markdown-bug: tripple backticks are not rendered correctly (e.g. line breaks, lines beginning with "#")
+- [.] i26: markdown-bug: tripple backticks are not rendered correctly (e.g. line breaks, lines beginning with "#")
     - [x] i26.1: create a backend test
     - [x] i26.2: fix (mainly done in fair_debate_md)
+    - [ ] i26.3: fix repo content
 - [x] i27: frontend-bug: arrow-keys trigger contribution visibility when textfield is active -> prevents cursor-navigation with arrow keys
 - [x] i25: bug: slug with special character -> no reverse match
     - [x] i25.1: add failing test
