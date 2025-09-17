@@ -346,12 +346,12 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, "html.parser")
-        code_element = soup.find(id="a2")
+        span_code_element = soup.find(id="a2")
 
-        # TODO fix this using the newest version of fdmd (also fix test_030 there)
-        # IPS(-1)
+        self.assertEqual(span_code_element.name, "span")
+        code_element = span_code_element.find("code")
         self.assertEqual(code_element.name, "code")
-
+        self.assertEqual(code_element.text, "\nincluding\n#triple\nbackticks")
 
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
