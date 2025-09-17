@@ -16,6 +16,7 @@ from splinter.driver.webdriver import BaseWebDriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import StaleElementReferenceException
 
 from ipydex import IPS
 import fair_debate_md as fdmd
@@ -87,9 +88,25 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # ensure that the login was successful
 
-        failed_login_attempt = self.fast_get(browser, id_str="data-failed_login_attempt")
 
-        if failed_login_attempt and failed_login_attempt.html == "true":
+        # be robust against StaleElementReferenceException
+        max_attempts = 3
+        for i in range(max_attempts + 1):
+            failed_login_attempt = self.fast_get(browser, id_str="data-failed_login_attempt")
+            if failed_login_attempt:
+                try:
+                    html_value = failed_login_attempt.html
+                except StaleElementReferenceException as ex:
+                    if i >= max_attempts:
+                        raise ex
+                else:
+                    break
+            else:
+                html_value = None
+            time.sleep(0.1)
+
+
+        if failed_login_attempt and html_value == "true":
             msg = f"Login process unexpectedly failed ({username=})"
             raise ValueError(msg)
 
@@ -122,7 +139,12 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
             return None
         else:
             if id_str is not None:
-                res = browser.find_by_id(id_str)[0]
+                try:
+                    res = browser.find_by_id(id_str)[0]
+                except Exception as ex:
+                    # occasionally used for debugging
+                    # IPS()
+                    raise ex
             else:
                 res = browser
             if class_str:
@@ -454,6 +476,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         # testuser_1 phase (role a)
         #
         # for testuser_1 segment a3b1 should also not be present
+        time.sleep(0.5)  # prevent test from failing strangely on some machines
         self.perform_login(browser=b1, username="testuser_1")
 
         b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
