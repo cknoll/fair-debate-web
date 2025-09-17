@@ -295,6 +295,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
             md_content = fp.read()
 
         self.assertNotIn("::code_placeholder_", md_content)
+        self.assertIn("```This\nis\na\ncode\n\nblock```", md_content)
 
         # now add reply (db_ctb) by testuser_2
         debate_key = api_data["debate_key"]

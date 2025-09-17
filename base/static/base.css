@@ -162,6 +162,7 @@ body a:hover{
 
 code  {
   background-color: var(--color-quote-background);
+  white-space: pre;
 }
 blockquote {
 
