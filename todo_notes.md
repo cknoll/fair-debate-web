@@ -7,12 +7,12 @@
 - [x] i30: Edit Unpublished Contribution → Cancel → nothing happens (reason: key == "root_segment" but should be "a")
     - key comes from `segmentElement.id` which is "root_segment" instead of "a"
     - [x] i30.1 test
-    - [ ] i30.2 fix
+    - [x] i30.2 fix
 - [.] i29: deployment: allow to update the code without changing data
     - is already partially implemented via (`python deployment/deploy.py --omit-database`)
 - [.] i28: deployment: make complete backup (data-base + repos)
     - [x] i28.1: save db-content as .json file to backup_path (from config.toml)
-- [ ] i26: markdown-bug: tripple backticks are not rendered correctly (e.g. line breaks, lines beginning with "#")
+- [x] i26: markdown-bug: tripple backticks are not rendered correctly (e.g. line breaks, lines beginning with "#")
     - [x] i26.1: create a backend test
     - [x] i26.2: fix (mainly done in fair_debate_md)
 - [x] i27: frontend-bug: arrow-keys trigger contribution visibility when textfield is active -> prevents cursor-navigation with arrow keys

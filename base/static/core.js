@@ -107,6 +107,11 @@ const deepestLevel = readJsonWithDefault("data-deepest_level", null);
  */
 function getContributionKey(key){
     var parts = key.match(/[ab]\d+/g);
+    if (key == "root_segment") {
+        // this occurs for a new debate which has not been saved yet
+        // parts would be null which causes problems downstream
+        parts = ["a0"];
+    }
     var first_letter_of_last_element = parts.pop()[0]
     var appendix = null;
     if (first_letter_of_last_element == "a") {
