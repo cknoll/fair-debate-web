@@ -362,6 +362,8 @@ Fair-Debate-Web is an experimental web application to facilitate text-based deba
 
 [Learn more ...]({dupurls["about_page"]})
 
+**This a prototype which is probably not self-explanatory.** If you have questions or suggestions, please [contact the maintainer]({dupurls["contact-page"]}).
+
 """
     ),
 )

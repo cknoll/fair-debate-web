@@ -1,5 +1,7 @@
 from django.urls import path
 from django.conf import settings
+from django.shortcuts import redirect
+
 
 from . import views
 from . import utils
@@ -46,4 +48,7 @@ urlpatterns = [
     path("signup/", views.user_signup, name="signup"),
     path("logout/", views.user_logout, name="logout"),
     path("profile/", views.user_profile, name="user_profile"),
+    path(
+        "contact/", lambda request: redirect("https://cknoll.github.io/pages/impressum.html", permanent=False)
+    ),
 ]
