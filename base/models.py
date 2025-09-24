@@ -33,6 +33,9 @@ class Debate(models.Model):
     # this will be 1, if an a-contribution is committed etc.
     n_committed_contributions = models.IntegerField(default=0)
 
+    # TODO-AIDER: We need a field called "discoverability" which has an `enum`-like type, which takes one of several predefined values
+    # currently those values are: "public", "hidden", "private". Maybe there will be more in the future. default should be "public".
+
     def get_user_role(self, user: DebateUser):
 
         if user == self.user_a:
