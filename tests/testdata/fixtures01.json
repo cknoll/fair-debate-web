@@ -69,6 +69,34 @@
   },
   {
     "fields" : {
+        "debate_key" : "d05-hidden_test_debate",
+        "repo_a" : 1,
+        "repo_b" : 2,
+        "user_a" : 2,
+        "user_b" : 3,
+        "n_committed_contributions": 2,
+        "update_date" : "2025-09-24T22:04:00.0Z",
+        "discoverability" : "hidden"
+      },
+    "model" : "base.debate",
+    "pk" : 5
+  },
+  {
+    "fields" : {
+        "debate_key" : "d06-private_test_debate",
+        "repo_a" : 1,
+        "repo_b" : 2,
+        "user_a" : 2,
+        "user_b" : 3,
+        "n_committed_contributions": 2,
+        "update_date" : "2025-09-24T22:04:00.0Z",
+        "discoverability" : "private"
+      },
+    "model" : "base.debate",
+    "pk" : 6
+  },
+  {
+    "fields" : {
         "date_joined" : "2024-05-22T22:41:00.946Z",
         "email" : "",
         "first_name" : "",
@@ -151,11 +179,11 @@
         "last_login" : "2024-05-22T22:41:31.020Z",
         "last_name" : "",
         "password" : "pbkdf2_sha256$720000$u8jcVNbywGxt8nsjR15lHy$QXQVAydzZI5uWYUJdTBQiPMjjaqBIzNIhkE+pWrBJv0=",
-        "username" : "testuser_3",
+        "username" : "testuser_4",
         "user_permissions" : [  ]
       },
     "model" : "base.debateuser",
-    "pk" : 4
+    "pk" : 5
   },
   {
     "fields" : {

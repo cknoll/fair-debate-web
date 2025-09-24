@@ -82,6 +82,9 @@ class Debate(models.Model):
         else:
             return Debate.objects.all().order_by("-update_date")[:limit]
 
+    def __str__(self):
+        return f"Debate<{self.debate_key}>"
+
 
 class DebateAdmin(admin.ModelAdmin):
     pass

@@ -27,6 +27,13 @@ Fair-debate-Web is an experimental web application to facilitate controversial t
 
 - `python manage.py runserver`
 
+#### Updating the testdata
+
+- database fixtures: edit `tests/testdata/fixtures01.json`
+- repo-content: see `<fair-debate-md-repo>/src/fair_debate_md/fixtures/README.md`
+
+
+
 ## Feedback
 
 Contact the maintainer <https://cknoll.github.io/pages/impressum.html>

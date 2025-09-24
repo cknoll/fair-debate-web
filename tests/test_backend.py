@@ -426,8 +426,8 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         debates_u2 = models.Debate.get_for_user(user2)
         debates_u3 = models.Debate.get_for_user(user3)
 
-        self.assertEqual(len(debates_u1), 4)
-        self.assertEqual(len(debates_u2), 3)
+        self.assertEqual(len(debates_u1), 6)
+        self.assertEqual(len(debates_u2), 5)
         self.assertEqual(len(debates_u3), 1)
 
         # ensure sorting
