@@ -17,6 +17,11 @@ class DebateUser(AbstractUser):
 
 
 class Debate(models.Model):
+    class Discoverability(models.TextChoices):
+        PUBLIC = "public", "Public"
+        HIDDEN = "hidden", "Hidden"
+        PRIVATE = "private", "Private"
+
     debate_key = models.CharField(max_length=255)
     repo_a = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_a")
     repo_b = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_b")
@@ -33,8 +38,9 @@ class Debate(models.Model):
     # this will be 1, if an a-contribution is committed etc.
     n_committed_contributions = models.IntegerField(default=0)
 
-    # TODO-AIDER: We need a field called "discoverability" which has an `enum`-like type, which takes one of several predefined values
-    # currently those values are: "public", "hidden", "private". Maybe there will be more in the future. default should be "public".
+    discoverability = models.CharField(
+        max_length=20, choices=Discoverability.choices, default=Discoverability.PUBLIC
+    )
 
     def get_user_role(self, user: DebateUser):
 
