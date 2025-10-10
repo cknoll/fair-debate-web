@@ -4,6 +4,11 @@
 - [ ] i18 how should we handle segments which completely consists of links?
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
+- [.] i31 Explanatory Example Debate
+    - [.] formulate main contribution
+    - [ ] formulate answers
+    - [.] add content to fixtures
+    - [x] ensure that this debate is displayed on landing page
 - [x] i30: Edit Unpublished Contribution → Cancel → nothing happens (reason: key == "root_segment" but should be "a")
     - key comes from `segmentElement.id` which is "root_segment" instead of "a"
     - [x] i30.1 test

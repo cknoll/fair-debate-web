@@ -21,6 +21,7 @@ def reverse(*args, **kwargs):
 dupurls = {
     "contact-page": "/contact",
     "about_page": utils.ABOUT_PATH,
+    "example-debate": "/d/d00-explanatory-example-debate",
 }
 duplicated_urls = defaultdict(lambda: "__invalid_url__", dupurls)
 
@@ -360,9 +361,9 @@ new_sp(
 
 Fair-Debate-Web is an experimental web application to facilitate text-based debates on controversial topics.
 
-[Learn more ...]({dupurls["about_page"]})
+Learn more on the *[/about]({duplicated_urls["about_page"]})-page* or the *explanatory [example debate]({duplicated_urls["example-debate"]})*.
 
-**This a prototype which is probably not self-explanatory.** If you have questions or suggestions, please [contact the maintainer]({dupurls["contact-page"]}).
+**This a prototype which is probably not self-explanatory.** If you have questions or suggestions, please [contact the maintainer]({duplicated_urls["contact-page"]}).
 
 """
     ),

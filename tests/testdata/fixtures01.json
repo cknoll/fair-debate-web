@@ -97,6 +97,20 @@
   },
   {
     "fields" : {
+        "debate_key" : "d00-explanatory-example-debate",
+        "repo_a" : 1,
+        "repo_b" : 2,
+        "user_a" : 2,
+        "user_b" : 3,
+        "n_committed_contributions": 2,
+        "update_date" : "2025-10-10T12:00:00.0Z",
+        "discoverability" : "public"
+      },
+    "model" : "base.debate",
+    "pk" : 10
+  },
+  {
+    "fields" : {
         "date_joined" : "2024-05-22T22:41:00.946Z",
         "email" : "",
         "first_name" : "",
