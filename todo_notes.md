@@ -7,6 +7,9 @@
 - [.] i31 Explanatory Example Debate
     - [.] formulate main contribution
     - [ ] formulate answers
+        - [ ] establish workflow to convert plain md source to patches.
+            Reason: The text of the contributions to the demo debate will likely change several times.
+            Realization: we have usual named files like `a/a.md` and `b/a815b.md`. They are converted (create modified copies). keys created based on file names
     - [.] add content to fixtures
     - [x] ensure that this debate is displayed on landing page
 - [x] i30: Edit Unpublished Contribution → Cancel → nothing happens (reason: key == "root_segment" but should be "a")
