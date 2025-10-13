@@ -4,6 +4,12 @@
 - [ ] i18 how should we handle segments which completely consists of links?
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
+
+- [ ] i34 Frontend issue: if a contribution level is partially unfolded via clicking it cannot be re-folded via "←"-key
+- [ ] i33 Bad formatting of inline `pre`-formatted text (in level 1), probably css-problem (or newlines in source file)
+- [ ] i32 This should be one statement (currently its 3): It has the *contribution key*: `a`.
+    - [ ] fdmd test case
+    - [ ] fdmd  fix
 - [.] i31 Explanatory Example Debate
     - [.] formulate main contribution
     - [ ] formulate answers
