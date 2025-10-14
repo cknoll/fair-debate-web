@@ -5,18 +5,19 @@
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
 
+- [x] i35 undesired segmentation of abbreviations like e.g. w.r.t. etc.
 - [ ] i34 Frontend issue: if a contribution level is partially unfolded via clicking it cannot be re-folded via "←"-key
-- [ ] i33 Bad formatting of inline `pre`-formatted text (in level 1), probably css-problem (or newlines in source file)
-- [ ] i32 This should be one statement (currently its 3): It has the *contribution key*: `a`.
-    - [ ] fdmd test case
-    - [ ] fdmd  fix
-- [.] i31 Explanatory Example Debate
-    - [.] formulate main contribution
-    - [ ] formulate answers
-        - [ ] establish workflow to convert plain md source to patches.
+- [x] i33 Bad formatting of inline `pre`-formatted text (in level 1), probably css-problem (or newlines in source file)
+- [x] i32 This should be one statement (currently its 3): It has the *contribution key*: `a`.
+    - [x] fdmd test case
+    - [x] fdmd  fix
+- [x] i31 Explanatory Example Debate
+    - [x] formulate main contribution
+    - [x] formulate answers
+        - [x] establish workflow to convert plain md source to patches.
             Reason: The text of the contributions to the demo debate will likely change several times.
             Realization: we have usual named files like `a/a.md` and `b/a815b.md`. They are converted (create modified copies). keys created based on file names
-    - [.] add content to fixtures
+    - [x] add content to fixtures
     - [x] ensure that this debate is displayed on landing page
 - [x] i30: Edit Unpublished Contribution → Cancel → nothing happens (reason: key == "root_segment" but should be "a")
     - key comes from `segmentElement.id` which is "root_segment" instead of "a"
