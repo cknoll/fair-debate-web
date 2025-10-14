@@ -70,7 +70,6 @@ app_name = config("app_name")
 project_name = config("PROJECT_NAME")
 
 
-
 # this is needed to distinguish different django instances on the same uberspace account
 port = config("port")
 
@@ -95,7 +94,6 @@ venv_path = f"/home/{user}/{venv}"
 # because uberspace offers many python versions:
 pipc = config("pip_command")
 python_version = config("python_version")
-
 
 
 du.argparser.add_argument("-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true")
@@ -252,8 +250,6 @@ def set_web_backend(c):
         # c.run(cmd2)
 
 
-
-
 def upload_files(c):
     print("\n", "ensure that deployment path exists", "\n")
     c.run(f"mkdir -p {target_deployment_path}", target_spec="both")
@@ -338,6 +334,14 @@ def initialize_test_repos(c):
     c.run('git config --global user.email "system@fair-debate.org"')
     c.run('git config --global user.name "fair-debate-system"')
     c.run("fdmd unpack-repos ./content_repos")
+
+    # handle example debate:
+    c.chdir(f"{target_deployment_path}/content_repos")
+    cmd = (
+        "fdmd process-content-dir __FIXTURES_RP__/d00-explanatory-example-debate__plain "
+        "./d00-explanatory-example-debate --patches"
+    )
+    c.run(cmd)
 
 
 def generate_static_files(c):
