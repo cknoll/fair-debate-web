@@ -5,6 +5,13 @@
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
 
+- [ ] i36 backup fails if the model has changed:
+    ```
+    python manage.py savefixtures --backup
+    CommandError: Unable to serialize database: no such column: base_debate.discoverability
+    ```
+    - this should at least lead to an error
+    - preferably the backup would be done with based on the old model (before changing the code)
 - [x] i35 undesired segmentation of abbreviations like e.g. w.r.t. etc.
 - [ ] i34 Frontend issue: if a contribution level is partially unfolded via clicking it cannot be re-folded via "←"-key
 - [x] i33 Bad formatting of inline `pre`-formatted text (in level 1), probably css-problem (or newlines in source file)

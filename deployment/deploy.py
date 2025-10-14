@@ -337,6 +337,7 @@ def initialize_test_repos(c):
 
     # handle example debate:
     c.chdir(f"{target_deployment_path}/content_repos")
+    c.run("rm -rf d00-explanatory-example-debate")
     cmd = (
         "fdmd process-content-dir __FIXTURES_RP__/d00-explanatory-example-debate__plain "
         "./d00-explanatory-example-debate --patches"
@@ -405,11 +406,11 @@ def debug():
     # set_web_backend(c)
     # initialize_db(c)
 
-    upload_files(c)
-    generate_static_files(c)
-    # deploy_local_dependency(c)
+    # upload_files(c)
+    # generate_static_files(c)
+    deploy_local_dependency(c)
     # initialize_test_repos(c)
-    finalize(c)
+    # finalize(c)
 
     exit()
 
