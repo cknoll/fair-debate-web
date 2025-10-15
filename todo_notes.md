@@ -8,12 +8,12 @@
 - [x] i37 hidden and debates should only be listed in private section of front page
     - [x] test
     - [x] feature
-- [ ] i36 backup fails if the model has changed:
+- [.] i36 backup fails if the model has changed:
     ```
     python manage.py savefixtures --backup
     CommandError: Unable to serialize database: no such column: base_debate.discoverability
     ```
-    - this should at least lead to an error
+    - [x] i36.1 this should at least lead to an error (interrupt the process before data destruction)
     - preferably the backup would be done with based on the old model (before changing the code)
 - [x] i35 undesired segmentation of abbreviations like e.g. w.r.t. etc.
 - [ ] i34 Frontend issue: if a contribution level is partially unfolded via clicking it cannot be re-folded via "←"-key
@@ -37,15 +37,18 @@
     - is already partially implemented via (`python deployment/deploy.py --omit-database`)
 - [.] i28: deployment: make complete backup (data-base + repos)
     - [x] i28.1: save db-content as .json file to backup_path (from config.toml)
-- [.] i26: markdown-bug: tripple backticks are not rendered correctly (e.g. line breaks, lines beginning with "#")
+    - [x] i28.2: save repos
+    - [ ] manually test
+- [x] i26: markdown-bug: tripple backticks are not rendered correctly (e.g. line breaks, lines beginning with "#")
     - [x] i26.1: create a backend test
     - [x] i26.2: fix (mainly done in fair_debate_md)
-    - [ ] i26.3: fix repo content
+    - [x] i26.3: fix repo content
 - [x] i27: frontend-bug: arrow-keys trigger contribution visibility when textfield is active -> prevents cursor-navigation with arrow keys
 - [x] i25: bug: slug with special character -> no reverse match
     - [x] i25.1: add failing test
     - [x] i25.2: sanitize incoming slugs
-- [ ] i24 use mastodon for sign up
+- [ ] i24 optionally use mastodon for sign up
+    - motivation lower barrier for users (also allow login with google, github, etc.?)
 - [w] i17 solve issue: uberspace web errorpage 500 status -> unclear how to trigger (wontfix)
 - [x] i19 add mouseover hint for « and » buttons
 - [x] i22 anchor link should highlight segment + unfold

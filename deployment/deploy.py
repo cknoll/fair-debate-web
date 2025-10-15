@@ -137,7 +137,7 @@ init_fixture_path = os.path.join(target_deployment_path, "tests/testdata/fixture
 
 # print a warning for data destruction
 
-print(du.bred("Currently no backup will be done during deployment (not yet implemented)."))
+print(du.bred("Currently no full backup will be done during deployment (not yet implemented)."))
 time.sleep(1)
 du.warn_user(
     app_name,
@@ -298,15 +298,29 @@ def install_app(c):
     c.run(f"pip install -r requirements.txt", target_spec="both")
 
 
-def initialize_db(c):
+def perform_backup_if_not_omitted(c: du.StateConnection):
+
+    if not args.omit_backup:
+        return
+
+    c.chdir(target_deployment_path)
+    print("\n", "content repos", "\n")
+
+    time_stamp_str = time.strftime("%Y-%m-%d__%H-%M-%S")
+    repo_backup_path = f"../fair_debate_repo_backups/{time_stamp_str}"
+    c.run(f"mkdir -p {repo_backup_path}")
+    c.run(f"cp -r ./content_repos {repo_backup_path}", warn=True)
+
+    print("\n", "backup database to json", "\n")
+    _ = c.run("python manage.py savefixtures --backup", warn=True)
+
+
+
+def initialize_db(c: du.StateConnection):
 
     c.chdir(target_deployment_path)
 
-    # try to backup db before (re-)initialization and changing database layout
-    # print("\n", "backup old database", "\n")
-    _ = c.run("python manage.py savefixtures --backup", warn=False)
-
-
+    perform_backup_if_not_omitted(c)
     c.run("python manage.py makemigrations", target_spec="both")
 
     # delete old db
