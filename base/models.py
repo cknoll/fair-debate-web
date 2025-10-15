@@ -22,7 +22,7 @@ class Debate(models.Model):
         HIDDEN = "hidden", "Hidden"
         PRIVATE = "private", "Private"
 
-    debate_key = models.CharField(max_length=255)
+    debate_key = models.CharField(max_length=255)  # TODO: add unique=True
     repo_a = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_a")
     repo_b = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_b")
 

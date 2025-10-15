@@ -441,7 +441,28 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         for deb in debates_all_3:
             self.assertLess(oldest_debate.update_date, deb.update_date)
 
-    def test_053__signup(self):
+    def test_053__debate_listing_for_hidden_debates(self):
+        """
+        Ensure that hidden and private debates are not shown in the public debate list on the landing page
+        """
+        response = self.client.get(reverse("landing_page"))
+        self.assertEqual(response.status_code, 200)
+
+        html = response.content.decode("utf-8")
+        soup = BeautifulSoup(html, "html.parser")
+        ul_element = soup.find(id="public_debate_list")
+        self.assertIsNotNone(ul_element)
+
+        li_elements = ul_element.find_all("li")
+        self.assertIsNotNone(li_elements)
+        self.assertGreater(len(li_elements), 0)
+
+        for li_element in li_elements:
+            debate_id = li_element["id"].split("__")[1]
+            debate = models.Debate.objects.get(debate_key=debate_id)
+            self.assertEqual(debate.discoverability, "public")
+
+    def test_058__signup(self):
         users = models.DebateUser.objects.all()
         self.assertEqual(len(users), N_USERS_IN_FIXTURES)
 

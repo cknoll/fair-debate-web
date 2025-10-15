@@ -19,7 +19,7 @@
     You participated in the following debates:
     <ul>
       {% for debate in data.recent_user_debate_list %}
-        {% include "base/partials/debate_list_entry.html" with debate=debate %}
+        {% include "base/partials/debate_list_entry.html" with debate=debate lk="private" %}
       {% endfor %}
     </ul>
     {% else %}
@@ -33,9 +33,9 @@
     <hr>
     Public debates with most recent activity:
     {# now the list for all recent debates (independently of user) #}
-    <ul>
+    <ul id="public_debate_list">
       {% for debate in data.recent_debate_list %}
-        {% include "base/partials/debate_list_entry.html" with debate=debate %}
+        {% include "base/partials/debate_list_entry.html" with debate=debate lk="public" %}
       {% endfor %}
     </ul>
 
