@@ -17,7 +17,7 @@
     {% if request.user.is_authenticated %}
     {% if data.recent_user_debate_list %}
     You participated in the following debates:
-    <ul>
+    <ul id="private_debate_list">
       {% for debate in data.recent_user_debate_list %}
         {% include "base/partials/debate_list_entry.html" with debate=debate lk="private" %}
       {% endfor %}

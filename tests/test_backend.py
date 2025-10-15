@@ -97,6 +97,12 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         response = self.client.post(action_url, post_data)
         self.assertTrue(auth.get_user(self.client).is_authenticated)
 
+        if next_url:
+            # redirect
+            self.assertEqual(response.status_code, 302)
+            new_url = response["Location"]
+            response = self.client.get(new_url)
+
         return response
 
     def perform_logout(self):
@@ -441,26 +447,53 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         for deb in debates_all_3:
             self.assertLess(oldest_debate.update_date, deb.update_date)
 
-    def test_053__debate_listing_for_hidden_debates(self):
+    def test_053__debate_listing_wrt_discoverability(self):
         """
         Ensure that hidden and private debates are not shown in the public debate list on the landing page
         """
         response = self.client.get(reverse("landing_page"))
         self.assertEqual(response.status_code, 200)
 
-        html = response.content.decode("utf-8")
-        soup = BeautifulSoup(html, "html.parser")
-        ul_element = soup.find(id="public_debate_list")
-        self.assertIsNotNone(ul_element)
 
-        li_elements = ul_element.find_all("li")
-        self.assertIsNotNone(li_elements)
-        self.assertGreater(len(li_elements), 0)
+        def get_debates_from_html_list(response, ul_id: str):
 
-        for li_element in li_elements:
-            debate_id = li_element["id"].split("__")[1]
-            debate = models.Debate.objects.get(debate_key=debate_id)
+            html = response.content.decode("utf-8")
+            soup = BeautifulSoup(html, "html.parser")
+            ul_element = soup.find(id=ul_id)
+            self.assertIsNotNone(ul_element)
+
+            li_elements = ul_element.find_all("li")
+            self.assertIsNotNone(li_elements)
+            self.assertGreater(len(li_elements), 0)
+            debates = []
+
+            for li_element in li_elements:
+                debate_id = li_element["id"].split("__")[1]
+                debates.append(models.Debate.objects.get(debate_key=debate_id))
+            return debates
+
+        debates = get_debates_from_html_list(response, ul_id="public_debate_list")
+
+        for debate in debates:
             self.assertEqual(debate.discoverability, "public")
+
+        # now test that after login also private and hidden debates are occurring in the private debate list
+        response = self.perform_login(username="testuser_1", next_url=reverse("landing_page"))
+        debates = get_debates_from_html_list(response, ul_id="private_debate_list")
+
+        counters = {"public": 0, "hidden": 0, "private": 0}
+        for debate in debates:
+            counters[debate.discoverability] += 1
+        self.assertEqual(counters, {"public": 1, "hidden": 1, "private": 1})
+
+        # now with a different user
+        response = self.perform_login(username="testuser_3", next_url=reverse("landing_page"))
+        debates = get_debates_from_html_list(response, ul_id="private_debate_list")
+
+        counters = {"public": 0, "hidden": 0, "private": 0}
+        for debate in debates:
+            counters[debate.discoverability] += 1
+        self.assertEqual(counters, {"public": 1, "hidden": 0, "private": 0})
 
     def test_058__signup(self):
         users = models.DebateUser.objects.all()
