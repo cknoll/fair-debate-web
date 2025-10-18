@@ -14,6 +14,9 @@
     CommandError: Unable to serialize database: no such column: base_debate.discoverability
     ```
     - [x] i36.1 this should at least lead to an error (interrupt the process before data destruction)
+    - [x] test this: add a change to the model
+    - [ ] verify that original data is still available if error occurs
+
     - preferably the backup would be done with based on the old model (before changing the code)
 - [x] i35 undesired segmentation of abbreviations like e.g. w.r.t. etc.
 - [ ] i34 Frontend issue: if a contribution level is partially unfolded via clicking it cannot be re-folded via "←"-key

@@ -42,6 +42,9 @@ class Debate(models.Model):
         max_length=20, choices=Discoverability.choices, default=Discoverability.PUBLIC
     )
 
+    # this field serves to introduce a database change to test/debug the effect of db changes in deployment
+    # irrelevant_attribute = models.IntegerField(default=0)
+
     def get_user_role(self, user: DebateUser):
 
         if user == self.user_a:

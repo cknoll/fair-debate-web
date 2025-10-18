@@ -300,19 +300,23 @@ def install_app(c):
 
 def perform_backup_if_not_omitted(c: du.StateConnection):
 
-    if not args.omit_backup:
+
+    if args.omit_backup:
+        print("\n", du.yellow("backup omitted"), "\n")
         return
 
     c.chdir(target_deployment_path)
-    print("\n", "content repos", "\n")
+    print("\n", "backup content repos", "\n")
 
     time_stamp_str = time.strftime("%Y-%m-%d__%H-%M-%S")
     repo_backup_path = f"../fair_debate_repo_backups/{time_stamp_str}"
     c.run(f"mkdir -p {repo_backup_path}")
-    c.run(f"cp -r ./content_repos {repo_backup_path}", warn=True)
+    res_repos = c.run(f"cp -r ./content_repos {repo_backup_path}", warn="smart")
+    assert res_repos.exited == 0, "Could not backup content repos"
 
     print("\n", "backup database to json", "\n")
-    _ = c.run("python manage.py savefixtures --backup", warn=True)
+    res_db = c.run("python manage.py savefixtures --backup", warn=True)
+    assert res_db.exited == 0, "Could not backup database to json"
 
 
 
@@ -420,9 +424,10 @@ def debug():
     # set_web_backend(c)
     # initialize_db(c)
 
-    # upload_files(c)
+    upload_files(c)
+    perform_backup_if_not_omitted(c)
     # generate_static_files(c)
-    deploy_local_dependency(c)
+    # deploy_local_dependency(c)
     # initialize_test_repos(c)
     # finalize(c)
 

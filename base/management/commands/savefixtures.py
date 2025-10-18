@@ -41,8 +41,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        from ipydex import IPS, activate_ips_on_exception
-        activate_ips_on_exception()
         buf = StringIO()
         call_command("dumpdata", stdout=buf)
         buf.seek(0)
