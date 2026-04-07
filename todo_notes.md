@@ -5,6 +5,9 @@
     - idea: add a button, which deactivates all links in every segment, such that it could be toggled the same way as ordinary text
     - links should be deactivated by default, it otherwise would prevent toggling a segment
 
+
+- [ ] i38 improve UI design
+    -  [ ] see and evaluate incomplete approaches in branches `aider_style` and `manual_styling`
 - [x] i37 hidden and debates should only be listed in private section of front page
     - [x] test
     - [x] feature
