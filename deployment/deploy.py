@@ -390,8 +390,9 @@ class MainManager:
         c.run(f"python manage.py loaddata {self.init_fixture_path}", target_spec="both")
         # TODO-AIDER: the above command loads password hashes from the fixture file (which public in the repo) → insecure
         # I want for every username in cdata the password in the django db replaced by the password from cdata
-
-
+        # therefore I added the setpassword management command. Please use this command here appropriately.
+        # Please also check its implementation in base/management/commands/setpassword.py
+        # for bugs and reasonable improvements.
 
 
 
