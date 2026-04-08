@@ -3,6 +3,7 @@ import os
 import sys
 import os
 from os.path import join as pjoin
+from pathlib import Path
 
 # these packages are not in requirements.txt but in deployment_requirements.txt
 # noinspection PyUnresolvedReferences
@@ -96,7 +97,9 @@ pipc = config("pip_command")
 python_version = config("python_version")
 
 
-du.argparser.add_argument("-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true")
+du.argparser.add_argument(
+    "-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true"
+)
 du.argparser.add_argument("-d", "--omit-database",
                           help="omit database-related-stuff (and requirements)", action="store_true")
 du.argparser.add_argument("-s", "--omit-static", help="omit static file handling", action="store_true")
@@ -108,8 +111,15 @@ du.argparser.add_argument(
     action="store_true",
     help="do not install requirements (allows to speed up deployment)",
 )
-du.argparser.add_argument("-p", "--purge", help="purge target directory before deploying", action="store_true")
-du.argparser.add_argument("--debug", help="start debug interactive mode (IPS), then exit", action="store_true")
+du.argparser.add_argument(
+    "-p", "--purge", help="purge target directory before deploying", action="store_true"
+)
+du.argparser.add_argument(
+    "--debug", help="start debug interactive mode (IPS), then exit", action="store_true"
+)
+du.argparser.add_argument(
+    "-be", "--backup-evaluation", help="download and evaluate backup files", action="store_true"
+)
 
 # always pass remote as argument (reason: legacy)
 
@@ -154,9 +164,11 @@ os.system(f"rm -rf {temp_workdir}")
 os.makedirs(temp_workdir)
 
 c = du.StateConnection(remote, user=user, target=args.target)
-PATH_ENV = c.run("echo $PATH").stdout
+print("Connection established. Now adapting PATH ... ")
+PATH_ENV = c.run("echo $PATH", hide=True).stdout
 c.env_variables["PATH"] = f"/home/{user}/.local/bin:{PATH_ENV}"
-
+assert c.last_result.return_code == 0
+print(du.bgreen("OK."))
 
 def create_and_setup_venv(c: du.StateConnection):
 
@@ -315,9 +327,10 @@ def perform_backup_if_not_omitted(c: du.StateConnection):
     assert res_repos.exited == 0, "Could not backup content repos"
 
     print("\n", "backup database to json", "\n")
+
+    # this uses settings.BACKUP_PATH which is defined in config.toml
     res_db = c.run("python manage.py savefixtures --backup", warn=True)
     assert res_db.exited == 0, "Could not backup database to json"
-
 
 
 def initialize_db(c: du.StateConnection):
@@ -343,6 +356,7 @@ def initialize_db(c: du.StateConnection):
 
     # TODO: implement option to load latest backup
     c.run(f"python manage.py loaddata {init_fixture_path}", target_spec="both")
+    # note: there is also the `fdmd unpack-repos ./content_repos` command below
 
 # TODO: this has to change for production phase (or even for beta-testing)
 def initialize_test_repos(c):
@@ -351,6 +365,8 @@ def initialize_test_repos(c):
 
     c.run('git config --global user.email "system@fair-debate.org"')
     c.run('git config --global user.name "fair-debate-system"')
+
+    # this will unpack the .patch files in the respective directory
     c.run("fdmd unpack-repos ./content_repos")
 
     # handle example debate:
@@ -443,42 +459,90 @@ def debug():
     IPS()
     exit()
 
-if args.debug:
-    debug()
 
-if args.initial:
+def backup_evaluation(c: du.StateConnection):
+    _download_latest_backup_files(c)
 
-    # this shall prevent unexpected domain errors
-    print(
-        "\n",
-        du.yellow(f"Make sure that the domain {django_base_domain} is set up correctly on your uberspace."),
-        "\n",
+def _download_latest_backup_files(c: du.StateConnection):
+    print("backup-evaluation")
+
+    LOCAL_BACKUP_PATH = f"{os.getcwd()}/_gitignore-backup-evaluation"
+    # BASE_DIR = Path(__file__).resolve().parent.parent.as_posix()
+    REMOTE_DB_BACKUP_PATH = os.path.abspath(
+        config("BACKUP_PATH").replace("__BASEDIR__", f"{target_deployment_path}")
     )
-    res = input("Continue (N/y)? ")
-    if res.lower() != "y":
-        print(du.bred("Aborted."))
-        exit()
+    REMOTE_REPO_BACKUP_PATH = REMOTE_DB_BACKUP_PATH.replace("db_backups", "repo_backups")
 
-    create_and_setup_venv(c)
-    render_and_upload_config_files(c)
-    update_supervisorctl(c)
-    set_web_backend(c)
+    # download DATABASE backup
 
-if args.purge:
-    purge_deployment_dir(c)
+    c.chdir(REMOTE_DB_BACKUP_PATH)
+    # file_names = c.run("ls -1 *.json | sort")
+    # use find instead of ls to apply wildcard matching reliably
+    file_names = c.run("find . -maxdepth 1 -type f -name '*.json' -printf '%f\n' | sort")
+    file_name_list = file_names.stdout.strip().split("\n")
+    assert file_name_list[-1].startswith("20")
 
-upload_files(c)
+    c.rsync_download(
+        f"{REMOTE_DB_BACKUP_PATH}/{file_name_list[-1]}",
+        f"{LOCAL_BACKUP_PATH}/{file_name_list[-1]}",
+    )
 
-if not args.omit_requirements:
-    deploy_local_dependency(c)
-    install_app(c)
+    # download REPO backup
 
-if not args.omit_database:
-    initialize_db(c)
-    initialize_test_repos(c)
+    c.chdir(REMOTE_REPO_BACKUP_PATH)
+    # use find instead of ls to apply wildcard matching appropriately
+    dir_names = c.run("find . -maxdepth 1 -type d -name '*__*' -printf '%f\n' | sort")
+    dir_name_list = dir_names.stdout.strip().split("\n")
+    assert dir_name_list[-1].startswith("20")
 
-if not args.omit_static:
-    generate_static_files(c)
+    c.rsync_download(
+        f"{REMOTE_REPO_BACKUP_PATH}/{dir_name_list[-1]}/",
+        f"{LOCAL_BACKUP_PATH}/{dir_name_list[-1]}/",
+    )
+    IPS(-1)
+    exit()
 
 
-finalize(c)
+if __name__ == "__main__":
+    if args.debug:
+        debug()
+
+    elif args.backup_evaluation:
+        backup_evaluation(c)
+
+    if args.initial:
+
+        # this shall prevent unexpected domain errors
+        print(
+            "\n",
+            du.yellow(f"Make sure that the domain {django_base_domain} is set up correctly on your uberspace."),
+            "\n",
+        )
+        res = input("Continue (N/y)? ")
+        if res.lower() != "y":
+            print(du.bred("Aborted."))
+            exit()
+
+        create_and_setup_venv(c)
+        render_and_upload_config_files(c)
+        update_supervisorctl(c)
+        set_web_backend(c)
+
+    if args.purge:
+        purge_deployment_dir(c)
+
+    upload_files(c)
+
+    if not args.omit_requirements:
+        deploy_local_dependency(c)
+        install_app(c)
+
+    if not args.omit_database:
+        initialize_db(c)
+        initialize_test_repos(c)
+
+    if not args.omit_static:
+        generate_static_files(c)
+
+
+    finalize(c)

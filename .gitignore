@@ -8,5 +8,7 @@ cache*.pcl
 content_repos
 deployment_date.txt
 
+*shelf.db*
+
 _git_bundle_*
 *.log

@@ -65,7 +65,7 @@ STATIC_ROOT = cfg("STATIC_ROOT").replace("__BASEDIR__", BASE_DIR)
 # Collect media files here (unclear whether we need this, copied from codequiz)
 MEDIA_ROOT = cfg("MEDIA_ROOT").replace("__BASEDIR__", BASE_DIR)
 
-# not yet used
+# used by `savefixtures` and `deploy.py --evaluate-backup`
 BACKUP_PATH = os.path.abspath(cfg("BACKUP_PATH").replace("__BASEDIR__", BASE_DIR))
 
 
