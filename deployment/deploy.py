@@ -195,6 +195,9 @@ class MainManager:
         self.init_fixture_path = init_fixture_path
         self.config = config
 
+        self.REMOTE_DB_BACKUP_PATH: str = None
+        self.REMOTE_REPO_BACKUP_PATH: str = None
+
     def create_and_setup_venv(self):
         c = self.c
 
@@ -341,7 +344,9 @@ class MainManager:
         print("\n", "backup content repos", "\n")
 
         time_stamp_str = time.strftime("%Y-%m-%d__%H-%M-%S")
-        repo_backup_path = f"../fair_debate_repo_backups/{time_stamp_str}"
+
+        # TODO: take this from config
+        repo_backup_path = f"../fair_debate_web_repo_backups/{time_stamp_str}"
         c.run(f"mkdir -p {repo_backup_path}")
         res_repos = c.run(f"cp -r ./content_repos {repo_backup_path}", warn="smart")
         assert res_repos.exited == 0, "Could not backup content repos"
@@ -504,40 +509,54 @@ class MainManager:
     def _download_latest_backup_files(self):
         c = self.c
         print("backup-evaluation")
-
         LOCAL_BACKUP_PATH = f"{os.getcwd()}/_gitignore-backup-evaluation"
+
+        db_dump_file_name, repo_dir_path = self._get_latest_backup_paths()
+
+        c.rsync_download(
+            f"{self.REMOTE_DB_BACKUP_PATH}/{db_dump_file_name}",
+            f"{LOCAL_BACKUP_PATH}/{db_dump_file_name}",
+        )
+
+        c.rsync_download(
+            f"{self.REMOTE_REPO_BACKUP_PATH}/{repo_dir_path}/",
+            f"{LOCAL_BACKUP_PATH}/{repo_dir_path}/",
+        )
+
+    def _get_latest_backup_paths(self):
+        """
+        return filename and dirname
+        """
+        c = self.c
+
         # BASE_DIR = Path(__file__).resolve().parent.parent.as_posix()
-        REMOTE_DB_BACKUP_PATH = os.path.abspath(
+        self.REMOTE_DB_BACKUP_PATH = os.path.abspath(
             self.config("BACKUP_PATH").replace("__BASEDIR__", f"{self.target_deployment_path}")
         )
-        REMOTE_REPO_BACKUP_PATH = REMOTE_DB_BACKUP_PATH.replace("db_backups", "repo_backups")
+        self.REMOTE_REPO_BACKUP_PATH = self.REMOTE_DB_BACKUP_PATH.replace("db_backups", "repo_backups")
 
-        # download DATABASE backup
+        # get filename for latest DATABASE backup
 
-        c.chdir(REMOTE_DB_BACKUP_PATH)
+        c.chdir(self.REMOTE_DB_BACKUP_PATH)
         # file_names = c.run("ls -1 *.json | sort")
         # use find instead of ls to apply wildcard matching reliably
         file_names = c.run("find . -maxdepth 1 -type f -name '*.json' -printf '%f\n' | sort")
         file_name_list = file_names.stdout.strip().split("\n")
         assert file_name_list[-1].startswith("20")
 
-        c.rsync_download(
-            f"{REMOTE_DB_BACKUP_PATH}/{file_name_list[-1]}",
-            f"{LOCAL_BACKUP_PATH}/{file_name_list[-1]}",
-        )
+        db_dump_file_name = file_name_list[-1]
 
-        # download REPO backup
+        # get path for latest REPO backup dir
 
-        c.chdir(REMOTE_REPO_BACKUP_PATH)
+        c.chdir(self.REMOTE_REPO_BACKUP_PATH)
         # use find instead of ls to apply wildcard matching appropriately
         dir_names = c.run("find . -maxdepth 1 -type d -name '*__*' -printf '%f\n' | sort")
         dir_name_list = dir_names.stdout.strip().split("\n")
         assert dir_name_list[-1].startswith("20")
 
-        c.rsync_download(
-            f"{REMOTE_REPO_BACKUP_PATH}/{dir_name_list[-1]}/",
-            f"{LOCAL_BACKUP_PATH}/{dir_name_list[-1]}/",
-        )
+        repo_dir_path = dir_name_list[-1]
+
+        return db_dump_file_name, repo_dir_path
 
 
 if __name__ == "__main__":
