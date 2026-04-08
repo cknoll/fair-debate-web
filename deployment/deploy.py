@@ -170,6 +170,14 @@ c.env_variables["PATH"] = f"/home/{user}/.local/bin:{PATH_ENV}"
 assert c.last_result.return_code == 0
 print(du.bgreen("OK."))
 
+
+# TODO-AIDER: convert all following functions to methods of class MainManager
+
+class MainManager:
+    def __init__(self):
+        self.c = c
+
+
 def create_and_setup_venv(c: du.StateConnection):
 
 
@@ -462,6 +470,13 @@ def debug():
 
 def backup_evaluation(c: du.StateConnection):
     _download_latest_backup_files(c)
+    _compare_backups(c)
+    IPS(-1)
+    exit()
+
+
+def _compare_backups(c: du.StateConnection):
+    pass
 
 def _download_latest_backup_files(c: du.StateConnection):
     print("backup-evaluation")
@@ -499,8 +514,6 @@ def _download_latest_backup_files(c: du.StateConnection):
         f"{REMOTE_REPO_BACKUP_PATH}/{dir_name_list[-1]}/",
         f"{LOCAL_BACKUP_PATH}/{dir_name_list[-1]}/",
     )
-    IPS(-1)
-    exit()
 
 
 if __name__ == "__main__":
