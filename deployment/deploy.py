@@ -339,7 +339,8 @@ def install_app(self):
     c.run(f"pip install -r requirements.txt", target_spec="both")
 
 
-def perform_backup_if_not_omitted(self, c: du.StateConnection):
+def perform_backup_if_not_omitted(self):
+    c = self.c
     if self.args.omit_backup:
         print("\n", du.yellow("backup omitted"), "\n")
         return
@@ -360,7 +361,8 @@ def perform_backup_if_not_omitted(self, c: du.StateConnection):
     assert res_db.exited == 0, "Could not backup database to json"
 
 
-def initialize_db(self, c: du.StateConnection):
+def initialize_db(self):
+    c = self.c
     c.chdir(self.target_deployment_path)
 
     self.perform_backup_if_not_omitted(c)
@@ -386,7 +388,8 @@ def initialize_db(self, c: du.StateConnection):
 
 
 # TODO: this has to change for production phase (or even for beta-testing)
-def initialize_test_repos(self, c):
+def initialize_test_repos(self):
+    c = self.c
     c.activate_venv(f"~/{self.venv}/bin/activate")
     c.chdir(self.target_deployment_path)
 
@@ -406,7 +409,8 @@ def initialize_test_repos(self, c):
     c.run(cmd)
 
 
-def generate_static_files(self, c):
+def generate_static_files(self):
+    c = self.c
 
     c.chdir(self.target_deployment_path)
 
@@ -433,7 +437,8 @@ def generate_static_files(self, c):
 
 
 # TODO: make more generic and move this into deployment utils
-def deploy_local_dependency(self, c: du.StateConnection):
+def deploy_local_dependency(self):
+    c = self.c
     import inspect
     import fair_debate_md
     from pathlib import Path
@@ -446,7 +451,8 @@ def deploy_local_dependency(self, c: du.StateConnection):
     c.deploy_local_package(local_path=project_path, package_name="fair_debate_md")
 
 
-def finalize(self, c):
+def finalize(self):
+    c = self.c
     c.run(f"touch ~/_this_is_uberspace.txt", target_spec="remote")
     py_cmd = "import time; print(time.strftime(r'%Y-%m-%d %H:%M:%S'))"
     c.run(f"""python3 -c "{py_cmd}" > deployment_date.txt""", target_spec="remote")
@@ -457,7 +463,6 @@ def finalize(self, c):
 
 
 def debug(self):
-
     c = self.c
     c.activate_venv(f"~/{self.venv}/bin/activate")
     # c.deploy_this_package()
@@ -489,18 +494,21 @@ def debug(self):
     exit()
 
 
-def backup_evaluation(self, c: du.StateConnection):
-    self._download_latest_backup_files(self.c)
-    self._compare_backups(self.c)
+def backup_evaluation(self):
+    c = self.c
+    self._download_latest_backup_files()
+    self._compare_backups()
     IPS(-1)
     exit()
 
 
-def _compare_backups(self, c: du.StateConnection):
+def _compare_backups(self):
+    c = self.c
     pass
 
 
-def _download_latest_backup_files(self, c: du.StateConnection):
+def _download_latest_backup_files(self):
+    c = self.c
     print("backup-evaluation")
 
     LOCAL_BACKUP_PATH = f"{os.getcwd()}/_gitignore-backup-evaluation"
