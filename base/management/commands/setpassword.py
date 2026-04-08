@@ -2,29 +2,32 @@
 This module enables the command `python manage.py setpassword <username> <password>` (used in `deploy.py`).
 """
 
-from io import StringIO
-
-from django.core.management.base import BaseCommand
-from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
 
 
-
 class Command(BaseCommand):
-    help = 'set password for user'
+    help = 'Set password for a user'
 
     def add_arguments(self, parser):
         # Positional arguments
-        parser.add_argument('username', type=str)
-        parser.add_argument('password', type=str)
+        parser.add_argument('username', type=str, help='Username of the user')
+        parser.add_argument('password', type=str, help='New password for the user')
 
     def handle(self, *args, **options):
-        # evaluate positional arguments
-        self.username, self.password = args
+        username = options['username']
+        password = options['password']
+        
+        if not username or not password:
+            raise CommandError("Username and password are required")
+            
         User = get_user_model()
-        user = User.objects.get(username=self.username)
-        # handle case where user does not exist
-        if not user:
-            raise ValueError(f"User {self.username} does not exist")
-        user.set_password(self.password)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise CommandError(f"User '{username}' does not exist")
+            
+        user.set_password(password)
         user.save()
+        
+        self.stdout.write(self.style.SUCCESS(f"Successfully set password for user '{username}'"))

@@ -195,7 +195,6 @@ class MainManager:
         self.init_fixture_path = init_fixture_path
         self.config = config
 
-
     def create_and_setup_venv(self):
         c = self.c
 
@@ -217,7 +216,6 @@ class MainManager:
 
         # ensure that the same version of deploymentutils like on the controller-pc is also in the server
         c.deploy_this_package()
-
 
     def render_and_upload_config_files(self):
         c = self.c
@@ -247,7 +245,6 @@ class MainManager:
         filters = "--exclude='**/README.md' --exclude='**/template_*'"  # these files would be harmless but might be confusing
         c.rsync_upload(srcpath1 + "/", "~", filters=filters, target_spec="remote")
 
-
     def update_supervisorctl(self):
         c = self.c
         c.activate_venv(f"~/{self.venv}/bin/activate")
@@ -259,7 +256,6 @@ class MainManager:
 
         res1 = c.run(f"supervisorctl status gunicorn-{self.project_name}", target_spec="remote")
         assert "RUNNING" in res1.stdout
-
 
     def set_web_backend(self):
         c = self.c
@@ -287,7 +283,6 @@ class MainManager:
             # c.run(cmd1)
             # c.run(cmd2)
 
-
     def upload_files(self):
         c = self.c
         print("\n", "ensure that deployment path exists", "\n")
@@ -313,7 +308,6 @@ class MainManager:
 
         c.run(f"touch requirements.txt", target_spec="remote")
 
-
     def purge_deployment_dir(self):
         c = self.c
         if not self.args.omit_backup:
@@ -330,14 +324,12 @@ class MainManager:
                 exit()
             c.run(f"rm -r {self.target_deployment_path}", target_spec="both")
 
-
     def install_app(self):
         c = self.c
         c.activate_venv(f"~/{self.venv}/bin/activate")
 
         c.chdir(self.target_deployment_path)
         c.run(f"pip install -r requirements.txt", target_spec="both")
-
 
     def perform_backup_if_not_omitted(self):
         c = self.c
@@ -359,7 +351,6 @@ class MainManager:
         # this uses settings.BACKUP_PATH which is defined in config.toml
         res_db = c.run("python manage.py savefixtures --backup", warn=True)
         assert res_db.exited == 0, "Could not backup database to json"
-
 
     def initialize_db(self):
         c = self.c
@@ -388,15 +379,27 @@ class MainManager:
         # TODO: (someday) implement option to load latest backup
 
         c.run(f"python manage.py loaddata {self.init_fixture_path}", target_spec="both")
-        # TODO-AIDER: the above command loads password hashes from the fixture file (which public in the repo) → insecure
-        # I want for every username in cdata the password in the django db replaced by the password from cdata
-        # therefore I added the setpassword management command. Please use this command here appropriately.
-        # Please also check its implementation in base/management/commands/setpassword.py
-        # for bugs and reasonable improvements.
 
+        # TODO: The following is not yet tested
 
+        # Set passwords for all users from the credentials config
+        import shlex
+        cdata: dict = config("credentials")
+        for key, password in cdata.items():
+            if key.endswith('_pass'):
+                username = key[:-5]  # Remove '_pass' suffix to get username
+                safe_password = shlex.quote(password)
+                res = c.run(
+                    f"python manage.py setpassword {username} {safe_password}",
+                    hide=True,
+                    warn=False,
+                    target_spec="both",
+                )
+                if res.exited != 0:
+                    print(du.bred(f"Could not set password for user '{username}'"))
+                else:
+                    print(du.green(f"Successfully set password for user '{username}'"))
 
-    # TODO: this has to change for production phase (or even for beta-testing)
     def initialize_test_repos(self):
         c = self.c
         c.activate_venv(f"~/{self.venv}/bin/activate")
@@ -405,18 +408,21 @@ class MainManager:
         c.run('git config --global user.email "system@fair-debate.org"')
         c.run('git config --global user.name "fair-debate-system"')
 
-        # this will unpack the .patch files in the respective directory
+        # this will unpack the .patch files (from the fdmd fixture directory) to the respective target dir
+        # this does not affect the database
         c.run("fdmd unpack-repos ./content_repos")
 
         # handle example debate:
         c.chdir(f"{self.target_deployment_path}/content_repos")
         c.run("rm -rf d00-explanatory-example-debate")
+
+        # see devdocs.md, section "Fixture Preparation"
+        # TODO: test if --patches is needed here (I assume it is not)
         cmd = (
             "fdmd process-content-dir __FIXTURES_RP__/d00-explanatory-example-debate__plain "
             "./d00-explanatory-example-debate --patches"
         )
         c.run(cmd)
-
 
     def generate_static_files(self):
         c = self.c
@@ -444,7 +450,6 @@ class MainManager:
 
         c.chdir(self.target_deployment_path)
 
-
     # TODO: make more generic and move this into deployment utils
     def deploy_local_dependency(self):
         c = self.c
@@ -459,7 +464,6 @@ class MainManager:
         project_path = Path(module_path).parents[2].as_posix()
         c.deploy_local_package(local_path=project_path, package_name="fair_debate_md")
 
-
     def finalize(self):
         c = self.c
         c.run(f"touch ~/_this_is_uberspace.txt", target_spec="remote")
@@ -469,7 +473,6 @@ class MainManager:
         c.run(f"supervisorctl restart gunicorn-{self.project_name}", target_spec="remote")
 
         print(final_msg)
-
 
     def debug(self):
         c = self.c
@@ -483,20 +486,16 @@ class MainManager:
 
         exit()
 
-
-
     def backup_evaluation(self):
         c = self.c
         self._download_latest_backup_files()
         self._compare_backups()
-        IPS(-1)
         exit()
-
 
     def _compare_backups(self):
         c = self.c
+        IPS(-1)
         pass
-
 
     def _download_latest_backup_files(self):
         c = self.c
