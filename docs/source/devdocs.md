@@ -39,6 +39,38 @@ UserB --> Approve: "Can approve\nthird party answers"
 
 
 
+## Fixture Preparation
+
+To make the platform understandable we need some example content. This requires data in the db and in repos
+
+### Repos
+
+There are three data sources:
+
+- "proto-repos", i.e. directories with plain md files (without keys) which can easily be updated.
+  - located in `fair-debate-md/src/fair_debate_md/fixtures/repos-preparation/`
+  - example:
+    ```
+    d00-explanatory-example-debate__plain
+    ├── a
+    │   ├── a14b12a.md
+    │   └── a.md
+    └── b
+        ├── a14b.md
+        └── a20b.md
+    ```
+- "repos represented as .patch-files"
+  - located in `fair-debate-md/src/fair_debate_md/fixtures/repos/`
+  - example:
+    ```
+    .
+    └── patches_01
+        ├── 0001-first-commit.patch
+        ├── 0002-add-contribution-a-a.md.patch
+        └── 0003-add-contribution-b-a14b.md.patch
+    ```
+
+
 ## Deployment
 
 
