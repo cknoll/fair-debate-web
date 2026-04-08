@@ -121,7 +121,7 @@ du.argparser.add_argument(
     "--debug", help="start debug interactive mode (IPS), then exit", action="store_true"
 )
 du.argparser.add_argument(
-    "-be", "--backup-evaluation", help="download and evaluate backup files", action="store_true"
+    "-be", "--backup-evaluation", help="download and evaluate backup files (wip)", action="store_true"
 )
 
 # always pass remote as argument (reason: legacy)
@@ -150,7 +150,7 @@ init_fixture_path = os.path.join(target_deployment_path, "tests/testdata/fixture
 
 # print a warning for data destruction
 
-print(du.bred("Currently no full backup will be done during deployment (not yet implemented)."))
+print(du.yellow("Currently no backup behavior during deployment is not yet fully tested."))
 time.sleep(1)
 du.warn_user(
     app_name,
@@ -195,8 +195,10 @@ class MainManager:
         self.init_fixture_path = init_fixture_path
         self.config = config
 
-        self.REMOTE_DB_BACKUP_PATH: str = None
-        self.REMOTE_REPO_BACKUP_PATH: str = None
+        self.REMOTE_DB_BACKUP_PATH = os.path.abspath(
+            self.config("BACKUP_PATH").replace("__BASEDIR__", f"{self.target_deployment_path}")
+        )
+        self.REMOTE_REPO_BACKUP_PATH = self.REMOTE_DB_BACKUP_PATH.replace("db_backups", "repo_backups")
 
     def create_and_setup_venv(self):
         c = self.c
@@ -357,11 +359,13 @@ class MainManager:
         res_db = c.run("python manage.py savefixtures --backup", warn=True)
         assert res_db.exited == 0, "Could not backup database to json"
 
-    def initialize_db(self):
+    def initialize_db_incl_backup(self):
         c = self.c
         c.chdir(self.target_deployment_path)
 
-        self.perform_backup_if_not_omitted(c)
+        self.perform_backup_if_not_omitted()
+
+        # create possible migrations (which are applied below)
         c.run("python manage.py makemigrations", target_spec="both")
 
         # delete old db
@@ -370,9 +374,11 @@ class MainManager:
         # this creates the new database
         c.run("python manage.py migrate --run-syncdb", target_spec="both")
 
+
+        # this might be obsolete because we have the admin user in the fixtures
         # create superuser with password from config
         c.chdir(self.target_deployment_path)
-        cmd = f'export DJANGO_SUPERUSER_PASSWORD="{config("ADMIN_PASS")}"; '
+        cmd = f'export DJANGO_SUPERUSER_PASSWORD="{config("credentials::admin_pass")}"; '
         cmd += 'python manage.py createsuperuser --noinput --username admin --email "a@b.org"'
         c.run(cmd)
 
@@ -381,7 +387,25 @@ class MainManager:
         # dict like {"<username1>_pass": "<password1>", "<username2>_pass": "<password2>", ...}
         cdata: dict = config("credentials")
 
-        # TODO: (someday) implement option to load latest backup
+    def load_all_data_from_latest_backup(self):
+        c = self.c
+
+        db_dump_file_name, repo_dir_path = self._get_latest_backup_paths()
+
+        # database:
+        c.chdir(self.target_deployment_path)
+        db_dump_file_path = os.path.join(self.REMOTE_DB_BACKUP_PATH, db_dump_file_name)
+
+        IPS(-1)
+        exit()
+        c.run(f"python manage.py loaddata {db_dump_file_path}", target_spec="both")
+
+        # repo:
+        c.run("rm -rf ./content_repos", target_spec="both")
+        c.run(f"cp -r {self.REMOTE_REPO_BACKUP_PATH}/{repo_dir_path} ./content_repos", target_spec="both")
+
+    def load_db_data_from_default_fixtures(self):
+        c = self.c
 
         c.run(f"python manage.py loaddata {self.init_fixture_path}", target_spec="both")
 
@@ -405,7 +429,7 @@ class MainManager:
                 else:
                     print(du.green(f"Successfully set password for user '{username}'"))
 
-    def initialize_test_repos(self):
+    def load_content_repos_from_fixtures(self):
         c = self.c
         c.activate_venv(f"~/{self.venv}/bin/activate")
         c.chdir(self.target_deployment_path)
@@ -497,6 +521,7 @@ class MainManager:
 
     def backup_evaluation(self):
         c = self.c
+        print("backup-evaluation")
         self._download_latest_backup_files()
         self._compare_backups()
         exit()
@@ -508,7 +533,6 @@ class MainManager:
 
     def _download_latest_backup_files(self):
         c = self.c
-        print("backup-evaluation")
         LOCAL_BACKUP_PATH = f"{os.getcwd()}/_gitignore-backup-evaluation"
 
         db_dump_file_name, repo_dir_path = self._get_latest_backup_paths()
@@ -528,12 +552,6 @@ class MainManager:
         return filename and dirname
         """
         c = self.c
-
-        # BASE_DIR = Path(__file__).resolve().parent.parent.as_posix()
-        self.REMOTE_DB_BACKUP_PATH = os.path.abspath(
-            self.config("BACKUP_PATH").replace("__BASEDIR__", f"{self.target_deployment_path}")
-        )
-        self.REMOTE_REPO_BACKUP_PATH = self.REMOTE_DB_BACKUP_PATH.replace("db_backups", "repo_backups")
 
         # get filename for latest DATABASE backup
 
@@ -599,8 +617,14 @@ if __name__ == "__main__":
         mm.install_app()
 
     if not args.omit_database:
-        mm.initialize_db()
-        mm.initialize_test_repos()
+        mm.initialize_db_incl_backup()
+
+        # todo: this should be triggered by a flag
+        if 1:
+            mm.load_all_data_from_latest_backup()
+        else:
+            mm.load_db_data_from_default_fixtures()
+            mm.load_content_repos_from_fixtures()
 
     if not args.omit_static:
         mm.generate_static_files()
