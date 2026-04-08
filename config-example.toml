@@ -17,12 +17,13 @@ LOGLEVEL = "INFO"
 remote = 'some_asteroid.uberspace.de'
 user = 'some_user'
 
+
 # #############################################################################
 # deployment settings which should be OK for most use cases
 # #############################################################################
 
 
-app_name = "fair_debate_web"
+app_name = "fair-debate"
 PROJECT_NAME = 'fair_debate_web'
 url_path = "/%(app_name)s"
 port = '8000'
@@ -70,4 +71,16 @@ DEBUG__DEVMODE = true
 # secret keys can be created with: python3 -c "import secrets; print(secrets.token_urlsafe(50))"
 SECRET_KEY = 'NfdysN_yXKWuliPb--example--W5_Fc9VUDOVnPgUBJ2oeq6FjAOJykFWFpK1PL7URw'
 
-ADMIN_PASS = "9_muuozzBL--example-secret--IV70wX6YbRc_TkL3s"
+ADMIN_PASS = '9_muuozzBL--example-secret--IV70wX6YbRc_TkL3s'
+
+[credentials]
+
+admin_pass = "mr5iocfs4w--example-secret--reC8Ab8FAQPEPKIoQ"
+test_user_1_pass = "ARmOXS_LVo--example-secret--wOcyAwoNQuAqCJAc4"
+test_user_2_pass = "zcow9_LVVn--example-secret--nOvvOQEokh8zTseyo"
+test_user_3_pass = "Ty1ism9zsy--example-secret--pTlc4KfxSV0avwLJs"
+test_user_4_pass = "jiy9bqfQMB--example-secret--MOL5cQiqmlHQsHZEE"
+test_user_5_pass = "fTuSvX-AD8--example-secret--pzxcYaXiwWalUveg0"
+test_user_6_pass = "wJP0egaelj--example-secret--qrpRCeLWKUOC8Rml4"
+test_user_7_pass = "Ipn5Aqea3r--example-secret--ejG2ggyVf0fRGOrD0"
+test_user_8_pass = "ql0UK7MwOx--example-secret--KoA3Gwk7PU6YCqb3Q"
