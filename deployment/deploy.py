@@ -171,14 +171,31 @@ assert c.last_result.return_code == 0
 print(du.bgreen("OK."))
 
 
-# TODO-AIDER: convert all following functions to methods of class MainManager
 
 class MainManager:
     def __init__(self):
         self.c = c
+        self.args = args
+        self.target_deployment_path = target_deployment_path
+        self.venv = venv
+        self.venv_path = venv_path
+        self.pipc = pipc
+        self.python_version = python_version
+        self.project_name = project_name
+        self.app_name = app_name
+        self.project_src_path = project_src_path
+        self.asset_dir = asset_dir
+        self.temp_workdir = temp_workdir
+        self.django_base_domain = django_base_domain
+        self.django_url_prefix = django_url_prefix
+        self.static_url_prefix = static_url_prefix
+        self.static_root_dir = static_root_dir
+        self.init_fixture_path = init_fixture_path
+        self.config = config
 
 
-def create_and_setup_venv(c: du.StateConnection):
+def create_and_setup_venv(self):
+    c = self.c
 
 
     # TODO: check if venv exists
@@ -191,8 +208,6 @@ def create_and_setup_venv(c: du.StateConnection):
     c.run(f"rm -rf {venv}")
     c.run(f"virtualenv -p {python_version} {venv}")
 
-    c.activate_venv(f"~/{venv}/bin/activate")
-
     c.run(f"pip install --upgrade pip")
     c.run(f"pip install --upgrade setuptools")
 
@@ -203,83 +218,79 @@ def create_and_setup_venv(c: du.StateConnection):
     c.deploy_this_package()
 
 
-def render_and_upload_config_files(c):
-    """
-    Use some variables from project config file (toml), put them in the template,
-    create service specific config files (ini) and upload them.
-
-    Currently only one config file is created.
-    """
-
-    c.activate_venv(f"~/{venv}/bin/activate")
+def render_and_upload_config_files(self):
+    c = self.c
+    c.activate_venv(f"~/{self.venv}/bin/activate")
 
     # generate the general service ini-file
     tmpl_dir = os.path.join("uberspace", "etc", "services.d")
     tmpl_name = "template_PROJECT_NAME_gunicorn.ini"
-    target_name = "PROJECT_NAME_gunicorn.ini".replace("PROJECT_NAME", project_name)
+    target_name = "PROJECT_NAME_gunicorn.ini".replace("PROJECT_NAME", self.project_name)
 
     time_stamp = time.strftime(r"%Y-%m-%d %H-%M-%S")
     du.render_template(
-        tmpl_path=pjoin(asset_dir, tmpl_dir, tmpl_name),
-        target_path=pjoin(temp_workdir, tmpl_dir, target_name),
+        tmpl_path=pjoin(self.asset_dir, tmpl_dir, tmpl_name),
+        target_path=pjoin(self.temp_workdir, tmpl_dir, target_name),
         context=dict(
-            venv_abs_bin_path=f"{venv_path}/bin", project_name=project_name, port=port, time_stamp=time_stamp
+            venv_abs_bin_path=f"{self.venv_path}/bin", project_name=self.project_name, port=config("port"), time_stamp=time_stamp
         ),
     )
 
     #
     # ## upload config files to remote $HOME ##
     #
-    srcpath1 = os.path.join(temp_workdir, "uberspace")
+    srcpath1 = os.path.join(self.temp_workdir, "uberspace")
     filters = "--exclude='**/README.md' --exclude='**/template_*'"  # these files would be harmless but might be confusing
     c.rsync_upload(srcpath1 + "/", "~", filters=filters, target_spec="remote")
 
 
-def update_supervisorctl(c):
-
-    c.activate_venv(f"~/{venv}/bin/activate")
+def update_supervisorctl(self):
+    c = self.c
+    c.activate_venv(f"~/{self.venv}/bin/activate")
 
     c.run("supervisorctl reread", target_spec="remote")
     c.run("supervisorctl update", target_spec="remote")
     print("waiting 16s for service to start")
     time.sleep(16)
 
-    res1 = c.run(f"supervisorctl status gunicorn-{project_name}", target_spec="remote")
+    res1 = c.run(f"supervisorctl status gunicorn-{self.project_name}", target_spec="remote")
     assert "RUNNING" in res1.stdout
 
 
-def set_web_backend(c):
-    c.activate_venv(f"~/{venv}/bin/activate")
+def set_web_backend(self):
+    c = self.c
+    c.activate_venv(f"~/{self.venv}/bin/activate")
 
     c.run(
-        f"uberspace web backend set {django_base_domain}{django_url_prefix} --http --port {port}", target_spec="remote"
+        f"uberspace web backend set {self.django_base_domain}{self.django_url_prefix} --http --port {config('port')}", target_spec="remote"
     )
 
     # note 1: the static files which are used by django are served under '{static_url_prefix}'/
     # (not {django_url_prefix}}{static_url_prefix})
     # they are served by apache from ~/html{static_url_prefix}, e.g. ~/html/markpad1-static
 
-    c.run(f"uberspace web backend set {django_base_domain}{static_url_prefix} --apache", target_spec="remote")
+    c.run(f"uberspace web backend set {self.django_base_domain}{self.static_url_prefix} --apache", target_spec="remote")
 
     # this is usefull for making the service accessible from other domains:
     if 0:
         url2 = "fair-debate.kddk.eu"
-        cmd1 = f"uberspace web backend set {url2} --http --port {port}"
-        cmd2 = f"uberspace web backend set {url2}{static_url_prefix} --apache"
+        cmd1 = f"uberspace web backend set {url2} --http --port {config('port')}"
+        cmd2 = f"uberspace web backend set {url2}{self.static_url_prefix} --apache"
         # c.run(cmd1)
         # c.run(cmd2)
 
 
-def upload_files(c):
+def upload_files(self):
+    c = self.c
     print("\n", "ensure that deployment path exists", "\n")
-    c.run(f"mkdir -p {target_deployment_path}", target_spec="both")
+    c.run(f"mkdir -p {self.target_deployment_path}", target_spec="both")
 
-    c.activate_venv(f"~/{venv}/bin/activate")
+    c.activate_venv(f"~/{self.venv}/bin/activate")
 
     print("\n", "upload config file", "\n")
-    c.rsync_upload(config.path, target_deployment_path, target_spec="remote")
+    c.rsync_upload(config.path, self.target_deployment_path, target_spec="remote")
 
-    c.chdir(target_deployment_path)
+    c.chdir(self.target_deployment_path)
 
     print("\n", "upload current application files for deployment", "\n")
     # omit irrelevant files (like .git)
@@ -289,14 +300,15 @@ def upload_files(c):
     filters = f"--exclude='.git/' --exclude='.idea/' --exclude='{db_file_name}' "
 
     c.rsync_upload(
-        project_src_path + "/", target_deployment_path, filters=filters, target_spec="both"
+        self.project_src_path + "/", self.target_deployment_path, filters=filters, target_spec="both"
     )
 
     c.run(f"touch requirements.txt", target_spec="remote")
 
 
-def purge_deployment_dir(c):
-    if not args.omit_backup:
+def purge_deployment_dir(self):
+    c = self.c
+    if not self.args.omit_backup:
         print(
             "\n",
             du.bred("  The `--purge` option explicitly requires the `--omit-backup` option. Quit."),
@@ -304,28 +316,27 @@ def purge_deployment_dir(c):
         )
         exit()
     else:
-        answer = input(f" -> {du.yellow('purging')} <{args.target}>/{target_deployment_path} (y/N)")
+        answer = input(f" -> {du.yellow('purging')} <{self.args.target}>/{self.target_deployment_path} (y/N)")
         if answer != "y":
             print(du.bred("Aborted."))
             exit()
-        c.run(f"rm -r {target_deployment_path}", target_spec="both")
+        c.run(f"rm -r {self.target_deployment_path}", target_spec="both")
 
 
-def install_app(c):
-    c.activate_venv(f"~/{venv}/bin/activate")
+def install_app(self):
+    c = self.c
+    c.activate_venv(f"~/{self.venv}/bin/activate")
 
-    c.chdir(target_deployment_path)
+    c.chdir(self.target_deployment_path)
     c.run(f"pip install -r requirements.txt", target_spec="both")
 
 
-def perform_backup_if_not_omitted(c: du.StateConnection):
-
-
-    if args.omit_backup:
+def perform_backup_if_not_omitted(self, c: du.StateConnection):
+    if self.args.omit_backup:
         print("\n", du.yellow("backup omitted"), "\n")
         return
 
-    c.chdir(target_deployment_path)
+    c.chdir(self.target_deployment_path)
     print("\n", "backup content repos", "\n")
 
     time_stamp_str = time.strftime("%Y-%m-%d__%H-%M-%S")
@@ -341,11 +352,10 @@ def perform_backup_if_not_omitted(c: du.StateConnection):
     assert res_db.exited == 0, "Could not backup database to json"
 
 
-def initialize_db(c: du.StateConnection):
+def initialize_db(self, c: du.StateConnection):
+    c.chdir(self.target_deployment_path)
 
-    c.chdir(target_deployment_path)
-
-    perform_backup_if_not_omitted(c)
+    self.perform_backup_if_not_omitted(c)
     c.run("python manage.py makemigrations", target_spec="both")
 
     # delete old db
@@ -355,7 +365,7 @@ def initialize_db(c: du.StateConnection):
     c.run("python manage.py migrate --run-syncdb", target_spec="both")
 
     # create superuser with password from config
-    c.chdir(target_deployment_path)
+    c.chdir(self.target_deployment_path)
     cmd = f'export DJANGO_SUPERUSER_PASSWORD="{config("ADMIN_PASS")}"; '
     cmd += 'python manage.py createsuperuser --noinput --username admin --email "a@b.org"'
     c.run(cmd)
@@ -363,13 +373,13 @@ def initialize_db(c: du.StateConnection):
     # print("\n", "install initial data", "\n")
 
     # TODO: implement option to load latest backup
-    c.run(f"python manage.py loaddata {init_fixture_path}", target_spec="both")
+    c.run(f"python manage.py loaddata {self.init_fixture_path}", target_spec="both")
     # note: there is also the `fdmd unpack-repos ./content_repos` command below
 
 # TODO: this has to change for production phase (or even for beta-testing)
-def initialize_test_repos(c):
-    c.activate_venv(f"~/{venv}/bin/activate")
-    c.chdir(target_deployment_path)
+def initialize_test_repos(self, c):
+    c.activate_venv(f"~/{self.venv}/bin/activate")
+    c.chdir(self.target_deployment_path)
 
     c.run('git config --global user.email "system@fair-debate.org"')
     c.run('git config --global user.name "fair-debate-system"')
@@ -378,7 +388,7 @@ def initialize_test_repos(c):
     c.run("fdmd unpack-repos ./content_repos")
 
     # handle example debate:
-    c.chdir(f"{target_deployment_path}/content_repos")
+    c.chdir(f"{self.target_deployment_path}/content_repos")
     c.run("rm -rf d00-explanatory-example-debate")
     cmd = (
         "fdmd process-content-dir __FIXTURES_RP__/d00-explanatory-example-debate__plain "
@@ -387,34 +397,34 @@ def initialize_test_repos(c):
     c.run(cmd)
 
 
-def generate_static_files(c):
+def generate_static_files(self, c):
 
-    c.chdir(target_deployment_path)
+    c.chdir(self.target_deployment_path)
 
     # TODO: this does not yet work (and must be run and copied manually)
 
     c.run("python manage.py collectstatic --no-input", target_spec="remote")
 
     print("\n", "copy static files to the right place", "\n")
-    targetdir = f"/var/www/virtual/{user}/{django_base_domain}"
+    targetdir = f"/var/www/virtual/{config('user')}/{self.django_base_domain}"
     c.run(f"mkdir -p {targetdir}")
     c.chdir(targetdir)
-    c.run(f"rm -rf ./{static_url_prefix}")
-    c.run(f"cp -r {static_root_dir} ./{static_url_prefix}")
+    c.run(f"rm -rf ./{self.static_url_prefix}")
+    c.run(f"cp -r {self.static_root_dir} ./{self.static_url_prefix}")
 
     # static files for second domain etc.
     for further_domain in config("ALLOWED_HOSTS")[1:]:
-        targetdir = f"/var/www/virtual/{user}/{further_domain}"
+        targetdir = f"/var/www/virtual/{config('user')}/{further_domain}"
         c.run(f"mkdir -p {targetdir}")
         c.chdir(targetdir)
-        c.run(f"rm -rf ./{static_url_prefix}")
-        c.run(f"cp -r {static_root_dir} ./{static_url_prefix}")
+        c.run(f"rm -rf ./{self.static_url_prefix}")
+        c.run(f"cp -r {self.static_root_dir} ./{self.static_url_prefix}")
 
-    c.chdir(target_deployment_path)
+    c.chdir(self.target_deployment_path)
 
 
 # TODO: make more generic and move this into deployment utils
-def deploy_local_dependency(c: du.StateConnection):
+def deploy_local_dependency(self, c: du.StateConnection):
     import inspect
     import fair_debate_md
     from pathlib import Path
@@ -426,19 +436,20 @@ def deploy_local_dependency(c: du.StateConnection):
     c.deploy_local_package(local_path=project_path, package_name="fair_debate_md")
 
 
-def finalize(c):
+def finalize(self, c):
     c.run(f"touch ~/_this_is_uberspace.txt", target_spec="remote")
     py_cmd = "import time; print(time.strftime(r'%Y-%m-%d %H:%M:%S'))"
     c.run(f"""python3 -c "{py_cmd}" > deployment_date.txt""", target_spec="remote")
     print("\n", "restart webservice", "\n")
-    c.run(f"supervisorctl restart gunicorn-{project_name}", target_spec="remote")
+    c.run(f"supervisorctl restart gunicorn-{self.project_name}", target_spec="remote")
 
     print(final_msg)
 
 
-def debug():
+def debug(self):
 
-    c.activate_venv(f"~/{venv}/bin/activate")
+    c = self.c
+    c.activate_venv(f"~/{self.venv}/bin/activate")
     # c.deploy_this_package()
     # render_and_upload_config_files(c)
     # deploy_local_dependency(c)
@@ -448,8 +459,8 @@ def debug():
     # set_web_backend(c)
     # initialize_db(c)
 
-    upload_files(c)
-    perform_backup_if_not_omitted(c)
+    self.upload_files()
+    self.perform_backup_if_not_omitted(c)
     # generate_static_files(c)
     # deploy_local_dependency(c)
     # initialize_test_repos(c)
@@ -458,7 +469,7 @@ def debug():
     exit()
 
     # create_and_setup_venv(c)
-    c.activate_venv(f"{venv_path}/bin/activate")
+    c.activate_venv(f"{self.venv_path}/bin/activate")
 
     c.deploy_this_package()
 
@@ -468,23 +479,23 @@ def debug():
     exit()
 
 
-def backup_evaluation(c: du.StateConnection):
-    _download_latest_backup_files(c)
-    _compare_backups(c)
+def backup_evaluation(self, c: du.StateConnection):
+    self._download_latest_backup_files(self.c)
+    self._compare_backups(self.c)
     IPS(-1)
     exit()
 
 
-def _compare_backups(c: du.StateConnection):
+def _compare_backups(self, c: du.StateConnection):
     pass
 
-def _download_latest_backup_files(c: du.StateConnection):
+def _download_latest_backup_files(self, c: du.StateConnection):
     print("backup-evaluation")
 
     LOCAL_BACKUP_PATH = f"{os.getcwd()}/_gitignore-backup-evaluation"
     # BASE_DIR = Path(__file__).resolve().parent.parent.as_posix()
     REMOTE_DB_BACKUP_PATH = os.path.abspath(
-        config("BACKUP_PATH").replace("__BASEDIR__", f"{target_deployment_path}")
+        self.config("BACKUP_PATH").replace("__BASEDIR__", f"{self.target_deployment_path}")
     )
     REMOTE_REPO_BACKUP_PATH = REMOTE_DB_BACKUP_PATH.replace("db_backups", "repo_backups")
 
@@ -517,11 +528,14 @@ def _download_latest_backup_files(c: du.StateConnection):
 
 
 if __name__ == "__main__":
+    # Create an instance of MainManager
+    mm = MainManager()
+
     if args.debug:
-        debug()
+        mm.debug()
 
     elif args.backup_evaluation:
-        backup_evaluation(c)
+        mm.backup_evaluation()
 
     if args.initial:
 
@@ -536,26 +550,26 @@ if __name__ == "__main__":
             print(du.bred("Aborted."))
             exit()
 
-        create_and_setup_venv(c)
-        render_and_upload_config_files(c)
-        update_supervisorctl(c)
-        set_web_backend(c)
+        mm.create_and_setup_venv()
+        mm.render_and_upload_config_files()
+        mm.update_supervisorctl()
+        mm.set_web_backend()
 
     if args.purge:
-        purge_deployment_dir(c)
+        mm.purge_deployment_dir()
 
-    upload_files(c)
+    mm.upload_files()
 
     if not args.omit_requirements:
-        deploy_local_dependency(c)
-        install_app(c)
+        mm.deploy_local_dependency()
+        mm.install_app()
 
     if not args.omit_database:
-        initialize_db(c)
-        initialize_test_repos(c)
+        mm.initialize_db()
+        mm.initialize_test_repos()
 
     if not args.omit_static:
-        generate_static_files(c)
+        mm.generate_static_files()
 
 
-    finalize(c)
+    mm.finalize()
