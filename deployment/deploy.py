@@ -8,6 +8,7 @@ from pathlib import Path
 # these packages are not in requirements.txt but in deployment_requirements.txt
 # noinspection PyUnresolvedReferences
 from packaging import version
+
 # noinspection PyUnresolvedReferences
 from ipydex import IPS, activate_ips_on_exception
 
@@ -39,9 +40,9 @@ from it over time)
 
 workdir = os.path.abspath(os.getcwd())
 msg = (
-       "This deployment script is expected to be run from the BASEDIR of the django project, i.e. "
-       "from the same directory where manage.py is located. This seems not to be the case.\n"
-       f"Your current workdir is {workdir}"
+    "This deployment script is expected to be run from the BASEDIR of the django project, i.e. "
+    "from the same directory where manage.py is located. This seems not to be the case.\n"
+    f"Your current workdir is {workdir}"
 )
 
 if not os.path.isfile(pjoin(workdir, "manage.py")):
@@ -100,11 +101,13 @@ python_version = config("python_version")
 du.argparser.add_argument(
     "-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true"
 )
-du.argparser.add_argument("-d", "--omit-database",
-                          help="omit database-related-stuff (and requirements)", action="store_true")
+du.argparser.add_argument(
+    "-d", "--omit-database", help="omit database-related-stuff (and requirements)", action="store_true"
+)
 du.argparser.add_argument("-s", "--omit-static", help="omit static file handling", action="store_true")
-du.argparser.add_argument("-x", "--omit-backup",
-                          help="omit db-backup (avoid problems with changed models)", action="store_true")
+du.argparser.add_argument(
+    "-x", "--omit-backup", help="omit db-backup (avoid problems with changed models)", action="store_true"
+)
 du.argparser.add_argument(
     "-q",
     "--omit-requirements",
@@ -171,7 +174,6 @@ assert c.last_result.return_code == 0
 print(du.bgreen("OK."))
 
 
-
 class MainManager:
     def __init__(self):
         self.c = c
@@ -196,7 +198,6 @@ class MainManager:
 
 def create_and_setup_venv(self):
     c = self.c
-
 
     # TODO: check if venv exists
 
@@ -232,7 +233,10 @@ def render_and_upload_config_files(self):
         tmpl_path=pjoin(self.asset_dir, tmpl_dir, tmpl_name),
         target_path=pjoin(self.temp_workdir, tmpl_dir, target_name),
         context=dict(
-            venv_abs_bin_path=f"{self.venv_path}/bin", project_name=self.project_name, port=config("port"), time_stamp=time_stamp
+            venv_abs_bin_path=f"{self.venv_path}/bin",
+            project_name=self.project_name,
+            port=config("port"),
+            time_stamp=time_stamp,
         ),
     )
 
@@ -262,14 +266,18 @@ def set_web_backend(self):
     c.activate_venv(f"~/{self.venv}/bin/activate")
 
     c.run(
-        f"uberspace web backend set {self.django_base_domain}{self.django_url_prefix} --http --port {config('port')}", target_spec="remote"
+        f"uberspace web backend set {self.django_base_domain}{self.django_url_prefix} --http --port {config('port')}",
+        target_spec="remote",
     )
 
     # note 1: the static files which are used by django are served under '{static_url_prefix}'/
     # (not {django_url_prefix}}{static_url_prefix})
     # they are served by apache from ~/html{static_url_prefix}, e.g. ~/html/markpad1-static
 
-    c.run(f"uberspace web backend set {self.django_base_domain}{self.static_url_prefix} --apache", target_spec="remote")
+    c.run(
+        f"uberspace web backend set {self.django_base_domain}{self.static_url_prefix} --apache",
+        target_spec="remote",
+    )
 
     # this is usefull for making the service accessible from other domains:
     if 0:
@@ -376,6 +384,7 @@ def initialize_db(self, c: du.StateConnection):
     c.run(f"python manage.py loaddata {self.init_fixture_path}", target_spec="both")
     # note: there is also the `fdmd unpack-repos ./content_repos` command below
 
+
 # TODO: this has to change for production phase (or even for beta-testing)
 def initialize_test_repos(self, c):
     c.activate_venv(f"~/{self.venv}/bin/activate")
@@ -428,6 +437,7 @@ def deploy_local_dependency(self, c: du.StateConnection):
     import inspect
     import fair_debate_md
     from pathlib import Path
+
     module_path = inspect.getfile(fair_debate_md)
     assert module_path.endswith("fair-debate-md/src/fair_debate_md/__init__.py")
 
@@ -489,6 +499,7 @@ def backup_evaluation(self, c: du.StateConnection):
 def _compare_backups(self, c: du.StateConnection):
     pass
 
+
 def _download_latest_backup_files(self, c: du.StateConnection):
     print("backup-evaluation")
 
@@ -542,7 +553,9 @@ if __name__ == "__main__":
         # this shall prevent unexpected domain errors
         print(
             "\n",
-            du.yellow(f"Make sure that the domain {django_base_domain} is set up correctly on your uberspace."),
+            du.yellow(
+                f"Make sure that the domain {django_base_domain} is set up correctly on your uberspace."
+            ),
             "\n",
         )
         res = input("Continue (N/y)? ")
@@ -570,6 +583,5 @@ if __name__ == "__main__":
 
     if not args.omit_static:
         mm.generate_static_files()
-
 
     mm.finalize()
