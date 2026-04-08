@@ -97,3 +97,24 @@ on a remote machine where I have ssh access there is the following directory str
 
 
 `rsync -av "kddk@host:$(ssh user@host 'cd ~/AAA/BBB && ls -1d 20* | sort | tail -n 1')"  ./local-destination/`
+
+
+### Local Deployment on Development Machine
+
+
+```bash
+
+# recommendation: make a fresh checkout of the repo
+# copy (or create) valid config.toml
+
+pip install -r requirements.txt
+rm -f db.sqlite3
+python manage.py migrate --run-syncdb
+python manage.py loaddata tests/testdata/fixtures01.json
+fdmd unpack-repos ./content_repos
+rm -rf ./content_repos/d00-explanatory-example-debate
+fdmd process-content-dir __FIXTURES_RP__/d00-explanatory-example-debate__plain ./content_repos/d00-explanatory-example-debate
+
+
+python manage.py runserver
+```

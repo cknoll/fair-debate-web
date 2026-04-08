@@ -452,6 +452,10 @@ class MainManager:
 
     # TODO: make more generic and move this into deployment utils
     def deploy_local_dependency(self):
+        """
+        make sure that we use the remote same (development) version of fair-debate-md on the
+        deployment server as we have on the development machine (where the deployment script is run)
+        """
         c = self.c
         import inspect
         import fair_debate_md

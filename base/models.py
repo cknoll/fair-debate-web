@@ -43,7 +43,8 @@ class Debate(models.Model):
     )
 
     # this field serves to introduce a database change to test/debug the effect of db changes in deployment
-    # irrelevant_attribute = models.IntegerField(default=0)
+    # currently needed to reuse backups
+    irrelevant_attribute = models.IntegerField(default=0)
 
     def get_user_role(self, user: DebateUser):
 
