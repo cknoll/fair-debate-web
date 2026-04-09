@@ -7,4 +7,5 @@
         {{ debate.title }}
     </a>
     <span class="dim" title="{{debate.update_date}}">(updated {{debate.update_date|naturaltime}})</span>
+    <span class="discoverability" title="Discoverability: {{debate.get_discoverability_display}}">[{{debate.discoverability}}]</span>
 </li>
