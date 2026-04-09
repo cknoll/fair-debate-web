@@ -374,7 +374,6 @@ class MainManager:
         # this creates the new database
         c.run("python manage.py migrate --run-syncdb", target_spec="both")
 
-
         # this might be obsolete because we have the admin user in the fixtures
         # create superuser with password from config
         c.chdir(self.target_deployment_path)
@@ -396,13 +395,14 @@ class MainManager:
         c.chdir(self.target_deployment_path)
         db_dump_file_path = os.path.join(self.REMOTE_DB_BACKUP_PATH, db_dump_file_name)
 
-        IPS(-1)
-        exit()
         c.run(f"python manage.py loaddata {db_dump_file_path}", target_spec="both")
 
         # repo:
         c.run("rm -rf ./content_repos", target_spec="both")
-        c.run(f"cp -r {self.REMOTE_REPO_BACKUP_PATH}/{repo_dir_path} ./content_repos", target_spec="both")
+        c.run(
+            f"cp -r {self.REMOTE_REPO_BACKUP_PATH}/{repo_dir_path}/content_repos ./content_repos",
+            target_spec="both",
+        )
 
     def load_db_data_from_default_fixtures(self):
         c = self.c
@@ -622,6 +622,7 @@ if __name__ == "__main__":
         # todo: this should be triggered by a flag
         if 1:
             mm.load_all_data_from_latest_backup()
+            IPS(-1)
         else:
             mm.load_db_data_from_default_fixtures()
             mm.load_content_repos_from_fixtures()

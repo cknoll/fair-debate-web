@@ -88,15 +88,15 @@ Note: This is work in progress, and thus not as professional as desired.
 - repos are saved at `~/fair_debate_web-deployment/fair_debate_repo_backups`
 
 
-- download backups for local comparison:
+- download backups for local comparison: `python deployment/deploy.py -u -be` (see code before running)
 
 
-on a remote machine where I have ssh access there is the following directory structure:
+---
 
-`~/AAA/BBB/YYYY-MM-DD__hh-mm-ss` where `YYYY-MM-DD__hh-mm-ss` is a placeholder for multiple directories all named with a time-stamp in iso-like format. I want to download the latest of those directories with rsync (without explicitly specifying its name). How can I do this?
+- create fixture-ready pw-hash: `python -c "import django; from django.conf import settings; settings.configure(); from django.contrib.auth.hashers import make_password; print(make_password(input('new password:')))"`
 
+---
 
-`rsync -av "kddk@host:$(ssh user@host 'cd ~/AAA/BBB && ls -1d 20* | sort | tail -n 1')"  ./local-destination/`
 
 
 ### Local Deployment on Development Machine
