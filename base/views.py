@@ -414,6 +414,7 @@ class ShowDebateView(View):
                 "segmented_html": body_content_html,
                 "debate_title": debate_obj.debate_key,  # TODO: the title should come from metadata.toml
                 "debate_key": debate_obj.debate_key,
+                "debate_discoverability": debate_obj.discoverability,
                 "user_role": debate_obj.get_user_role(request.user),
                 "num_db_ctbs": len_ctb_obj_set,
                 "num_answers": ddl.num_answers,
