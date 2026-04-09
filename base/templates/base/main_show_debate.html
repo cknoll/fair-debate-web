@@ -14,6 +14,7 @@
 <div id="second_sticky_bar">
     <span id="debate_title">
         <h2>{{data.debate_title}}</h2>
+        <span class="discoverability" title="Discoverability: {{data.debate_discoverability}}">[{{data.debate_discoverability}}]</span>
         <span class="clickable_span" title="copy url to clipboard" onclick="copyFullURL()">&#x1F517;</span>
         {% if data.num_answers %}
         <span>({{ data.num_answers }}
