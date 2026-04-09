@@ -346,6 +346,8 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(get_parsed_element_by_id("data-num_answers", res=response), 1)
 
     def test_035a__new_nonpublic_debate(self):
+        # settings.CATCH_EXCEPTIONS = False
+
         self.perform_login("testuser_1")
         response = self.client.get(reverse("new_debate"))
         self.assertEqual(response.status_code, 200)
@@ -353,38 +355,58 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         with open(fdmd.fixtures.txt1_md_fpath) as fp:
             content = fp.read()
 
+        # Test creating a debate with invalid discoverability → raise ValueError which is catched by middleware
+        response = self.post_to_view(
+            viewname="new_debate",
+            spec_values={
+                "body": content,
+                "debate_slug": "test_hidden_debate_xyz",
+                "discoverability": "-invalid-",
+            },
+            follow_redirect=False,
+        )
+        self.assertEqual(response.status_code, 500)
+
         # Test creating a hidden debate
         response = self.post_to_view(
             viewname="new_debate",
-            spec_values={"body": content, "debate_slug": "test_hidden_debate", "discoverability": "hidden"},
+            spec_values={
+                "body": content,
+                "debate_slug": "test_hidden_debate_xyz",
+                "discoverability": "hidden",
+            },
             follow_redirect=True,
         )
         self.assertEqual(response.status_code, 200)
 
         # Get the created debate and verify its discoverability
-        debate = models.Debate.objects.get(debate_key__endswith="test_hidden_debate")
+        debate = models.Debate.objects.get(debate_key__endswith="test-hidden-debate-xyz")
         self.assertEqual(debate.discoverability, "hidden")
 
         # Test creating a private debate
         response = self.post_to_view(
             viewname="new_debate",
-            spec_values={"body": content, "debate_slug": "test_private_debate", "discoverability": "private"},
+            spec_values={
+                "body": content,
+                "debate_slug": "test_private_debate_abc",
+                "discoverability": "private",
+            },
             follow_redirect=True,
         )
         self.assertEqual(response.status_code, 200)
 
-        debate = models.Debate.objects.get(debate_key__endswith="test_private_debate")
+        debate = models.Debate.objects.get(debate_key__endswith="test-private-debate-abc")
         self.assertEqual(debate.discoverability, "private")
 
         # Test default (public) debate
         response = self.post_to_view(
             viewname="new_debate",
-            spec_values={"body": content, "debate_slug": "test_public_debate"},
+            spec_values={"body": content, "debate_slug": "test_public_debate_0815"},
             follow_redirect=True,
         )
         self.assertEqual(response.status_code, 200)
 
-        debate = models.Debate.objects.get(debate_key__endswith="test_public_debate")
+        debate = models.Debate.objects.get(debate_key__endswith="test-public-debate-0815")
         self.assertEqual(debate.discoverability, "public")
 
     def test_036__markdown_rendering_of_backticks(self):
@@ -495,7 +517,6 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         """
         response = self.client.get(reverse("landing_page"))
         self.assertEqual(response.status_code, 200)
-
 
         def get_debates_from_html_list(response, ul_id: str):
 

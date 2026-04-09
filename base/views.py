@@ -84,9 +84,15 @@ class NewDebateView(View):
         return render(request, template, context)
 
     def post(self, request, **kwargs):
+
+        discoverability = request.POST.get("discoverability", Debate.discoverability.field.default)
+
+        # ensure enum type and correct string
+        discoverability = Debate.Discoverability(discoverability)
+
         debate_obj = Debate(
             user_a=request.user,
-            discoverability=request.POST.get("discoverability", Debate.discoverability._get_default()),
+            discoverability=discoverability,
         )
         debate_obj.save()
 
