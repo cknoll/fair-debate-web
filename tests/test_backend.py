@@ -345,6 +345,11 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(get_parsed_element_by_id("data-num_db_ctbs", res=response), 0)
         self.assertEqual(get_parsed_element_by_id("data-num_answers", res=response), 1)
 
+    def test_035a__new_nonpublic_debate(self):
+        # TODO-AIDER: recently I added the attribute `models.Debate.discoverability`. However, as of now when a new debate-object is created,
+        # this attribute is not asked for. This has to change. Please guide me step by step (views.py, template, tests...).
+        pass
+
     def test_036__markdown_rendering_of_backticks(self):
         self.perform_login("testuser_1")
         # response = self.client.get(reverse("new_debate"))
