@@ -25,6 +25,12 @@
     <form id="new-debate-form" action="{{ request.path }}" method="POST">
         {% csrf_token %}
         <input type="text" placeholder="slug" id="debate_slug_input" name="debate_slug"><br><br>
+        <select id="discoverability" name="discoverability">
+            <option value="public" selected>Public</option>
+            <option value="hidden">Hidden</option>
+            <option value="private">Private</option>
+        </select>
+        <br><br>
         <textarea id="new-debate-body-ta" class="custom-textarea" placeholder="Add markdown source here." name="body">{{ data.plain_md }}</textarea>
         <div class="button-container">
             <button type="button" onclick="window.history.back();">Cancel</button>

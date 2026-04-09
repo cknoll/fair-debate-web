@@ -22,6 +22,11 @@ class Debate(models.Model):
         HIDDEN = "hidden", "Hidden"
         PRIVATE = "private", "Private"
 
+        # bypass duplicate-check
+        @classmethod
+        def _get_default(self):
+            return self.PUBLIC
+
     debate_key = models.CharField(max_length=255)  # TODO: add unique=True
     repo_a = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_a")
     repo_b = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL, related_name="debate_b")
@@ -39,7 +44,7 @@ class Debate(models.Model):
     n_committed_contributions = models.IntegerField(default=0)
 
     discoverability = models.CharField(
-        max_length=20, choices=Discoverability.choices, default=Discoverability.PUBLIC
+        max_length=20, choices=Discoverability.choices, default=Discoverability._get_default()
     )
 
     # this field serves to introduce a database change to test/debug the effect of db changes in deployment

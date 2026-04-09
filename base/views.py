@@ -84,7 +84,10 @@ class NewDebateView(View):
         return render(request, template, context)
 
     def post(self, request, **kwargs):
-        debate_obj = Debate(user_a=request.user)
+        debate_obj = Debate(
+            user_a=request.user,
+            discoverability=request.POST.get("discoverability", Debate.discoverability._get_default()),
+        )
         debate_obj.save()
 
         slug = utils.sanitize_slug(request.POST["debate_slug"])

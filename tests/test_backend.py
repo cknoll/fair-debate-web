@@ -346,9 +346,46 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         self.assertEqual(get_parsed_element_by_id("data-num_answers", res=response), 1)
 
     def test_035a__new_nonpublic_debate(self):
-        # TODO-AIDER: recently I added the attribute `models.Debate.discoverability`. However, as of now when a new debate-object is created,
-        # this attribute is not asked for. This has to change. Please guide me step by step (views.py, template, tests...).
-        pass
+        self.perform_login("testuser_1")
+        response = self.client.get(reverse("new_debate"))
+        self.assertEqual(response.status_code, 200)
+
+        with open(fdmd.fixtures.txt1_md_fpath) as fp:
+            content = fp.read()
+
+        # Test creating a hidden debate
+        response = self.post_to_view(
+            viewname="new_debate",
+            spec_values={"body": content, "debate_slug": "test_hidden_debate", "discoverability": "hidden"},
+            follow_redirect=True,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # Get the created debate and verify its discoverability
+        debate = models.Debate.objects.get(debate_key__endswith="test_hidden_debate")
+        self.assertEqual(debate.discoverability, "hidden")
+
+        # Test creating a private debate
+        response = self.post_to_view(
+            viewname="new_debate",
+            spec_values={"body": content, "debate_slug": "test_private_debate", "discoverability": "private"},
+            follow_redirect=True,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        debate = models.Debate.objects.get(debate_key__endswith="test_private_debate")
+        self.assertEqual(debate.discoverability, "private")
+
+        # Test default (public) debate
+        response = self.post_to_view(
+            viewname="new_debate",
+            spec_values={"body": content, "debate_slug": "test_public_debate"},
+            follow_redirect=True,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        debate = models.Debate.objects.get(debate_key__endswith="test_public_debate")
+        self.assertEqual(debate.discoverability, "public")
 
     def test_036__markdown_rendering_of_backticks(self):
         self.perform_login("testuser_1")
