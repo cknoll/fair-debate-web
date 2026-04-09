@@ -619,7 +619,7 @@ if __name__ == "__main__":
     if not args.omit_database:
         mm.initialize_db_incl_backup()
 
-        # todo: this should be triggered by a flag
+        # TODO-AIDER: this should be triggered by a cli flag
         if 1:
             mm.load_all_data_from_latest_backup()
             IPS(-1)
