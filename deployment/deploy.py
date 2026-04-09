@@ -123,6 +123,12 @@ du.argparser.add_argument(
 du.argparser.add_argument(
     "-be", "--backup-evaluation", help="download and evaluate backup files (wip)", action="store_true"
 )
+du.argparser.add_argument(
+    "-l",
+    "--load-from-backup",
+    help="load all data from the latest backup (database and repos)",
+    action="store_true",
+)
 
 # always pass remote as argument (reason: legacy)
 
@@ -619,10 +625,8 @@ if __name__ == "__main__":
     if not args.omit_database:
         mm.initialize_db_incl_backup()
 
-        # TODO-AIDER: this should be triggered by a cli flag
-        if 1:
+        if args.load_from_backup:
             mm.load_all_data_from_latest_backup()
-            IPS(-1)
         else:
             mm.load_db_data_from_default_fixtures()
             mm.load_content_repos_from_fixtures()
