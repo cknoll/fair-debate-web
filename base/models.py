@@ -93,11 +93,27 @@ class Debate(models.Model):
 
 
 
+class DebateAsUserAInline(admin.TabularInline):
+    model = Debate
+    fk_name = "user_a"
+    extra = 0
+    readonly_fields = ["debate_key", "repo_a", "repo_b", "user_b", "update_date", "n_committed_contributions", "discoverability"]
+
+
+class DebateAsUserBInline(admin.TabularInline):
+    model = Debate
+    fk_name = "user_b"
+    extra = 0
+    readonly_fields = ["debate_key", "repo_a", "repo_b", "user_a", "update_date", "n_committed_contributions", "discoverability"]
+
+
 class DebateAdmin(admin.ModelAdmin):
     pass
 
-class DebateUserAdmin(admin.InlineModelAdmin):
-    inlines = [DebateAdmin, DebateAdmin]
+
+class DebateUserAdmin(admin.ModelAdmin):
+    inlines = [DebateAsUserAInline, DebateAsUserBInline]
+
 
 admin.site.register(DebateUser, DebateUserAdmin)
 admin.site.register(Debate, DebateAdmin)
