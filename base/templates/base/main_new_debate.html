@@ -25,6 +25,7 @@
     <form id="new-debate-form" action="{{ request.path }}" method="POST">
         {% csrf_token %}
         <input type="text" placeholder="slug" id="debate_slug_input" name="debate_slug"><br><br>
+        Discoverability:
         <select id="discoverability" name="discoverability">
             <option value="public" selected>Public</option>
             <option value="hidden">Hidden</option>

@@ -102,7 +102,10 @@ du.argparser.add_argument(
     "-o", "--omit-tests", help="omit test execution (e.g. for dev branches)", action="store_true"
 )
 du.argparser.add_argument(
-    "-d", "--omit-database", help="omit database-related-stuff (and requirements)", action="store_true"
+    "-d",
+    "--omit-database",
+    help="omit re-initializing the database(and repos), i.e. use existing data",
+    action="store_true",
 )
 du.argparser.add_argument("-s", "--omit-static", help="omit static file handling", action="store_true")
 du.argparser.add_argument(
@@ -643,6 +646,9 @@ if __name__ == "__main__":
         else:
             mm.load_db_data_from_default_fixtures()
             mm.load_content_repos_from_fixtures()
+    else:
+        assert args.omit_database  # just for clarification
+        assert not args.load_from_backup  # sanity check
 
     if not args.omit_static:
         mm.generate_static_files()
