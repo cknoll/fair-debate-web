@@ -6,13 +6,12 @@
     - links should be deactivated by default, it otherwise would prevent toggling a segment
 
 
-- [ ] i43 user a should be able to change visibility (public, private, hidden)
+- [x] i43 user a should be able to change visibility (public, private, hidden)
 - [ ] i42 recover currently unaccessible repos d8 etc
-- [ ] i41 prevent .aider history etc. from being copied to deployment server
-- [ ] i40 there should be a simple way to determine the difference between the working data of two instances.
+- [x] i41 prevent .aider history etc. from being copied to deployment server
+- [.] i40 there should be a simple way to determine the difference between the working data of two instances.
     - reason: I run the public test instance. If I redeploy I will apply some fixtures. But there might also be user-generated data and I do not want to overwrite this without reviewing the content.
-    - I need overview for models:
-        - base.contribution, base.debate. base.debateuser, base.repo
+    - somehow solved by `deploy.py --backup-evaluation` + manual local investigation
 - [ ] i39 users should appear in admin panel
 - [ ] i38 improve UI design
     -  [ ] see and evaluate incomplete approaches in branches `aider_style` and `manual_styling`

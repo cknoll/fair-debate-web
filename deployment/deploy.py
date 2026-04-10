@@ -106,7 +106,10 @@ du.argparser.add_argument(
 )
 du.argparser.add_argument("-s", "--omit-static", help="omit static file handling", action="store_true")
 du.argparser.add_argument(
-    "-x", "--omit-backup", help="omit db-backup (avoid problems with changed models)", action="store_true"
+    "-x", "--omit-backup", help=(
+        "omit db- and repo-backup (e.g. to avoid problems with changed models); "
+        "is independent of --load-from-backup"
+    ), action="store_true"
 )
 du.argparser.add_argument(
     "-q",
@@ -124,9 +127,13 @@ du.argparser.add_argument(
     "-be", "--backup-evaluation", help="download and evaluate backup files (wip)", action="store_true"
 )
 du.argparser.add_argument(
-    "-l",
     "--load-from-backup",
     help="load all data from the latest backup (database and repos)",
+    action="store_true",
+)
+du.argparser.add_argument(
+    "--omit-upload-files",
+    help="do not upload source and config files",
     action="store_true",
 )
 
@@ -311,7 +318,11 @@ class MainManager:
         # TODO: this should be done more elegantly
 
         db_file_name = config("DB_FILE_NAME")
-        filters = f"--exclude='.git/' --exclude='.idea/' --exclude='{db_file_name}' "
+
+        exclude_patterns = [".git/", ".idea/", db_file_name, "content_repos/", ".env", ".aider*"]
+        filters = " ".join(f"--exclude='{pat}'" for pat in exclude_patterns)
+
+        # filters = f"--exclude='.git/' --exclude='.idea/' --exclude='{db_file_name}' "
 
         c.rsync_upload(
             self.project_src_path + "/", self.target_deployment_path, filters=filters, target_spec="both"
@@ -433,7 +444,7 @@ class MainManager:
                 if res.exited != 0:
                     print(du.bred(f"Could not set password for user '{username}'"))
                 else:
-                    print(du.green(f"Successfully set password for user '{username}'"))
+                    print(du.bgreen(f"Successfully set password for user '{username}'"))
 
     def load_content_repos_from_fixtures(self):
         c = self.c
@@ -616,7 +627,8 @@ if __name__ == "__main__":
     if args.purge:
         mm.purge_deployment_dir()
 
-    mm.upload_files()
+    if not args.omit_upload_files:
+        mm.upload_files()
 
     if not args.omit_requirements:
         mm.deploy_local_dependency()
@@ -626,6 +638,7 @@ if __name__ == "__main__":
         mm.initialize_db_incl_backup()
 
         if args.load_from_backup:
+            # note: *creating* backup can be omitted and this is still executed.
             mm.load_all_data_from_latest_backup()
         else:
             mm.load_db_data_from_default_fixtures()
