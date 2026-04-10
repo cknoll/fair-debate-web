@@ -12,13 +12,13 @@
 - [.] i40 there should be a simple way to determine the difference between the working data of two instances.
     - reason: I run the public test instance. If I redeploy I will apply some fixtures. But there might also be user-generated data and I do not want to overwrite this without reviewing the content.
     - somehow solved by `deploy.py --backup-evaluation` + manual local investigation
-- [ ] i39 users should appear in admin panel
+- [.] i39 users should appear in admin panel
 - [ ] i38 improve UI design
     -  [ ] see and evaluate incomplete approaches in branches `aider_style` and `manual_styling`
 - [x] i37 hidden and debates should only be listed in private section of front page
     - [x] test
     - [x] feature
-- [.] i36 backup fails if the model has changed:
+- [x] i36 backup fails if the model has changed:
     ```
     python manage.py savefixtures --backup
     CommandError: Unable to serialize database: no such column: base_debate.discoverability
