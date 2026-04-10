@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib import admin
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class Repo(models.Model):
@@ -91,13 +91,13 @@ class Debate(models.Model):
         return f"Debate<{self.debate_key}>"
 
 
-class DebateUserAdmin(admin.ModelAdmin):
-    pass
 
 
 class DebateAdmin(admin.ModelAdmin):
     pass
 
+class DebateUserAdmin(admin.InlineModelAdmin):
+    inlines = [DebateAdmin, DebateAdmin]
 
 admin.site.register(DebateUser, DebateUserAdmin)
 admin.site.register(Debate, DebateAdmin)
