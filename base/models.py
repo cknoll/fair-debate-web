@@ -8,7 +8,6 @@ class Repo(models.Model):
     url = models.CharField(max_length=1000)
 
 
-# TODO-AIDER: This model does not appear in the admin interface. Please fix.
 class DebateUser(AbstractUser):
     repos = models.ManyToManyField(Repo, related_name="users", blank=True)
     active_rep = models.ForeignKey(Repo, null=True, on_delete=models.SET_NULL)
@@ -92,10 +91,15 @@ class Debate(models.Model):
         return f"Debate<{self.debate_key}>"
 
 
+class DebateUserAdmin(admin.ModelAdmin):
+    pass
+
+
 class DebateAdmin(admin.ModelAdmin):
     pass
 
 
+admin.site.register(DebateUser, DebateUserAdmin)
 admin.site.register(Debate, DebateAdmin)
 
 
