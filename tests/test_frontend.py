@@ -1068,6 +1068,80 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         error_list = get_js_error_list(b1)
         self.assertFalse(error_list)
 
+    def test_g123__not_logged_in_warning_visibility(self):
+        """
+        Test that the 'not_logged_in_warning' div is shown only for unauthenticated users
+        when they are allowed to add a contribution (i.e., when user_b is "__undefined__").
+
+        This test covers the following scenarios:
+        1. Anonymous user on a debate where user_b is "__undefined__": warning should be visible
+        2. Logged-in user: warning should be hidden (has 'hidden' class)
+        """
+
+        # Case 1: Anonymous user on a debate where user_b is "__undefined__"
+        # This is a newly created debate (from _g120__common) where user_b is not yet assigned
+        c = self._g120__common(create_b2=False)  # creates a new debate with user_b = "__undefined__"
+        b1 = c.b1
+
+        # At this point, user_b should be "__undefined__" because the debate was just created
+        # and user_b has not been assigned yet
+        user_b_element = get_parsed_element_by_id(id="data-user_b", browser=b1)
+        self.assertEqual(user_b_element, "__undefined__")
+
+        # Click on segment a3 twice to open the contribution form
+        # First click: shows toolbar
+        trigger_click_event(b1, id="a3")
+        # Second click: should open contribution form (because user_b is "__undefined__")
+        trigger_click_event(b1, id="a3")
+
+        # Verify contribution form is present
+        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 1)
+
+        # Verify the warning div is present and visible (no 'hidden' class)
+        warning_div = b1.evaluate_script(
+            'document.getElementsByClassName("not_logged_in_warning")[0]'
+        )
+        self.assertIsNotNone(warning_div)
+
+        # Check that the warning does NOT have the 'hidden' class
+        has_hidden_class = b1.evaluate_script(
+            'document.getElementsByClassName("not_logged_in_warning")[0].classList.contains("hidden")'
+        )
+        self.assertFalse(has_hidden_class)
+
+        # Verify the warning text is correct
+        warning_text = b1.evaluate_script(
+            'document.getElementsByClassName("not_logged_in_warning")[0].textContent'
+        )
+        self.assertIn("not logged", warning_text.lower())
+
+        # Case 2: Logged-in user - warning should be hidden
+        # First, logout
+        self.perform_logout(b1)
+
+        # Now login as testuser_2 (who will have role 'b')
+        self.perform_login(browser=b1, username="testuser_2")
+
+        # Refresh the page to get the updated user context
+        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
+
+        # Verify user is now authenticated
+        user_is_authenticated = get_parsed_element_by_id(id="data-user_is_authenticated", browser=b1)
+        self.assertEqual(user_is_authenticated, "true")
+
+        # Click on segment a3 twice to open the contribution form
+        trigger_click_event(b1, id="a3")
+        trigger_click_event(b1, id="a3")
+
+        # Verify contribution form is present
+        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 1)
+
+        # Verify the warning div has the 'hidden' class
+        has_hidden_class = b1.evaluate_script(
+            'document.getElementsByClassName("not_logged_in_warning")[0].classList.contains("hidden")'
+        )
+        self.assertTrue(has_hidden_class)
+
 
 # #################################################################################################
 
