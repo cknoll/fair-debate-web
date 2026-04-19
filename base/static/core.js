@@ -433,6 +433,7 @@ class SegmentClickState {
         this.debateHasUserB = (user_b !== "__undefined__");
         this.userDoesParticipateInDebate = ["a", "b"].includes(user_role)
 
+        // TODO-AIDER: This flag should be false if user is not authenticated
         this.userIsAllowedToAnswer = (
             (this.contributionKey.endsWith(user_role) && !this.segmentHasAnswer) ||
             ((user_role === null) && (user_b === "__undefined__"))
