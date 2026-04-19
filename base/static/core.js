@@ -433,7 +433,10 @@ class SegmentClickState {
         this.debateHasUserB = (user_b !== "__undefined__");
         this.userDoesParticipateInDebate = ["a", "b"].includes(user_role)
 
-        this.userIsAllowedToAnswer = ((this.contributionKey.endsWith(user_role) && !this.segmentHasAnswer) || ((user_role === null) && (user_b === "__undefined__")))
+        this.userIsAllowedToAnswer = (
+            (this.contributionKey.endsWith(user_role) && !this.segmentHasAnswer) ||
+            ((user_role === null) && (user_b === "__undefined__"))
+        )
         // we are allowed to add a contribution
         // either because user user role matches with the required role for the planned contribution
         // or because we have no role yet AND user_b is __undefined__;
