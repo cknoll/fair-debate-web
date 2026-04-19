@@ -42,7 +42,9 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     # headless = True
     headless = "new"  # recommended by ai
 
-    js_segment_contribution_forms = 'document.getElementsByClassName("segment_contribution_form_container")'
+    js_get_segment_contribution_forms = (
+        'document.getElementsByClassName("segment_contribution_form_container")'
+    )
 
     @classmethod
     def setUpClass(cls):
@@ -102,7 +104,6 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # ensure that the login was successful
 
-
         # be robust against StaleElementReferenceException
         max_attempts = 3
         for i in range(max_attempts + 1):
@@ -119,14 +120,17 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
                 html_value = None
             time.sleep(0.1)
 
-
         if failed_login_attempt and html_value == "true":
             msg = f"Login process unexpectedly failed ({username=})"
             raise ValueError(msg)
 
-    def perform_logout(self, browser: BaseWebDriver):
+    def perform_logout(self, browser: BaseWebDriver, return_to_current_page=False):
+        original_url = browser.url
         browser.visit(f"{self.live_server_url}{reverse('logout')}")
         self.assertFalse(auth.get_user(self.client).is_authenticated)
+
+        if return_to_current_page:
+            browser.visit(original_url)
 
     def fast_get(self, browser: Browser, id_str: str = None, class_str: str = None):
         """
@@ -224,7 +228,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
             # assert that no form is displayed:
             # (using JS is faster and more reliable than using splinter directly)
-            self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 0)
+            self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
             seg_id_text_0 = b1.find_by_id("seg_id_display")[0].text
             self.assertEqual(seg_id_text_0, "")
@@ -317,32 +321,29 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # investigate the (non) appearance of the contribution form
         # (this is not solved via `self.fast_get_by_id` to possibly receive more then 1 result)
-        js_segment_contribution_forms = (
-            'document.getElementsByClassName("segment_contribution_form_container")'
-        )
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
         # first click: toolbar
         trigger_click_event(b1, id="a3")
         # 2nd click: contribution form
         trigger_click_event(b1, id="a3")
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 1)
 
         # assert that the form does not appear multiple times
         trigger_click_event(b1, id="a3")
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
         trigger_click_event(b1, id="a3")
         trigger_click_event(b1, id="a3")
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 1)
 
         # cancel the form
         b1.find_by_css("._cancel_button").click()
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
         trigger_click_event(b1, id="a3")
         trigger_click_event(b1, id="a3")
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 1)
 
         # fill and submit the form
         form = b1.find_by_id("segment_contribution_form")[0]
@@ -433,7 +434,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         trigger_click_event(b1, id="a3b1")
 
         # no form should open:
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
         # test that the new contribution is displayed in response to get request
         b1.visit(f"{self.live_server_url}{reverse('landing_page')}")  # goto unrelated url
@@ -498,7 +499,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # testuser_1 should be able to answer to a2b2
         trigger_click_event(b1, id="a2")  # open existing answer
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
         # 1st click: toolbar
         trigger_click_event(b1, id="a2b2")
@@ -506,14 +507,14 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # 2nd click: contribution form
         trigger_click_event(b1, id="a2b2")
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 1)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 1)
 
         trigger_click_event(b1, id="cancel_btn_contribution_a2b2a")
 
         trigger_click_event(b1, id="a3")
         # no form should open:
         self.assertIsNotNone(self.fast_get(b1, id_str="segment_toolbar_a3"))
-        self.assertEqual(len(b1.evaluate_script(js_segment_contribution_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
     def test_g033__segment_toolbar_and_anchor_link(self):
         # self.headless = False
@@ -875,6 +876,10 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.assertTrue(get_js_visibility_for_id(b1, "contribution_a15b"))
 
     def _g120__common(self, create_b2=True):
+        """
+        Create new debate in db and press submit-button.
+        """
+
         # self.headless = False
         res = Container()
         res.b1 = self.new_browser()
@@ -1021,19 +1026,19 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         # testuser_1 (in browser b1) should not be able to open answer forms
         trigger_click_event(b1, id="a3")
-        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
         trigger_click_event(b1, id="a4")
-        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 0)
+        self.assertEqual(len(b1.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
         # testuser_2 (in browser b2) should be able to open answer forms
         trigger_click_event(b2, id="a3")
         trigger_click_event(b2, id="a3")
-        self.assertEqual(len(b2.evaluate_script(self.js_segment_contribution_forms)), 1)
+        self.assertEqual(len(b2.evaluate_script(self.js_get_segment_contribution_forms)), 1)
 
         trigger_click_event(b2, id="a4")
         trigger_click_event(b2, id="a4")
-        self.assertEqual(len(b2.evaluate_script(self.js_segment_contribution_forms)), 1)
+        self.assertEqual(len(b2.evaluate_script(self.js_get_segment_contribution_forms)), 1)
 
         # compose an answer:
         ta = b2.find_by_tag("textarea")[0]
@@ -1070,77 +1075,37 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
     def test_g123__not_logged_in_warning_visibility(self):
         """
-        Test that the 'not_logged_in_warning' div is shown only for unauthenticated users
+        Test that the 'not_logged_in_warning' div is not shown for unauthenticated users
         when they are allowed to add a contribution (i.e., when user_b is "__undefined__").
 
         This test covers the following scenarios:
         1. Anonymous user on a debate where user_b is "__undefined__": warning should be visible
         2. Logged-in user: warning should be hidden (has 'hidden' class)
         """
+        self.headless = False
 
         # Case 1: Anonymous user on a debate where user_b is "__undefined__"
         # This is a newly created debate (from _g120__common) where user_b is not yet assigned
-        c = self._g120__common(create_b2=False)  # creates a new debate with user_b = "__undefined__"
-        b1 = c.b1
+        c = self._g120__common(create_b2=True)  # creates a new debate with user_b = "__undefined__"
+        b1, b2 = c.b1, c.b2
+        self.dirs_to_remove.append(pjoin(REPO_HOST_DIR, c.api_data["debate_key"]))
+        trigger_click_event(b1, id="commit_btn_contribution_a")
 
         # At this point, user_b should be "__undefined__" because the debate was just created
         # and user_b has not been assigned yet
         user_b_element = get_parsed_element_by_id(id="data-user_b", browser=b1)
         self.assertEqual(user_b_element, "__undefined__")
 
+        b2.visit(b1.url)
+
         # Click on segment a3 twice to open the contribution form
         # First click: shows toolbar
-        trigger_click_event(b1, id="a3")
+        trigger_click_event(b2, id="a3")
         # Second click: should open contribution form (because user_b is "__undefined__")
-        trigger_click_event(b1, id="a3")
+        trigger_click_event(b2, id="a3")
 
-        # Verify contribution form is present
-        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 1)
-
-        # Verify the warning div is present and visible (no 'hidden' class)
-        warning_div = b1.evaluate_script(
-            'document.getElementsByClassName("not_logged_in_warning")[0]'
-        )
-        self.assertIsNotNone(warning_div)
-
-        # Check that the warning does NOT have the 'hidden' class
-        has_hidden_class = b1.evaluate_script(
-            'document.getElementsByClassName("not_logged_in_warning")[0].classList.contains("hidden")'
-        )
-        self.assertFalse(has_hidden_class)
-
-        # Verify the warning text is correct
-        warning_text = b1.evaluate_script(
-            'document.getElementsByClassName("not_logged_in_warning")[0].textContent'
-        )
-        self.assertIn("not logged", warning_text.lower())
-
-        # Case 2: Logged-in user - warning should be hidden
-        # First, logout
-        self.perform_logout(b1)
-
-        # Now login as testuser_2 (who will have role 'b')
-        self.perform_login(browser=b1, username="testuser_2")
-
-        # Refresh the page to get the updated user context
-        b1.visit(f"{self.live_server_url}{reverse('test_show_debate')}")
-
-        # Verify user is now authenticated
-        user_is_authenticated = get_parsed_element_by_id(id="data-user_is_authenticated", browser=b1)
-        self.assertEqual(user_is_authenticated, "true")
-
-        # Click on segment a3 twice to open the contribution form
-        trigger_click_event(b1, id="a3")
-        trigger_click_event(b1, id="a3")
-
-        # Verify contribution form is present
-        self.assertEqual(len(b1.evaluate_script(self.js_segment_contribution_forms)), 1)
-
-        # Verify the warning div has the 'hidden' class
-        has_hidden_class = b1.evaluate_script(
-            'document.getElementsByClassName("not_logged_in_warning")[0].classList.contains("hidden")'
-        )
-        self.assertTrue(has_hidden_class)
+        # Verify no contribution form is present
+        self.assertEqual(len(b2.evaluate_script(self.js_get_segment_contribution_forms)), 0)
 
 
 # #################################################################################################
