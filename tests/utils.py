@@ -33,10 +33,20 @@ logger.debug("fair_debate_web.tests.utils loaded")
 class Container:
     pass
 
+# regarding N_DEBATES_IN_FIXTURES:
+# currently we have 7:
+# d00-explanatory-example-debate
+# d02-test_debate
+# d03-test_debate
+# d04-test_debate
+# d05-hidden_test_debate
+# d06-private_test_debate
+# d1-lorem_ipsum
+
 
 N_CTB_IN_FIXTURES = 2
 N_PUBLIC_DEBATES_IN_FIXTURES = 4
-N_DEBATES_IN_FIXTURES = 6
+N_DEBATES_IN_FIXTURES = 7  # see comment above
 N_USERS_IN_FIXTURES = 5
 N_COMMITS_TEST_REPO = 4
 

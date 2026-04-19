@@ -49,9 +49,12 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         logger.info(f"end of TestClass `{cls}`")
 
     def setUp(self):
+        # ensure that after each test this variable can be reset
+        self.CATCH_EXCEPTIONS_from_settings = settings.CATCH_EXCEPTIONS
         self.set_up()
 
     def tearDown(self):
+        settings.CATCH_EXCEPTIONS = self.CATCH_EXCEPTIONS_from_settings
         self.tear_down()
 
     def post_to_view(self, viewname, follow_redirect=None, **kwargs):
@@ -196,7 +199,12 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         response = response = self.post_and_follow_redirect(new_url, post_data)
         self.assertEqual(response.status_code, 200)
+
+        # old:
         expected_content = b'<h1>\n  <span class="segment" id="a1">\n   Updated content\n  </span>\n </h1>'
+
+        # new:
+        expected_content = b'<h1>\n<span class="segment" id="a1">\n   Updated content\n  </span>\n</h1>'
         self.assertIn(expected_content, response.content)
 
         # other user should not see anything before committing
@@ -460,9 +468,8 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
         # test if redirect with ?next=... works
         response = self.perform_login(next_url=reverse("test_show_debate"))
-        self.assertEqual(response.status_code, 302)
-        new_url = response["Location"]
-        self.assertEqual(new_url, reverse("test_show_debate"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_parsed_element_by_id(id="data-utd_page_type", res=response), "utd_show_debate")
 
     def test_051__h3_answer_rendering(self):
         """
@@ -496,8 +503,8 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         debates_u2 = models.Debate.get_for_user(user2)
         debates_u3 = models.Debate.get_for_user(user3)
 
-        self.assertEqual(len(debates_u1), 6)
-        self.assertEqual(len(debates_u2), 5)
+        self.assertEqual(len(debates_u1), 7)
+        self.assertEqual(len(debates_u2), 6)
         self.assertEqual(len(debates_u3), 1)
 
         # ensure sorting

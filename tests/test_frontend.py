@@ -945,7 +945,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         body_ta.clear()
         body_ta.type(new_content)
         trigger_click_event(b1, id="submit_btn_contribution_a")
-        expected_content = '<h1>\n  <span class="segment" id="a1">\n   Updated content\n  </span>\n </h1>'
+        expected_content = '<h1>\n<span class="segment" id="a1">\n   Updated content\n  </span>\n</h1>'
         self.assertIn(expected_content, b1.html)
 
         # now type again and test modal dialog
@@ -1076,13 +1076,10 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
     def test_g123__not_logged_in_warning_visibility(self):
         """
         Test that the 'not_logged_in_warning' div is not shown for unauthenticated users
-        when they are allowed to add a contribution (i.e., when user_b is "__undefined__").
 
-        This test covers the following scenarios:
-        1. Anonymous user on a debate where user_b is "__undefined__": warning should be visible
-        2. Logged-in user: warning should be hidden (has 'hidden' class)
+        (this once was a bug)
         """
-        self.headless = False
+        # self.headless = False
 
         # Case 1: Anonymous user on a debate where user_b is "__undefined__"
         # This is a newly created debate (from _g120__common) where user_b is not yet assigned

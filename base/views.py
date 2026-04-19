@@ -410,7 +410,7 @@ class ShowDebateView(View):
 
         context = {
             "data": {
-                "utd_page_type": f"utd_new_debate",
+                "utd_page_type": f"utd_show_debate",
                 "segmented_html": body_content_html,
                 "debate_title": debate_obj.debate_key,  # TODO: the title should come from metadata.toml
                 "debate_key": debate_obj.debate_key,
