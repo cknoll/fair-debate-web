@@ -42,7 +42,7 @@ jobs:
 
     - name: run all tests
       run: |
-        python -m unittest
+        pytest
 
 
     # debugging (set env.DEBUG_WITH_SSH to true (see above))
