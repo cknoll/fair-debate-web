@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DEBUG_WITH_SSH: true
+      DEBUG_WITH_SSH: 'true'
 
     steps:
     - uses: actions/checkout@v2
@@ -39,6 +39,10 @@ jobs:
         # install this package
         pwd
         uv pip install --system -r requirements.txt
+
+    - name: prepare test-data
+      run: |
+        fdmd unpack-repos ./content_repos
 
     - name: run all tests
       run: |
