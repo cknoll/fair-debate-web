@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DEBUG_WITH_SSH: false
+      DEBUG_WITH_SSH: true
 
     steps:
     - uses: actions/checkout@v2
