@@ -3,6 +3,7 @@ bleach
 django-bleach>=3.1
 djangorestframework
 markdown
+dill
 deploymentutils
 fair_debate_md
 pytest
