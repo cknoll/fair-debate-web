@@ -120,6 +120,9 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
     def test_001__basics(self):
         self.assertGreaterEqual(Version(fdmd.__version__), Version("0.6.1"))
+        test_debate_key = "d1-lorem_ipsum"
+        self.assertIn("tests/testdata", settings.REPO_HOST_DIR)
+        self.assertTrue(os.path.exists(pjoin(settings.REPO_HOST_DIR, test_debate_key)))
 
     def test_010__index(self):
         response = self.client.get(reverse("landing_page"))

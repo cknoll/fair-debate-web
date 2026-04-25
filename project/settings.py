@@ -59,6 +59,13 @@ VERSION = release.__version__
 REPO_HOST_DIR = cfg("REPO_HOST_DIR").replace("__BASEDIR__", BASE_DIR)
 os.makedirs(REPO_HOST_DIR, exist_ok=True)
 
+# for unittest we need a different REPO_HOST_DIR (to not interfere with actual data)
+
+REPO_HOST_DIR_FOR_TESTS = cfg("REPO_HOST_DIR").replace(
+    "__BASEDIR__", os.path.join(BASE_DIR, "tests", "testdata")
+)
+
+
 # Collect static files here (will be copied to correct location by deployment script)
 STATIC_ROOT = cfg("STATIC_ROOT").replace("__BASEDIR__", BASE_DIR)
 

@@ -51,8 +51,7 @@ N_USERS_IN_FIXTURES = 5
 N_COMMITS_TEST_REPO = 4
 
 original_REPO_HOST_DIR = settings.REPO_HOST_DIR
-REPO_HOST_DIR_rel = original_REPO_HOST_DIR.replace(settings.BASE_DIR, "").lstrip("/")
-settings.REPO_HOST_DIR = pjoin(settings.BASE_DIR, "tests", "testdata", REPO_HOST_DIR_rel)
+settings.REPO_HOST_DIR = settings.REPO_HOST_DIR_FOR_TESTS
 REPO_HOST_DIR = settings.REPO_HOST_DIR
 os.makedirs(settings.REPO_HOST_DIR, exist_ok=True)
 
