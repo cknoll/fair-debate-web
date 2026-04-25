@@ -64,6 +64,26 @@ jobs:
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
 
+
+    # TODO-AIDER: I see the expected log-output on github:
+
+# SSH: ssh TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
+# or: ssh -i <path-to-private-SSH-key> TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
+# SSH: ssh TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
+# or: ssh -i <path-to-private-SSH-key> TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
+# SSH: ssh TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
+# or: ssh -i <path-to-private-SSH-key> TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
+
+    # but when I connect to the server with the ssh-key, I get:
+
+    # kex_exchange_identification: Connection closed by remote host
+    # Connection closed by 206.189.246.93 port 22
+
+
+
+    # the yaml code below can be ignored for now.
+
+
     # - name: run backend tests
     #   run: |
     #     pytest -k test_backend
