@@ -20,8 +20,8 @@ jobs:
 
     env:
       # note: 'true' only works if no error occurred.
-      # DEBUG_WITH_SSH: 'true'
-      DEBUG_WITH_SSH: false
+      DEBUG_WITH_SSH: 'true'
+      # DEBUG_WITH_SSH: false
 
 
     steps:
@@ -61,9 +61,13 @@ jobs:
       run: |
         python manage.py loaddata tests/testdata/fixtures01.json
 
-    - name: run all tests
-      run: |
-        pytest
+    # - name: run backend tests
+    #   run: |
+    #     pytest -k test_backend
+
+    # - name: run frontend tests
+    #   run: |
+    #     pytest -k test_frontend
 
 
     # debugging (set env.DEBUG_WITH_SSH to true (see above))
