@@ -19,7 +19,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DEBUG_WITH_SSH: 'true'
+      # note: 'true' only works if no error occurred.
+      # DEBUG_WITH_SSH: 'true'
+      DEBUG_WITH_SSH: false
+
 
     steps:
     - uses: actions/checkout@v2
@@ -39,6 +42,12 @@ jobs:
         # install this package
         pwd
         uv pip install --system -r requirements.txt
+
+    - name: configure git
+      run: |
+        git config --global user.email "ci-user@ci-server.com"
+        git config --global user.name "CI User"
+        git config --global init.defaultBranch main
 
     - name: prepare test-data
       run: |
