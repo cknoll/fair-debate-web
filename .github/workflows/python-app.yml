@@ -70,6 +70,10 @@ jobs:
       with:
         limit-access-to-actor: false
 
+    - name: run specific test
+      run: |
+        pytest -k test_g032__gui_behavior_for_users
+
     - name: run backend tests
       run: |
         pytest -k test_backend

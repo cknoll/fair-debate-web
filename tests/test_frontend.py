@@ -408,6 +408,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES)
         submit_button.click()
+        time.sleep(.5)
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES + 1)
 
         # test for new element (should be visible by default)
