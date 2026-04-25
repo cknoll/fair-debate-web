@@ -6,15 +6,22 @@
     - links should be deactivated by default, it otherwise would prevent toggling a segment
 
 
-- [x] i43 user a should be able to change visibility (public, private, hidden)
-- [ ] i42 recover currently unaccessible repos d8 etc
-- [x] i41 prevent .aider history etc. from being copied to deployment server
+- [ ] i47 recover currently unaccessible repos d8 etc
+- [ ] i46 debug roles for d11 (olympia)
+- [ ] i45 the current role of a user (a, b, not participating, not logged in) should be displayed
+- [ ] i44 user a should be able to change visibility (public, private, hidden) if no responses have yet been made
+    - if responses have been made the decision should not be up to a single user
+- [.] i42 activate ci
+    - main issue: ci reveals that result of package markdownify changed significantly
+    - [x] → requires major adaption of fair_debate_md (fixed with fdmd version 0.6.1, which is now ensured in the tests)
 - [.] i40 there should be a simple way to determine the difference between the working data of two instances.
     - reason: I run the public test instance. If I redeploy I will apply some fixtures. But there might also be user-generated data and I do not want to overwrite this without reviewing the content.
     - somehow solved by `deploy.py --backup-evaluation` + manual local investigation
-- [x] i39 users should appear in admin panel
 - [ ] i38 improve UI design
     -  [ ] see and evaluate incomplete approaches in branches `aider_style` and `manual_styling`
+- [x] i43 user a should be able to specify visibility (public, private, hidden) when they create a new debate
+- [x] i41 prevent .aider history etc. from being copied to deployment server
+- [x] i39 users should appear in admin panel
 - [x] i37 hidden and debates should only be listed in private section of front page
     - [x] test
     - [x] feature
