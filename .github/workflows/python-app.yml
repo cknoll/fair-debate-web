@@ -53,6 +53,10 @@ jobs:
       run: |
         fdmd unpack-repos ./content_repos
 
+    - name: prepare data base
+      run: |
+        python manage.py migrate --run-syncdb
+
     - name: install fixtures
       run: |
         python manage.py loaddata tests/testdata/fixtures01.json
