@@ -14,14 +14,21 @@ Fair-debate-Web is an experimental web application to facilitate controversial t
 
 #### Preparation
 
-- `fdmd unpack-repos ./content_repos`
-    - run this both in `<repo_root>` (workdir of development server) and `<repo_root>/tests/testdata` (for unittests)
+(see also also the [CI pipeline definition](.github/workflows/python-app.yml))
+
+- `python manage.py initializefixtures`
+- `python manage.py initializefixtures --unit-test-mode`
 - `python manage.py migrate --run-syncdb`
 - `python manage.py loaddata tests/testdata/fixtures01.json`
 
 #### Run automated unit tests
 
-- `pytest` (requires splinter installed and configured)
+- `pytest` (all tests)
+- `pytest -k test_backend.py`
+- `pytest -k test_frontend.py`
+
+Note: The frontend tests might be fragile (depending on the host machine) due to timing issues.
+
 
 #### Interactive Testing (using the development server)
 
