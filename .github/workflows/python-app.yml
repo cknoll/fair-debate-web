@@ -61,6 +61,9 @@ jobs:
       run: |
         python manage.py loaddata tests/testdata/fixtures01.json
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+
     # - name: run backend tests
     #   run: |
     #     pytest -k test_backend
@@ -71,25 +74,25 @@ jobs:
 
 
     # debugging (set env.DEBUG_WITH_SSH to true (see above))
-    - name: Setup tmate session
-      if: env.DEBUG_WITH_SSH == 'true'
-      id: tmate
-      uses: mxschmitt/action-tmate@v3
-      with:
-        detached: true
+    # - name: Setup tmate session
+    #   if: env.DEBUG_WITH_SSH == 'true'
+    #   id: tmate
+    #   uses: mxschmitt/action-tmate@v3
+    #   with:
+    #     detached: true
 
-    # this exports the ad-hoc ssh-connection address to an text file such that it can be accessed via API
-    # this allows to connect to the debugging ssh server without manual copy-pasting
-    # see https://github.com/cknoll/github-ci-ssh-connect
+    # # this exports the ad-hoc ssh-connection address to an text file such that it can be accessed via API
+    # # this allows to connect to the debugging ssh server without manual copy-pasting
+    # # see https://github.com/cknoll/github-ci-ssh-connect
 
-    - name: Capture tmate output
-      if: env.DEBUG_WITH_SSH == 'true'
-      run: |
-          echo $(cat /home/runner/work/_temp/_runner_file_commands/* | grep ::notice::SSH | awk '{print $NF}') > tmate-connection.txt
+    # - name: Capture tmate output
+    #   if: env.DEBUG_WITH_SSH == 'true'
+    #   run: |
+    #       echo $(cat /home/runner/work/_temp/_runner_file_commands/* | grep ::notice::SSH | awk '{print $NF}') > tmate-connection.txt
 
-    - name: Upload tmate logs as artifact
-      if: env.DEBUG_WITH_SSH == 'true'
-      uses: actions/upload-artifact@v4
-      with:
-        name: tmate-connection
-        path: tmate-connection.txt
+    # - name: Upload tmate logs as artifact
+    #   if: env.DEBUG_WITH_SSH == 'true'
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: tmate-connection
+    #     path: tmate-connection.txt
