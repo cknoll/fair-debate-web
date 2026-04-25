@@ -444,6 +444,8 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
 
     def test_050__login_and_out(self):
         response = self.client.get(reverse("login"))
+        import os
+        IPS(os.getenv("PYTEST_IPS"))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(auth.get_user(self.client).is_authenticated)
 
