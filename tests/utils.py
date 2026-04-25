@@ -44,9 +44,16 @@ class Container:
 # d1-lorem_ipsum
 
 
+# the following data will change with new fixtures
+
 N_CTB_IN_FIXTURES = 2
 N_PUBLIC_DEBATES_IN_FIXTURES = 4
+
+
 N_DEBATES_IN_FIXTURES = 7  # see comment above
+N_DEBATES_USER_1 = 7
+N_DEBATES_USER_2 = 6
+
 N_USERS_IN_FIXTURES = 5
 N_COMMITS_TEST_REPO = 4
 

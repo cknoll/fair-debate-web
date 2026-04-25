@@ -28,6 +28,8 @@ from .utils import (
     N_CTB_IN_FIXTURES,
     N_DEBATES_IN_FIXTURES,
     N_USERS_IN_FIXTURES,
+    N_DEBATES_USER_1,
+    N_DEBATES_USER_2,
     N_COMMITS_TEST_REPO,
     REPO_HOST_DIR,  # note: this is adapted for unittests
 )
@@ -508,8 +510,8 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         debates_u2 = models.Debate.get_for_user(user2)
         debates_u3 = models.Debate.get_for_user(user3)
 
-        self.assertEqual(len(debates_u1), 7)
-        self.assertEqual(len(debates_u2), 6)
+        self.assertEqual(len(debates_u1), N_DEBATES_USER_1)
+        self.assertEqual(len(debates_u2), N_DEBATES_USER_2)
         self.assertEqual(len(debates_u3), 1)
 
         # ensure sorting
