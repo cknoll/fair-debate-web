@@ -20,8 +20,8 @@ jobs:
 
     env:
       # note: 'true' only works if no error occurred.
-      DEBUG_WITH_SSH: 'true'
-      # DEBUG_WITH_SSH: false
+      # DEBUG_WITH_SSH: 'true'
+      DEBUG_WITH_SSH: false
 
 
     steps:
@@ -51,7 +51,7 @@ jobs:
 
     - name: prepare test-data
       run: |
-        fdmd unpack-repos ./content_repos
+        python manage.py initializefixtures --unit-test-mode
 
     - name: prepare data base
       run: |
@@ -61,38 +61,22 @@ jobs:
       run: |
         python manage.py loaddata tests/testdata/fixtures01.json
 
+
+    # experience: a successful connection seems to require that one connects fast after the server waits for it
+    # if the server e.g. waits for 2min the log messages indicate waiting but connection cannot be established
     - name: Setup tmate session
+      if: env.DEBUG_WITH_SSH == 'true'
       uses: mxschmitt/action-tmate@v3
       with:
         limit-access-to-actor: false
 
+    - name: run backend tests
+      run: |
+        pytest -k test_backend
 
-    # TODO-AIDER: I see the expected log-output on github:
-
-# SSH: ssh TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
-# or: ssh -i <path-to-private-SSH-key> TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
-# SSH: ssh TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
-# or: ssh -i <path-to-private-SSH-key> TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
-# SSH: ssh TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
-# or: ssh -i <path-to-private-SSH-key> TSqbtnQhgfn5kecZGEAyVqCDn@lon1.tmate.io
-
-    # but when I connect to the server with the ssh-key, I get:
-
-    # kex_exchange_identification: Connection closed by remote host
-    # Connection closed by 206.189.246.93 port 22
-
-
-
-    # the yaml code below can be ignored for now.
-
-
-    # - name: run backend tests
-    #   run: |
-    #     pytest -k test_backend
-
-    # - name: run frontend tests
-    #   run: |
-    #     pytest -k test_frontend
+    - name: run frontend tests
+      run: |
+        pytest -k test_frontend
 
 
     # debugging (set env.DEBUG_WITH_SSH to true (see above))
