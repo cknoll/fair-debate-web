@@ -46,6 +46,11 @@ def settings_value(name):
 
 
 @register.filter
+def get_user_role(debate, user):
+    return debate.get_user_role(user)
+
+
+@register.filter
 def debug(arg):
     from ipydex import IPS
 

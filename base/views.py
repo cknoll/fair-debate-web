@@ -53,6 +53,8 @@ class MainView(View):
         if request.user.is_authenticated:
             user: DebateUser = request.user
             context["data"]["recent_user_debate_list"] = Debate.get_for_user(user, limit=3)
+            context["user"] = user
+
         context["data"]["recent_debate_list"] = Debate.objects.filter(
             discoverability=Debate.Discoverability.PUBLIC
         ).order_by("-update_date")[:3]
