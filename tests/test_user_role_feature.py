@@ -20,6 +20,9 @@ class TestGetUserRoleFilter(TestCase):
             user_a=self.user,
             discoverability=Debate.Discoverability.PUBLIC
         )
+        # Set a valid debate_key (mimic NewDebateView logic)
+        self.debate.debate_key = f"d{self.debate.pk}-test-debate"
+        self.debate.save()
 
     def test_get_user_role_returns_a_for_user_a(self):
         """Test that user_a gets role 'a'."""
@@ -51,10 +54,12 @@ class TestMainViewUserContext(TestCase):
         self.client.force_login(user)
 
         # Create at least one debate so the list is populated
-        Debate.objects.create(
+        debate = Debate.objects.create(
             user_a=user,
             discoverability=Debate.Discoverability.PUBLIC
         )
+        debate.debate_key = f"d{debate.pk}-test-landing-debate"
+        debate.save()
 
         settings.CATCH_EXCEPTIONS = False
         response = self.client.get("/")
