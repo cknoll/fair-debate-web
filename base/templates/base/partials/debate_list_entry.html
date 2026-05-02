@@ -7,13 +7,11 @@
     <a href="{% url 'show_debate' debate_key=debate.debate_key %}">
         {{ debate.title }}
     </a>
-    {% if user.is_authenticated %}
-        {% with role=debate|get_user_role:user %}
-            <span class="user_role_display" title="your role in this debate">
-                {{ user.username }}:{% if role %}{{ role }}{% else %}no role{% endif %}
-            </span>
-        {% endwith %}
-    {% endif %}
+    {# The html comments serve to prevent the newlines to render as spaces in the browser #}
     <span class="dim" title="{{debate.update_date}}">(updated {{debate.update_date|naturaltime}})</span>
-    <span class="discoverability" title="Discoverability: {{debate.get_discoverability_display}}">[{{debate.discoverability}}]</span>
+    <span class="discoverability" title="Discoverability: {{debate.get_discoverability_display}}">[{{debate.discoverability}}<!--
+        -->{% if user.is_authenticated %}{% with role=debate|get_user_role:user %}{% if role %}<!--
+                    --> <span class="user_role_display" title="your role in this debate">(your role:{{ role }})</span><!--
+        -->{% endif %}{% endwith %}{% endif %}<!--
+-->]</span>
 </li>
