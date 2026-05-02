@@ -58,14 +58,7 @@ We use `black -l 110 ./` to ensure coding style consistency. For commit messages
 - "utc": unit test comment
 - "utd": unit test data
 
-### Local Testing
-
-- Create test data:
-- `fdmd unpack-repos ./content_repos`
-    - this should be run in both in `<repo-root>` (for manual testing) and in `<repo-root/tests/testdata>` (for unittests)
-
-
-### Helpful Commands:
+### Helpful (Low Level) Commands:
 
 - py3 manage.py shell
 - py3 manage.py createsuperuser

@@ -75,12 +75,13 @@ ADMIN_PASS = '9_muuozzBL--example-secret--IV70wX6YbRc_TkL3s'
 
 [credentials]
 
-admin_pass = "mr5iocfs4w--example-secret--reC8Ab8FAQPEPKIoQ"
-test_user_1_pass = "ARmOXS_LVo--example-secret--wOcyAwoNQuAqCJAc4"
-test_user_2_pass = "zcow9_LVVn--example-secret--nOvvOQEokh8zTseyo"
-test_user_3_pass = "Ty1ism9zsy--example-secret--pTlc4KfxSV0avwLJs"
-test_user_4_pass = "jiy9bqfQMB--example-secret--MOL5cQiqmlHQsHZEE"
-test_user_5_pass = "fTuSvX-AD8--example-secret--pzxcYaXiwWalUveg0"
-test_user_6_pass = "wJP0egaelj--example-secret--qrpRCeLWKUOC8Rml4"
-test_user_7_pass = "Ipn5Aqea3r--example-secret--ejG2ggyVf0fRGOrD0"
-test_user_8_pass = "ql0UK7MwOx--example-secret--KoA3Gwk7PU6YCqb3Q"
+admin_pass = 'fd_admin_pass'
+testuser_1_pass = 'fd_user_pass'
+testuser_2_pass = 'fd_user_pass'
+testuser_3_pass = 'fd_user_pass'
+testuser_4_pass = 'fd_user_pass'
+testuser_5_pass = 'fd_user_pass'
+testuser_6_pass = 'fd_user_pass'
+testuser_7_pass = 'fd_user_pass'
+testuser_8_pass = 'fd_user_pass'
+

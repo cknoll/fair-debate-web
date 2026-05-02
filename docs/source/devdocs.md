@@ -71,6 +71,16 @@ There are three data sources:
     ```
 
 
+### Database
+
+The database is populated from `tests/testdata/fixtures01.json`. Note: This file contains hashed passwords. They are generated from the passwords in `config-example.toml`. The script `deploy.py` takes care that for the demo-instance all existing users get different passwords.
+
+
+**Note:** Currently, the consistency between the passwords in the toml-config and the fixtures has to be ensured manually. The following command is useful:
+
+Create fixture-ready pw-hash: `python -c "import django; from django.conf import settings; settings.configure(); from django.contrib.auth.hashers import make_password; print(make_password(input('new password:')))"`
+
+
 ## Deployment
 
 
@@ -90,10 +100,6 @@ Note: This is work in progress, and thus not as professional as desired.
 
 - download backups for local comparison: `python deployment/deploy.py -u -be` (see code before running)
 
-
----
-
-- create fixture-ready pw-hash: `python -c "import django; from django.conf import settings; settings.configure(); from django.contrib.auth.hashers import make_password; print(make_password(input('new password:')))"`
 
 ---
 
