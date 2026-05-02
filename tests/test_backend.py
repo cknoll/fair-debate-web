@@ -16,6 +16,7 @@ from packaging.version import Version
 from ipydex import IPS
 import fair_debate_md as fdmd
 from base import models, utils
+from base.templatetags.extra_filters import get_user_role
 
 from .utils import (
     logger,
@@ -911,3 +912,38 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         response = self.client.post(c.action_url_delete, c.post_data_a15b)
 
         self.assertEqual(len(models.Contribution.objects.all()), N_CTB_IN_FIXTURES - 1)
+
+    def test_091__get_user_role_filter(self):
+        """Test the get_user_role template filter using existing fixtures."""
+        # Test user_a role in d1-lorem_ipsum
+        user_1 = models.DebateUser.objects.get(username="testuser_1")
+        debate_1 = models.Debate.objects.get(debate_key="d1-lorem_ipsum")
+        role = get_user_role(debate_1, user_1)
+        self.assertEqual(role, "a")
+
+        # Test user_b role in d1-lorem_ipsum
+        user_2 = models.DebateUser.objects.get(username="testuser_2")
+        role = get_user_role(debate_1, user_2)
+        self.assertEqual(role, "b")
+
+        # Test user_b role in d04-test_debate (user_3 is user_b)
+        user_3 = models.DebateUser.objects.get(username="testuser_3")
+        debate_4 = models.Debate.objects.get(debate_key="d04-test_debate")
+        role = get_user_role(debate_4, user_3)
+        self.assertEqual(role, "b")
+
+        # Test non-participant user (testuser_4 has no role in debate_1)
+        user_4 = models.DebateUser.objects.get(username="testuser_4")
+        role = get_user_role(debate_1, user_4)
+        self.assertIsNone(role)
+
+    def test_092__main_view_user_context(self):
+        """Test that MainView displays user role when authenticated."""
+        self.perform_login(username="testuser_1")
+        settings.CATCH_EXCEPTIONS = False
+        response = self.client.get(reverse("landing_page"))
+        self.assertEqual(response.status_code, 200)
+        # Check that the user role display span is present in the response
+        self.assertIn(b"user_role_display", response.content)
+        # Check that the username and role are correctly displayed
+        self.assertIn(b"testuser_1:a", response.content)
