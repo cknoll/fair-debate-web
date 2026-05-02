@@ -15,19 +15,19 @@
 <div>
     <hr>
     {% if request.user.is_authenticated %}
-    {% if data.recent_user_debate_list %}
-    You participated in the following debates:
-    <ul id="private_debate_list">
-      {% for debate in data.recent_user_debate_list %}
-        {% include "base/partials/debate_list_entry.html" with debate=debate lk="private" %}
-      {% endfor %}
-    </ul>
+      {% if data.recent_user_debate_list %}
+        You participated in the following debates:
+        <ul id="private_debate_list">
+          {% for debate in data.recent_user_debate_list %}
+            {% include "base/partials/debate_list_entry.html" with debate=debate lk="private" %}
+          {% endfor %}
+        </ul>
+      {% else %}
+        You have not participated in any debates yet.
+      {% endif %}
     {% else %}
-    You have not participated in any debates yet.
-    {% endif %}
-    {% else %}
-    To actively participate in debates you need to <a href="{% url 'login' %}">login</a>
-    or <a href="{% url 'signup' %}">sign up</a> first.
+      To actively participate in debates you need to <a href="{% url 'login' %}">login</a>
+    a  or <a href="{% url 'signup' %}">sign up</a> first.
     {% endif %}
 
     <hr>
