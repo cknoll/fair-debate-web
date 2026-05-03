@@ -12,24 +12,26 @@
 <!-- {{data.unit_test_comment}} -->
 
 <div id="second_sticky_bar">
+    {% trim_whitespace_after "»" stop_at="«" %}
     <span id="debate_title">
         <h2>{{data.debate_title}}</h2>
-        <span class="discoverability" title="Discoverability: {{data.debate_discoverability}}">[{{data.debate_discoverability}}<!--
-        -->{% if request.user.is_authenticated %}{% with role=data.user_role %}{% if role %}<!--
-                    -->, <span class="user_role_display" title="your role in this debate">(your role:{{ data.user_role }})</span><!--
-        -->{% endif %}{% endwith %}{% endif %}<!--
-        -->]</span>
+        <span class="discoverability" title="Discoverability: {{data.debate_discoverability}}">[{{data.debate_discoverability}}»
+        {% if request.user.is_authenticated %}{% with role=data.user_role %}{% if role %}»
+                , <span class="user_role_display" title="your role in this debate">(your role:{{ data.user_role }})</span>»
+         {% endif %}{% endwith %}{% endif %}
+        ]</span>
         <span class="clickable_span" title="copy url to clipboard" onclick="copyFullURL()">&#x1F517;</span>
         {% if data.num_answers %}
         <span>({{ data.num_answers }}
             {% if data.num_answers == 1 %}
-                answer)
+            answer»
             {% else %}
-                answers)
+            answers»
             {% endif %}
-        </span>
+        )</span>
         {% endif %}
-    </span>
+    </span> <!-- end of id="debate_title" -->
+    {% end_trim_whitespace_after %}
     <div style="display: block;">
         <div id="seg_id_display"></div>
         {% if data.user_role %}
