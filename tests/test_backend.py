@@ -26,6 +26,7 @@ from .utils import (
     generate_post_data_for_form,
     get_parsed_element_by_id,
     get_form_base_data_from_html_template_host,
+    get_user_pw,
     N_CTB_IN_FIXTURES,
     N_DEBATES_IN_FIXTURES,
     N_USERS_IN_FIXTURES,
@@ -97,7 +98,7 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
                 url = f"{url}?next={next_url}"
             previous_response = self.client.get(url)
         self.assertFalse(auth.get_user(self.client).is_authenticated)
-        login_data = {"username": username, "password": "admin"}
+        login_data = {"username": username, "password": get_user_pw(username)}
         post_data, action_url = generate_post_data_for_form(previous_response, spec_values=login_data)
 
         response = self.client.post(action_url, post_data)

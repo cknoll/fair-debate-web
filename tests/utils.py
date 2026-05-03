@@ -2,6 +2,7 @@ import os
 import json
 import time
 import logging
+import tomllib
 
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -259,3 +260,17 @@ def get_form_base_data_from_html_template_host(response_content: bytes) -> str:
     csrf_token = json.loads(soup.find(id="data-csrf_token").text)
 
     return action_url, csrf_token
+
+
+def get_user_pw(user):
+    # the unittest use the passwords from config-example.toml
+    with open(os.path.join(settings.BASE_DIR, "config-example.toml"), "rb") as f:
+        config = tomllib.load(f)
+
+    cdata: dict = config["credentials"]
+    pw_data = {}
+    for key, password in cdata.items():
+        if key.endswith('_pass'):
+            username = key[:-5]  # Remove '_pass' suffix to get username
+            pw_data[username] = password
+    return pw_data[user]
