@@ -947,4 +947,4 @@ class TestCore1(RepoResetMixin, FollowRedirectMixin, TestCase):
         # Check that the user role display span is present in the response
         self.assertIn(b"user_role_display", response.content)
         # Check that the username and role are correctly displayed
-        self.assertIn(b"testuser_1:a", response.content)
+        self.assertIn(b"your role: a", response.content)

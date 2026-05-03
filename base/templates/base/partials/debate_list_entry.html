@@ -13,7 +13,7 @@
         {% if user.is_authenticated %}
             {% with role=debate|get_user_role:user %}
                 {% if role %}»
-                    « <span class="user_role_display" title="your role in this debate">(your role:{{ role }})</span>»
+                    « <span class="user_role_display" title="your role in this debate">(your role: {{ role }})</span>»
                 {% endif %}
             {% endwith %}
         {% endif %}»

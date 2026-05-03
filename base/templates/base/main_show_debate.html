@@ -17,7 +17,7 @@
         <h2>{{data.debate_title}}</h2>
         <span class="discoverability" title="Discoverability: {{data.debate_discoverability}}">[{{data.debate_discoverability}}»
         {% if request.user.is_authenticated %}{% with role=data.user_role %}{% if role %}»
-                , <span class="user_role_display" title="your role in this debate">(your role:{{ data.user_role }})</span>»
+                , <span class="user_role_display" title="your role in this debate">(your role: {{ data.user_role }})</span>»
          {% endif %}{% endwith %}{% endif %}
         ]</span>
         <span class="clickable_span" title="copy url to clipboard" onclick="copyFullURL()">&#x1F517;</span>

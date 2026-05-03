@@ -16,6 +16,7 @@ from packaging.version import Version
 import git
 
 from splinter import Browser, Config
+from splinter.exceptions import ElementDoesNotExist
 from splinter.driver.webdriver import BaseWebDriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
@@ -120,6 +121,19 @@ class FollowRedirectMixin:
 
 
 def get_parsed_element_by_id(id: str, res: HttpResponse = None, browser: Browser = None):
+    # forgive timing issues, just try again
+    for i in range(5):
+        try:
+            res = _get_parsed_element_by_id(id,  res, browser)
+            return res
+        except ElementDoesNotExist as ex:
+            time.sleep(0.1)
+            continue
+    # we did not leave the loop
+    raise ex
+
+
+def _get_parsed_element_by_id(id: str, res: HttpResponse = None, browser: Browser = None):
 
     if browser is None:
         assert isinstance(res, HttpResponse)

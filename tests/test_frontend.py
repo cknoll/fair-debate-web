@@ -32,6 +32,7 @@ from .utils import (
     N_DEBATES_IN_FIXTURES,
     N_COMMITS_TEST_REPO,
     get_parsed_element_by_id,
+    get_user_pw,
 )
 
 pjoin = os.path.join
@@ -96,7 +97,7 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
 
     def perform_login(self, browser: Browser, username: str = "testuser_1"):
         self.visit(reverse("login"), browser=browser)
-        pw = "admin"
+        pw = get_user_pw(username)
 
         browser.find_by_id("id_username").fill(username)
         browser.find_by_id("id_password").fill(pw)
@@ -935,7 +936,12 @@ class TestGUI(RepoResetMixin, StaticLiveServerTestCase):
         self.perform_login(browser=b2, username="testuser_2")
         b2.visit(new_url)
 
-        status = get_parsed_element_by_id(id="data-server_status_code", browser=b2)
+        for i in range(3):
+            try:
+                status = get_parsed_element_by_id(id="data-server_status_code", browser=b2)
+            except Exception:
+                time.sleep(0.1)
+                continue
         self.assertEqual(status, 404)
 
         # test edit and submit
